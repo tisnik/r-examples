@@ -1,0 +1,1054 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Programovací jazyk R (úvodní informace)</title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1>Programovací jazyk R (úvodní informace)</h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>R je doménově specifickým jazykem používaným především pro zpracování a statistickou analýzu dat, včetně jejich grafického zobrazení popř. zveřejnění na webu. V novém seriálu se seznámíme jak se samotným jazykem R, tak i s poměrně rozsáhlým ekosystémem, který okolo tohoto jazyka existuje.</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Programovací jazyk R (úvodní informace)</a></p>
+<p><a href="#k02">2. Popularita ekosystému postaveného okolo jazyka R</a></p>
+<p><a href="#k03">3. R, Python nebo Julia?</a></p>
+<p><a href="#k04">4. RStudio</a></p>
+<p><a href="#k05">5. R Markdown</a></p>
+<p><a href="#k06">6. Instalace základních systémových balíčků jazyka R</a></p>
+<p><a href="#k07">7. Spuštění interaktivního prostředí se smyčkou REPL</a></p>
+<p><a href="#k08">8. Získání nápovědy a příkladů použití</a></p>
+<p><a href="#k09">9. Instalace RStudia</a></p>
+<p><a href="#k10">10. Vybrané ukázky některých možností jazyka R</a></p>
+<p><a href="#k11">11. Vektory</a></p>
+<p><a href="#k12">12. Alternativní způsob konstrukce vektoru</a></p>
+<p><a href="#k13">13. Grafy</a></p>
+<p><a href="#k14">14. Histogramy</a></p>
+<p><a href="#k15">15. Balíček ggplot2, lineární regrese atd.</a></p>
+<p><a href="#k16">16. Spouštění skriptů psaných v&nbsp;R</a></p>
+<p><a href="#k17">17. Poznámka na závěr: seznamy v&nbsp;Pythonu versus vektory v&nbsp;R</a></p>
+<p><a href="#k18">18. Obsah následující části seriálu</a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Programovací jazyk R (úvodní informace)</h2>
+
+<p>V&nbsp;právě začínajícím seriálu se seznámíme s&nbsp;doménově specifickým
+jazykem (<i>DSL</i>) pojmenovaným jednoduše <i>R</i>. Tento jazyk se používá
+převážně pro (před)zpracování dat, jejich statistickou analýzu, včetně jejich
+grafického zobrazení, která je typicky následovaná zveřejněním na webu ve formě
+statické nebo interaktivní prezentace. Tento pro vývojáře dosti neobvyklý
+jazyk, který se vyvíjí již 27 let, je rozšířen i ve vědecké komunitě a na
+<i>CRAN (Comprehensive R Archival Network)</i> je pro něj zveřejněno přes 16000
+balíčků s&nbsp;různými oblastmi zaměření. Na R je ovšem nejdůležitější nikoli
+vlastní jazyk, ale ekosystém, který je okolo něho postaven. Proto bude tento
+seriál zaměřen více na popis ekosystému spíše, než na podrobný popis syntaxe a
+sémantiky R.</p>
+
+<img src="https://i.iinfo.cz/images/347/r01-1.png" class="image-414208" alt="&#160;" width="256" height="256" />
+<p><i>Obrázek 1: Logo programovacího jazyka R.</i></p>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Popularita ekosystému postaveného okolo jazyka R</h2>
+
+<p>Jazyk R byl představen již před 27 lety a i přesto, že se jednalo a stále
+jedná o velmi rozšířený jazyk v&nbsp;oblasti zpracování dat, statistických
+analýz a vizualizace výsledků, stále jde o doménově specificky jazyk, který se
+příliš nehodí pro vývoj obecných aplikací vhodných pro produkční nasazení.
+Proto by se podle všech předpokladů neměl tento jazyk umisťovat na předních
+místech žebříčku oblíbenosti popř.&nbsp;míry používání programovacích jazyků.
+Ovšem letos se, pravděpodobně v&nbsp;souvislosti s&nbsp;koronavirem a studiemi,
+které zkoumaly jeho rozšiřování popř.&nbsp;s&nbsp;výzkumem léčby, dostal jazyk
+R na výsluní a umístil se na viditelném místě ve všech známých žebříčcích:
+Tiobe Indexu, PYPLu, analýza Stack Overflow atd. (ovšem současně se umístil i
+na předních místech žebříčku obávaných jazyků. I proto nemusí být na škodu znát
+alespoň jeho základy.</p>
+
+<img src="https://i.iinfo.cz/images/347/r01-2.png" class="image-414209" alt="&#160;" width="651" height="635" />
+<p><i>Obrázek 2: Žebříček nejžádanějších jazyků.<br />
+Zdroj: <a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a></i></p>
+
+<img src="https://i.iinfo.cz/images/347/r01-3.png" class="image-414210" alt="&#160;" width="655" height="788" />
+<p><i>Obrázek 3: Žebříček nejoblíbenějších jazyků.<br />
+Zdroj: <a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a></i></p>
+
+<img src="https://i.iinfo.cz/images/347/r01-4.png" class="image-414211" alt="&#160;" width="653" height="450" />
+<p><i>Obrázek 4: Ovšem i žebříček nejděsivějších jazyků.<br />
+Zdroj: <a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a></i></p>
+
+<img src="https://i.iinfo.cz/images/347/r01-5.png" class="image-414212" alt="&#160;" width="634" height="820" />
+<p><i>Obrázek 5: Výsledky dostupné na PYPL.<br />
+Zdroj: <a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a></i></p>
+
+<a href="https://www.root.cz/obrazek/414213/"><img src="https://i.iinfo.cz/images/347/r01-6-prev.png" class="image-414213" alt="&#160;" width="327" height="270" /></a>
+<p><i>Obrázek 6: Tiobe Index.<br />
+Zdroj: <a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a></i></p>
+
+<a href="https://www.root.cz/obrazek/414214/"><img src="https://i.iinfo.cz/images/347/r01-7-prev.png" class="image-414214" alt="&#160;" width="370" height="191" /></a>
+<p><i>Obrázek 7: Historie oblíbenosti jazyka R na Tiobe Indexu.<br />
+Zdroj: <a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a></i></p>
+
+<a href="https://www.root.cz/obrazek/414215/"><img src="https://i.iinfo.cz/images/347/r01-8-prev.png" class="image-414215" alt="&#160;" width="344" height="270" /></a>
+<p><i>Obrázek 8: Jazyk R na RedMonku (viz zvýrazněnou část).<br />
+Zdroj: <a href="https://redmonk.com/">https://redmonk.com/</a></i></p>
+
+<p><div class="rs-tip-major">Poznámka: každý z&nbsp;výše uvedených zdrojů
+používá odlišnou metodiku zpracování dat, proto jsou i výsledky značně
+odlišné.</div></p>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. R, Python nebo Julia?</h2>
+
+<p>Mnoho potenciálních uživatelů jazyka R se (a to zcela logicky) ptá, zda je
+výhodnější používat R, Python (doplněný typicky o Matplotlib, NumPy a SciPy)
+nebo <a
+href="https://www.root.cz/serialy/programovaci-jazyk-julia/">programovací jazyk
+Julia</a>. Každý z&nbsp;těchto jazyků má některé výhody a pochopitelně i
+nevýhody. Julia je z&nbsp;této trojice zdaleka nejrychlejší, ovšem prozatím
+nemá tak propracovaný ekosystém, minimálně v&nbsp;porovnání s&nbsp;R nebo
+Pythonem. To se odráží i na počtu dostupných balíčků, nabídek IDE, dostupné
+literatury apod. Python představuje k&nbsp;R velkou konkurenci v&nbsp;oblasti
+ML a především NLP &ndash; opět díky dostupnosti knihoven a frameworků. Ovšem R
+vyhrává v&nbsp;počtu dostupných balíčků, existencí balíčku
+<strong>ggplot2</strong> (ten si popíšeme v&nbsp;samostatném článku) a taktéž
+tím, že většina výzkumných článků používá právě tento jazyk. Navíc jazyk R
+obsahuje možnost tvorby interaktivních webových prezentací s&nbsp;(taktéž
+interaktivními) grafy vytvářenými s&nbsp;využitím <a
+href="https://shiny.rstudio.com/">Shiny</a> (i této technologii bude věnován
+samostatný článek).</p>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. RStudio</h2>
+
+<p>V&nbsp;základních balíčcích s&nbsp;programovacím jazykem R nalezneme
+&bdquo;pouze&ldquo; interaktivní smyčku REPL, která umožňuje dialog mezi
+uživatelem a ekosystémem R. Ovšem v&nbsp;praxi se většinou setkáme
+s&nbsp;použitím integrovaného vývojového prostředí (jehož nedílnou součástí je
+ovšem i REPL). V&nbsp;případě jazyka R je tímto IDE <i>RStudio</i>, které je
+volně dostupné a otevřené (což je důležité mj.&nbsp;i v&nbsp;akademické sféře)
+a pochopitelně je nabízeno i pro Linux. RStudio existuje ve dvou variantách.
+První varianta se jmenuje <i>RStudio Desktop</i> a jedná se o plnohodnotné
+<i>desktopové</i> vývojové prostředí. Druhá varianta nese název <i>RStudio
+Server</i>. Tato varianta, jak již její název naznačuje, běží na serveru,
+přičemž na straně klienta je použit WWW prohlížeč, se všemi výhodami a
+nevýhodami, které toto řešení přináší. V&nbsp;navazujících článcích si použití
+<i>RStudia</i>, přesněji řečeno jeho desktopové varianty, ukážeme.</p>
+
+<a href="https://www.root.cz/obrazek/414216/"><img src="https://i.iinfo.cz/images/347/r01-9-prev.png" class="image-414216" alt="&#160;" width="370" height="270" /></a>
+<p><i>Obrázek 9: Prostředí RStudia.</i></p>
+
+<p><div class="rs-tip-major">Poznámka: existují i další IDE pro R, například
+<i>R Tools for Visual Studio</i>, <i>Rattle</i>, <i>ESS</i> (založeno na
+Emacsu), <i>Radiant</i> nebo <i>r4intelliJ</i>, ovšem zdá se, že majorita
+uživatelů R používá právě <i>RStudio</i>.</div></p>
+
+<a href="https://www.root.cz/obrazek/414217/"><img src="https://i.iinfo.cz/images/347/r01-10-prev.png" class="image-414217" alt="&#160;" width="369" height="270" /></a>
+<p><i>Obrázek 10: Prostředí RStudia.</i></p>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. R Markdown</h2>
+
+<p>Součástí ekosystému postaveného okolo programovacího jazyka R je i
+značkovací jazyk nazvaný <i>R Markdown</i>, který vychází z&nbsp;klasického <a
+href="https://www.root.cz/clanky/rozsahly-svet-znackovacich-jazyku/#k14">Markdownu</a>,
+ovšem navíc přidává možnost vkládat do dokumentu části skriptů psaných
+v&nbsp;R, které se vyhodnotí (včetně grafů) a zobrazí ve výsledném dokumentu
+(HTML, PDF, Word atd.). Navíc je možné s&nbsp;využitím <i>Shiny</i> a
+<i>htmlwidgets</i> vytvářet <a
+href="https://rmarkdown.rstudio.com/lesson-14.html">interaktivní dokumenty</a>,
+což jsou vlastně živé prezentace s&nbsp;tabulkami a grafy. A právě existence
+<i>Shiny</i> s&nbsp;poměrně velkou pravděpodobností způsobila velký rozmach
+jazyka R v&nbsp;tomto roce v&nbsp;souvislosti s&nbsp;grafy a predikcemi šíření
+popř.&nbsp;léčení koronaviru.</p>
+
+<img src="https://i.iinfo.cz/images/481/jupyter1-1.png" class="image-407896" alt="&#160;" width="669" height="724" />
+<p><i>Obrázek 11: R Markdown notebook.<br />
+Zdroj: dokumentace k&nbsp;projektu dostupná na https://bookdown.org/yihui/rmarkdown/notebook.html</i></p>
+
+<p><div class="rs-tip-major">Poznámka: nabízí se zde porovnání s&nbsp;Jupyter
+Notebookem, ovšem práce s&nbsp;R Markdownem je poněkud odlišná a podobá se
+spíše psaní článků či knih.</div></p>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Instalace základních systémových balíčků jazyka R</h2>
+
+<p>Základní systémové balíčky programovacího jazyka R a vlastně i celého
+ekosystému postaveného okolo R bývají dostupné přímo v&nbsp;repositářích
+většiny mainstreamových distribucí Linuxu. Základní balíček s&nbsp;jeho
+závislostmi se většinou jmenuje <strong>R</strong> (pozor &ndash; použijte
+verzálku a ne minusku) a například na systému Fedora/RHEL lze nainstalovat <a
+href="https://rpm-software-management.github.io/">přes DNF</a>:</p>
+
+<pre>
+# <strong>dnf install R</strong>
+</pre>
+
+<p>Samotný balíček R má relativně velké množství závislostí, což je ostatně
+patrné i z&nbsp;následující obrazovky (instalace je provedena pro Fedoru server
+s&nbsp;X a Fluxboxem; na Fedora workstation je mnoho závislých balíčků již
+nainstalovaných):</p>
+
+<pre>
+Last metadata expiration check: 1:03:19 ago on Thu 27 Aug 2020 07:28:20 PM CEST.
+Dependencies resolved.
+================================================================================
+ Package             Arch   Version              Repository                Size
+================================================================================
+Installing:
+ R                   x86_64 4.0.2-1.fc32         updates                   10 k
+Installing dependencies:
+ R-core              x86_64 4.0.2-1.fc32         updates                   57 M
+ R-core-devel        x86_64 4.0.2-1.fc32         updates                   88 k
+ R-devel             x86_64 4.0.2-1.fc32         updates                  9.5 k
+ R-java              x86_64 4.0.2-1.fc32         updates                   11 k
+ R-java-devel        x86_64 4.0.2-1.fc32         updates                   10 k
+ R-rpm-macros        noarch 1.2.0-1.fc32         updates                   11 k
+&nbsp;
+Transaction Summary
+================================================================================
+Install  407 Packages
+&nbsp;
+Total download size: 445 M
+Installed size: 1.3 G
+Is this ok [y/N]:
+</pre>
+
+<p>Po instalaci by měly být dostupné především dva příkazy <strong>R</strong> a
+<strong>Rscript</strong>, které využijeme v&nbsp;dalším textu.</p>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Spuštění interaktivního prostředí se smyčkou REPL</h2>
+
+<p>Po instalaci R si můžeme vyzkoušet spuštění interaktivního prostředí tohoto
+programovacího jazyka, které je vybavené smyčkou REPL:</p>
+
+<pre>
+$ <strong>R</strong>
+&nbsp;
+R version 4.0.2 (2020-06-22) -- "Taking Off Again"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+&nbsp;
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+&nbsp;
+  Natural language support but running in an English locale
+&nbsp;
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+&nbsp;
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+&nbsp;
+<strong>&gt;</strong>
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: poslední řádek obsahuje takzvanou výzvu
+(<i>prompt</i>). Pokud je zobrazena, je R připraven na vstup příkazu od
+uživatele.</div></p>
+
+<p>Při ukončování REPLu se prostředí zeptá, zda se mají uložit informace o
+pracovním prostředí (<i>environment, workspace</i>), aby bylo možné při
+opětovném spuštění REPLu pokračovat v&nbsp;práci. Tento koncept si podrobněji
+vysvětlíme příště.</p>
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Získání nápovědy a příkladů použití</h2>
+
+<p>K&nbsp;balíčkům i k&nbsp;jednotlivým funkcím, které jsou dostupné, je možné
+zobrazit nápovědu, a to příkazem <strong>help</strong>. Pokud se tento příkaz
+(ve skutečnosti se jedná o funkci) zavolá bez parametrů, vypíšou se informace o
+způsobu jeho použití (volání):</p>
+
+<pre>
+&gt; <strong>help()</strong>
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+help                   package:utils                   R Documentation
+&nbsp;
+Documentation
+&nbsp;
+Description:
+&nbsp;
+     ‘help’ is the primary interface to the help systems.
+&nbsp;
+Usage:
+&nbsp;
+     help(topic, package = NULL, lib.loc = NULL,
+          verbose = getOption("verbose"),
+          try.all.packages = getOption("help.try.all.packages"),
+          help_type = getOption("help_type"))
+&nbsp;
+Arguments:
+&nbsp;
+   topic: usually, a name or character string specifying the topic for
+          which help is sought.  A character string (enclosed in
+          explicit single or double quotes) is always taken as naming a
+          topic.
+&nbsp;
+          If the value of ‘topic’ is a length-one character vector the
+          topic is taken to be the value of the only element.
+</pre>
+
+<p>Zadat je možné i název funkce popř.&nbsp;přesnou specifikaci balíčku (pokud
+existuje funkce se stejným jménem ve více balíčcích):</p>
+
+<pre>
+&gt; <strong>help(sort)</strong>
+</pre>
+<pre>
+sort                   package:base                    R Documentation
+&nbsp;
+Sorting or Ordering Vectors
+&nbsp;
+Description:
+&nbsp;
+     Sort (or _order_) a vector or factor (partially) into ascending or
+     descending order.  For ordering along more than one variable,
+     e.g., for sorting data frames, see ‘order’.
+&nbsp;
+Usage:
+&nbsp;
+     sort(x, decreasing = FALSE, ...)
+&nbsp;
+     ## Default S3 method:
+     sort(x, decreasing = FALSE, na.last = NA, ...)
+&nbsp;
+     sort.int(x, partial = NULL, na.last = NA, decreasing = FALSE,
+              method = c("auto", "shell", "quick", "radix"), index.return = FALSE)
+&nbsp;
+Arguments:
+&nbsp;
+       x: for ‘sort’ an R object with a class or a numeric, complex,
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: v&nbsp;závislosti na nastavení se
+zobrazí buď nápověda naformátovaná v&nbsp;čistém textu nebo HTML dokument.
+Alternativně je možné nápovědu získat i v&nbsp;PDF (pro sazbu se v&nbsp;tomto
+případě používá <i>pdflatex</i>, podrobnosti si řekneme příště).</div></p>
+
+<p>Zobrazit lze i příklady použití:</p>
+
+<pre>
+&gt; <strong>example(sort)</strong>
+&nbsp;
+sort&gt; require(stats)
+&nbsp;
+sort&gt; x &lt;- swiss$Education[1:25]
+&nbsp;
+sort&gt; x; sort(x); sort(x, partial = c(10, 15))
+ [1] 12  9  5  7 15  7  7  8  7 13  6 12  7 12  5  2  8 28 20  9 10  3 12  6  1
+ [1]  1  2  3  5  5  6  6  7  7  7  7  7  8  8  9  9 10 12 12 12 12 13 15 20 28
+ [1]  3  2  5  5  1  6  6  7  7  7  7  8  7  8  9  9 10 12 12 12 12 20 28 13 15
+&nbsp;
+sort&gt; ## illustrate 'stable' sorting (of ties):
+sort&gt; sort(c(10:3, 2:12), method = "shell", index.return = TRUE) # is stable
+$x
+ [1]  2  3  3  4  4  5  5  6  6  7  7  8  8  9  9 10 10 11 12
+&nbsp;
+$ix
+ [1]  9  8 10  7 11  6 12  5 13  4 14  3 15  2 16  1 17 18 19
+&nbsp;
+</pre>
+
+<p>Vyhledávání v&nbsp;nápovědě a příkladech použití:</p>
+
+<pre>
+&gt; <strong>apropos("sort")</strong>
+&nbsp;
+[1] ".doSortWrap"  "is.unsorted"  "sort"         "sort.default" "sort.int"    
+[6] "sort.list"    "sort.POSIXlt" "sortedXyData"
+</pre>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Instalace RStudia</h2>
+
+<p>Pro práci s&nbsp;jazykem R se velmi často používá integrované vývojové
+prostředí nazvané <i>RStudio</i>. To lze nainstalovat buď opět z&nbsp;balíčků
+nabízených v&nbsp;repositářích Linuxové distribuce, nebo &ndash; pokud tato
+možnost neexistuje &ndash; lze na stránce <a
+href="https://rstudio.com/products/rstudio/download/">https://rstudio.com/products/rstudio/download/</a>
+vybrat volně dostupnou verzi RStudia (<i>RStudio Desktop with Open Source
+License</i>) a na další stránce pak získat adresu s&nbsp;balíčkem kompatibilním
+s&nbsp;použitou distribucí Linuxu. Opět si ukažme instalaci provedenou pro
+Fedoru. K&nbsp;dispozici je balíček určený pro Fedoru 28, ovšem ten je
+použitelný i s&nbsp;novější verzí Fedory (konkrétně s&nbsp;Fedorou 32).</p>
+
+<p>Nejdříve balíček stáhneme:</p>
+
+<pre>
+# <strong>wget https://download1.rstudio.org/desktop/centos7/x86_64/rstudio-1.3.1073-x86_64.rpm</strong>
+&nbsp;
+--2020-08-28 15:59:45--  https://download1.rstudio.org/desktop/centos7/x86_64/rstudio-1.3.1073-x86_64.rpm
+Resolving download1.rstudio.org (download1.rstudio.org)... 2600:9000:2111:9e00:10:3192:1100:93a1, 2600:9000:2111:1400:10:3192:1100:93a1, 2600:9000:2111:e00:10:3192:1100:93a1, ...
+&nbsp;
+Connecting to download1.rstudio.org (download1.rstudio.org)|99.86.116.95|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 146953448 (140M) [application/x-redhat-package-manager]
+Saving to: ‘rstudio-1.3.1073-x86_64.rpm’
+&nbsp;
+rstudio-1.3.1073-x8 100%[===================&gt;] 140.15M  33.8MB/s    in 4.0s    
+&nbsp;
+2020-08-28 15:59:49 (34.9 MB/s) - ‘rstudio-1.3.1073-x86_64.rpm’ saved [146953448/146953448]
+</pre>
+
+<p>A posléze ho nainstalujeme příkazem <strong>rpm</strong>:</p>
+
+<pre>
+$ <strong>rpm -i rstudio-1.3.1073-x86_64.rpm</strong>
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: při spuštění RStudia se může vypsat
+informace o chybějící knihovně <i>openssl</i>. Tu lze snadno doinstalovat.
+Jedná se o balíček nazvaný <strong>compat-openssl10</strong>.</div></p>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Vybrané ukázky některých možností jazyka R</h2>
+
+<p>V&nbsp;navazujících šesti kapitolách si ukážeme některé možnosti, které nám
+programovací jazyk R (a jeho knihovny) nabízí. Bude se skutečně prozatím jednat
+pouze o ukázky, protože v&nbsp;této chvíli neznáme syntaxi a sémantiku tohoto
+jazyka &ndash; ta bude popsána v&nbsp;dalších článcích. Ukázky je možné spustit
+buď přímo v&nbsp;rámci interaktivní smyčky REPL v&nbsp;<strong>R</strong>, nebo
+je možné stejné příkazy zadávat do RStudia (což je mnohem blíže tomu, jak se
+jazyk R používá v&nbsp;praxi).</p>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Vektory</h2>
+
+<p>Jazyk R podporuje několik datových typů (seznam, pole, matice, tabulka,
+uzávěr, ...), ovšem existuje mezi nimi jeden typ využívaný v&nbsp;prakticky
+všech skriptech a ve většině funkcí. Jedná se o <i>vektory</i> (<i>vector</i>),
+jejichž prvky mohou obsahovat logické hodnoty, celá čísla, čísla typu
+<i>double</i>, komplexní čísla, znaky atd. Takovým vektorům se někdy říká
+<i>atomické</i>. Zajímavé je, že když použijete číslo popř.&nbsp;nějaká funkce
+číslo vrací, jedná se ve skutečnosti o vektor.</p>
+
+<p>Vektory se vytváří z&nbsp;prvků konstruktorem nazvaným <strong>c</strong>.
+Výsledek (tedy zkonstruovaný vektor) je možné přiřadit nějaké proměnné pomocí
+<strong>=</strong> (méně často z&nbsp;důvodů, které si vysvětlíme příště) nebo
+<strong>&lt;-</strong>:</p>
+
+<pre>
+&gt; <strong>a &lt;- c(1,2,3,4)</strong>
+</pre>
+
+<p>Vektor si můžeme vypsat:</p>
+
+<pre>
+&gt; <strong>str(a)</strong>
+ num [1:4] 1 2 3 4
+</pre>
+
+<p>A popř.&nbsp;zjistit jeho typ a třídu:</p>
+
+<pre>
+&gt; <strong>typeof(a)</strong>
+[1] "double"
+&nbsp;
+&gt; <strong>class(a)</strong>
+[1] "numeric"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: práce s&nbsp;třídami a objekty je
+poměrně komplikovaná faktem, že existují dva objektové systémy. K&nbsp;těm se
+ještě dále vrátíme.</div></p>
+
+<p>Číslo je skutečně považováno za jednoprvkový vektor:</p>
+
+<pre>
+&gt; <strong>c(1) + 10</strong>
+[1] 11
+&nbsp;
+&gt; <strong>length(42)</strong>
+[1] 1
+</pre>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Alternativní způsob konstrukce vektoru</h2>
+
+<p>V&nbsp;případě, že má vektor obsahovat aritmetickou sekvenci, lze takový
+vektor zkonstruovat s&nbsp;využitím funkce <strong>seq</strong>, kterou si
+podrobněji popíšeme příště. Alternativně lze pro vektory se známou hodnotou
+prvního a posledního prvku (tj.&nbsp;obou mezních hodnot) použít operátor
+<strong>:</strong>, který odpovídá konstruktorům typu <strong>range</strong>
+v&nbsp;jiných programovacích jazycích:</p>
+
+<pre>
+&gt; <strong>1:4</strong>
+[1] 1 2 3 4
+&gt; <strong>str(1:4)</strong>
+ int [1:4] 1 2 3 4
+&gt; <strong>typeof(1:4)</strong>
+[1] "integer"
+</pre>
+
+<p>Základní použití funkce <strong>seq</strong>:</p>
+
+<pre>
+&gt; <strong>seq(1,4)</strong>
+[1] 1 2 3 4
+&nbsp;
+&gt; <strong>seq(1,4,2)</strong>
+[1] 1 3
+&nbsp;
+&gt; <strong>seq(1,10,2)</strong>
+[1] 1 3 5 7 9
+&nbsp;
+&gt; <strong>seq(10,0)</strong>
+ [1] 10  9  8  7  6  5  4  3  2  1  0
+</pre>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Grafy</h2>
+
+<p>Velmi silnou stránkou programovacího jazyka R je tvorba grafů, která je
+většinou velmi intuitivní. Tvorbou grafů se budeme podrobněji zabývat
+v&nbsp;samostatném článku, takže dnes si uvedeme jen několik malých ukázek.</p>
+
+<p>První graf bude obsahovat průběh funkce sinus, ovšem tento průběh je
+nahrazen jednotlivými body, protože graf vytvořený funkcí
+<strong>plot</strong>, které předáme vektory s&nbsp;x-ovými a y-ovými
+souřadnicemi, vytvoří graf s&nbsp;nepospojovanými body [x<sub>i</sub>,
+y<sub>i</sub>]:</p>
+
+<pre>
+x &lt;- 1:100
+y &lt;- sin(x/10)
+plot(x,y)
+</pre>
+
+<p>Zkrácený zápis:</p>
+
+<pre>
+plot(sin(1:100/10))
+</pre>
+
+<img src="https://i.iinfo.cz/images/347/r01-11.png" class="image-414218" alt="&#160;" width="666" height="664" />
+<p><i>Obrázek 12: Body ležící na průběhu funkce sinus.</i></p>
+
+<p>Lissajousův obrazec:</p>
+
+<pre>
+plot(sin(1:1000/3), cos(1:4000/4))
+</pre>
+
+<img src="https://i.iinfo.cz/images/347/r01-12.png" class="image-414219" alt="&#160;" width="664" height="666" />
+<p><i>Obrázek 13: Výsledek předchozího příkladu.</i></p>
+
+<p>Skutečný graf s&nbsp;průběhem funkce sin:</p>
+
+<pre>
+plot(sin, from=0, to=2*pi)
+</pre>
+
+<img src="https://i.iinfo.cz/images/347/r01-13.png" class="image-414220" alt="&#160;" width="667" height="665" />
+<p><i>Obrázek 14: Průběh funkce sinus.</i></p>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Histogramy</h2>
+
+<p>Vytvořit je možné i histogram, a to pomocí funkce <strong>hist</strong>.
+Ukažme si jednoduchý histogram s&nbsp;hodnotami produkovanými funkcí sinus:</p>
+
+<pre>
+hist(sin(1:n * 2*pi/n))
+</pre>
+
+<img src="https://i.iinfo.cz/images/347/r01-14.png" class="image-414221" alt="&#160;" width="665" height="658" />
+<p><i>Obrázek 15: Histogram.</i></p>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Balíček ggplot2, lineární regrese atd.</h2>
+
+<p>Jedním z&nbsp;důležitých balíčků připravených pro ekosystém jazyka R je
+balíček nazvaný <strong>ggplot2</strong>, který lze nainstalovat například
+příkazem:</p>
+
+<pre>
+&lt; <strong>install.packages("ggplot2"))</strong>
+</pre>
+
+<p>&bdquo;gg&ldquo; v&nbsp;názvu tohoto balíčku znamená &bdquo;grammar of
+graphics&ldquo;, protože grafy mají vlastní sémantiku (osy, popisky, průběhy
+hodnot atd). Tento balíček později využijeme při složitějších
+vizualizacích.</p>
+
+<p>Ještě si dnes ukažme použití funkce <strong>lm</strong>, která dokáže
+vypočítat lineární regresi (proložení naměřených či vypočtených bodů přímkou) a
+navíc i odchylky atd. Tento příklad byl převzat z&nbsp;Wikipedie a snažíme se
+v&nbsp;něm proložit hodnoty 1<sup>2</sup>, 2<sup>2</sup>, až 6<sup>2</sup>:</p>
+
+<pre>
+&gt; <strong>x &lt;- 1:6  # Create vector.</strong>
+&gt; <strong>y &lt;- x^2  # Create vector by formula.</strong>
+&gt; <strong>model &lt;- lm(y ~ x)</strong>
+&gt; <strong>print(model)</strong>
+&nbsp;
+Call:
+lm(formula = y ~ x)
+&nbsp;
+Coefficients:
+(Intercept)            x  
+     -9.333        7.000  
+&nbsp;
+&gt; <strong>summary(model)</strong>
+&nbsp;
+Call:
+lm(formula = y ~ x)
+&nbsp;
+Residuals:
+      1       2       3       4       5       6 
+ 3.3333 -0.6667 -2.6667 -2.6667 -0.6667  3.3333 
+&nbsp;
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  -9.3333     2.8441  -3.282 0.030453 *  
+x             7.0000     0.7303   9.585 0.000662 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+&nbsp;
+Residual standard error: 3.055 on 4 degrees of freedom
+Multiple R-squared:  0.9583,    Adjusted R-squared:  0.9478 
+F-statistic: 91.88 on 1 and 4 DF,  p-value: 0.000662
+</pre>
+
+<img src="https://i.iinfo.cz/images/347/r01-15.png" class="image-414222" alt="&#160;" width="668" height="666" />
+<p><i>Obrázek 16: Vizualizovaný model vytvořený funkcí <strong>lm</strong>.</i></p>
+
+<img src="https://i.iinfo.cz/images/347/r01-16.png" class="image-414223" alt="&#160;" width="666" height="670" />
+<p><i>Obrázek 17: Vizualizovaný model vytvořený funkcí <strong>lm</strong> pro
+odlišný vstup.</i></p>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Spouštění skriptů psaných v&nbsp;R</h2>
+
+<p>Ještě se zmiňme o tom, jakým způsobem se spouští skripty psané v&nbsp;jazyku
+R. Můžeme je spouštět přímo v&nbsp;rámci interaktivní smyčky REPL (které
+předáme přesměrovaný vstup):</p>
+
+<pre>
+$ <strong>R &lt; 10_lm_plots.R</strong>
+</pre>
+
+<p>Ve skutečnosti ovšem budeme muset specifikovat, jestli se má při ukončování
+REPLu ukládat informace o pracovním prostředí. Reálné spuštění skriptu tedy
+bude vypadat následovně:</p>
+
+<pre>
+$ <strong>R --vanilla &lt; 10_lm_plots.R</strong>
+</pre>
+
+<p>Alternativně je možné použít příkaz <strong>RScript</strong>, kterému se
+přímo (bez přesměrování) předá název souboru se skriptem:</p>
+
+<pre>
+$ <strong>Rscript 10_lm_plots.R</strong>
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: skripty obsahující programy psané
+v&nbsp;R mají většinou koncovku &bdquo;.R&ldquo;, i když se někdy setkáme i
+s&nbsp;použitím malého &bdquo;.r&ldquo;.</div></p>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Poznámka na závěr: seznamy v&nbsp;Pythonu versus vektory v&nbsp;R</h2>
+
+<p>Na závěr se zmiňme o jednom z&nbsp;rozdílů mezi seznamy v&nbsp;Pythonu a
+vektory v&nbsp;jazyku R, a to z&nbsp;toho důvodu, že se mnohdy tyto dva jazyky
+používají současně. V&nbsp;Pythonu jsou vektory měnitelnými (<i>mutable</i>)
+datovými strukturami a navíc se jedná o typ dat, který není uložen přímo
+v&nbsp;proměnné &ndash; proměnná ve skutečnosti obsahuje odkaz (referenci) na
+seznam. To může vést k&nbsp;tomu, že zdánlivá změna jediné proměnné ve
+skutečnosti vede i ke změně proměnné druhé (protože obě proměnné referencují
+stejný měnitelný seznam):</p>
+
+<pre>
+&gt;&gt;&gt; <strong>x=[1,2,3]</strong>
+&nbsp;
+&gt;&gt;&gt; <strong>y=x</strong>
+&nbsp;
+&gt;&gt;&gt; <strong>y+=[4]</strong>
+&nbsp;
+&gt;&gt;&gt; <strong>x==y</strong>
+True
+&nbsp;
+&gt;&gt;&gt; <strong>x</strong>
+[1, 2, 3, 4]
+&nbsp;
+&gt;&gt;&gt; <strong>y</strong>
+[1, 2, 3, 4]
+</pre>
+
+<p>V&nbsp;R namísto toho přidáním prvku do vektoru <strong>y</strong> nezměníme
+vektor <strong>x</strong>:</p>
+
+<pre>
+&gt; <strong>x=c(1,2,3)</strong>
+&nbsp;
+&gt; <strong>y=x</strong>
+&nbsp;
+&gt; <strong>y=append(y,4)</strong>
+&nbsp;
+&gt; <strong>identical(x,y)</strong>
+[1] FALSE
+</pre>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Obsah následující části seriálu</h2>
+
+<p>V&nbsp;navazující části nového seriálu se seznámíme s&nbsp;některými
+základními koncepty, na nichž je programovací jazyk R postaven. Zejména si
+popíšeme podporované datové typy, základní funkce určené pro operaci
+s&nbsp;vektory a maticemi i některé řídicí příkazy (i když je nutné říci, že se
+v&nbsp;jazyku R řídicí struktury, především programové smyčky, používají méně
+často, než je tomu v&nbsp;běžných programovacích jazycích). Všechny příklady
+budou koncipovány tak, že je bude možné spustit jak v&nbsp;interaktivní smyčce
+REPL, tak i v&nbsp;prostředí <i>RStudia</i>.</p>
+
+<p><div class="rs-tip-major">Poznámka: celý koncept jazyka R se odlišuje od
+obecných programovacích jazyků a proto nemusí být při jeho popisu kladen takový
+důraz na přesný popis typového systému, řídicích struktur atd. (mnoho lidí
+úspěšně používá R dennodenně, a to bez exaktní znalosti sémantiky tohoto
+jazyka).</div></p>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+jen jednotky kilobajtů), můžete namísto toho použít odkazy na jednotlivé
+demonstrační příklady, které naleznete v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td> 1</td><td>01_show_help.R</td><td>zobrazení nápovědy v&nbsp;REPLu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/01_show_help.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/01_show_help.R</a></td></tr>
+<tr><td> 2</td><td>02_show_help_sort.R</td><td>zobrazení nápovědy v&nbsp;REPLu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/02_show_help_sort.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/02_show_help_sort.R</a></td></tr>
+<tr><td> 3</td><td>03_vector_constructor.R</td><td>konstrukce vektorů pomocí <strong>c()</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/03_vector_constructor.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/03_vector_constructor.R</a></td></tr>
+<tr><td> 4</td><td>04_vector_range.R</td><td>konstrukce vektorů operátorem <i>range</i></td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/04_vector_range.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/04_vector_range.R</a></td></tr>
+<tr><td> 5</td><td>05_plot.R</td><td>nejjednodušší použití příkazu <strong>plot</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/05_plot.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/05_plot.R</a></td></tr>
+<tr><td> 6</td><td>06_plot.R</td><td>další ukázka příkazu <strong>plot</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/06_plot.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/06_plot.R</a></td></tr>
+<tr><td> 7</td><td>07_lm.R</td><td>lineární regrese</td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/07_lm.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/07_lm.R</a></td></tr>
+<tr><td> 8</td><td>08_lm_plot.R</td><td>graf s&nbsp;výsledky lineární regrese</td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/08_lm_plot.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/08_lm_plot.R</a></td></tr>
+<tr><td> 9</td><td>09_lm_plots.R</td><td>grafy s&nbsp;výsledky lineární regrese</td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/09_lm_plots.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/09_lm_plots.R</a></td></tr>
+<tr><td>10</td><td>10_lm_plots.R</td><td>grafy s&nbsp;výsledky lineární regrese (jiná funkce)</td><td><a href="https://github.com/tisnik/r-examples/blob/master/01-introduction/10_lm_plots.R">https://github.com/tisnik/r-examples/blob/master/01-introduction/10_lm_plots.R</a></td></tr>
+</table>
+
+<p><div class="rs-tip-major">Poznámka: v&nbsp;tomto repositáři budou uloženy i
+jednotlivé články, prezentace a návody týkající se ekosystému programovacího
+jazyka R.</div></p>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded & Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
