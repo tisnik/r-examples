@@ -1,0 +1,1384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Programovací jazyk R (vektory ve funkci základního datového typu jazyka)</title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1>Programovací jazyk R (vektory ve funkci základního datového typu jazyka)</h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>Ve druhé části miniseriálu o programovacím jazyku R se budeme zabývat především základním (a nejpoužívanějším) datovým typem tohoto jazyka. Jedná se o vektory, což jsou homogenní datové struktury, pro které je definováno mnoho funkcí i několik operátorů. Kromě vektorů v R nalezneme i další typy, o nichž se zmíníme později.</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Programovací jazyk R (vektory ve funkci základního datového typu jazyka)</a></p>
+<p><a href="#k02">2. Konstrukce vektorů</a></p>
+<p><a href="#k03">3. Konverze hodnot při konstrukci vektorů</a></p>
+<p><a href="#k04">4. Funkce <strong>seq</strong></a></p>
+<p><a href="#k05">5. Funkce <strong>rep</strong></a></p>
+<p><a href="#k06">6. Přístup k&nbsp;prvkům vektoru</a></p>
+<p><a href="#k07">7. Výběr většího množství prvků</a></p>
+<p><a href="#k08">8. Operace prováděné nad vektory</a></p>
+<p><a href="#k09">9. Porovnávání vektorů prvek po prvku</a></p>
+<p><a href="#k10">10. Funkce <strong>all</strong></a></p>
+<p><a href="#k11">11. Funkce <strong>which</strong></a></p>
+<p><a href="#k12">12. Součet vektorů prvek po prvku, automatické prodloužení vektorů</a></p>
+<p><a href="#k13">13. Ostatní operace prováděné nad prvky vektorů</a></p>
+<p><a href="#k14">14. Dělení nulou</a></p>
+<p><a href="#k15">15. Dělení se zbytkem</a></p>
+<p><a href="#k16">16. Logické operace nad prvky vektorů</a></p>
+<p><a href="#k17">17. Konsolidované logické operace</a></p>
+<p><a href="#k18">18. Obsah následujícího článku</a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Programovací jazyk R (vektory ve funkci základního datového typu jazyka)</h2>
+
+<p>Programovací jazyk R podporuje několik datových typů (seznam, pole, matice,
+tabulka, uzávěr, ...), ovšem existuje mezi nimi jeden typ využívaný
+v&nbsp;prakticky všech skriptech a ve většině funkcí. Jedná se o <i>vektory</i>
+(<i>vector</i>), jejichž prvky mohou obsahovat logické hodnoty, celá čísla,
+čísla typu <i>double</i>, komplexní čísla, znaky či řetězce atd. Takovým
+vektorům se někdy říká <i>atomické</i> (což ovšem může být matoucí, protože
+pojem <i>atom</i> je v&nbsp;oblasti programovacích jazyků použit pro několik
+rozdílných konceptů). Zajímavé je, že když použijete číslo popř.&nbsp;nějaká
+funkce číslo vrací, jedná sice o skalární hodnotu, ale můžeme s&nbsp;ní
+pracovat jako s&nbsp;plnohodnotným vektorem. Jednotlivé typy vektorů jsou
+shrnuty v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th>#</th><th>Typ</th><th>Stručný popis</th></tr>
+<tr><td>1</td><td>integer</td><td>celá čísla (kladná i záporná)</td></tr>
+<tr><td>2</td><td>double</td><td>čísla s&nbsp;plovoucí řádovou čárkou</td></tr>
+<tr><td>3</td><td>complex</td><td>komplexní čísla</td></tr>
+<tr><td>4</td><td>character</td><td>znaky tvořící řetězec (vektor tedy obsahuje jeden nebo více řetězců)</td></tr>
+<tr><td>5</td><td>logical</td><td>pravdivostní hodnoty TRUE a FALSE</td></tr>
+<tr><td>6</td><td>raw</td><td>bajty (typicky znaky převedené na bajty)</td></tr>
+</table>
+
+<p><div class="rs-tip-major">Poznámka: vektory jsou v&nbsp;jazyku R homogenními
+datovými strukturami, takže všechny jejich prvky mají stejný typ. Pokud budete
+potřebovat pracovat s&nbsp;heterogenními strukturami, lze namísto vektorů
+použít seznamy, které si popíšeme příště. Pro jejich konstrukci se používá
+funkce <strong>list</strong>.</div></p>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Konstrukce vektorů</h2>
+
+<p>Se základními konstruktory vektorů jsme se již ve stručnosti seznámili
+minule, takže si nyní pouze připomeňme, že existuje hned několik způsobů
+konstrukce nového vektoru. V&nbsp;případě, že má vektor obsahovat jen jedinou
+hodnotu, je vytvoření takového vektoru jednoduché a přímočaré, protože vlastní
+zápis hodnoty (typicky čísla) již představuje skalární hodnotu, která se však
+chová jako vektor (má délku rovnou jedné, může se používat v&nbsp;operacích,
+kde se očekávají vektory atd.):</p>
+
+<pre>
+&gt; <strong>42</strong>
+&nbsp;
+[1] 42
+</pre>
+
+<p>O tom, jakého typu je takový skalár nebo vektor, se můžeme přesvědčit
+zavoláním funkce <strong>class</strong>:</p>
+
+<pre>
+&gt; <strong>class(42)</strong>
+&nbsp;
+[1] "numeric"
+</pre>
+
+<p>Vektor s&nbsp;obecnými prvky se vytvoří konstruktorem nazvaným
+<strong>c</strong>, což je funkce, které se předají hodnoty jednotlivých
+prvků:</p>
+
+<pre>
+&gt; <strong>a &lt;- c(1,2,3,4)</strong>
+&nbsp;
+&gt; <strong>class(a)</strong>
+&nbsp;
+[1] "numeric"
+</pre>
+
+<p>Prvky samozřejmě nemusí být pouze celými čísly, ale například i hodnotami
+s&nbsp;plovoucí řádovou čárkou:</p>
+
+<pre>
+&gt; <strong>b &lt;- c(1.2, 2.3, 3.4)</strong>
+&nbsp;
+&gt; <strong>class(b)</strong>
+&nbsp;
+[1] "numeric"
+</pre>
+
+<p>Nakonec si vyzkoušíme vytvoření vektoru obsahujícího pravdivostní hodnoty
+TRUE a FALSE:</p>
+
+<pre>
+&gt; <strong>l &lt;- c(TRUE, FALSE, TRUE)</strong>
+&nbsp;
+&gt; <strong>class(l)</strong>
+&nbsp;
+[1] "logical"
+</pre>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. Konverze hodnot při konstrukci vektorů</h2>
+
+<p><a href="#k01">V&nbsp;úvodní kapitole</a> jsme si řekli, že vektory jsou
+homogenními datovými strukturami, tedy že všechny jejich prvky jsou stejného
+typu (což v&nbsp;důsledku vede k&nbsp;mnohem rychlejší práci s&nbsp;nimi
+&ndash; ostatně stejný způsob se používá i v&nbsp;NumPy a podobných balíčcích).
+Co se ovšem stane ve chvíli, pokud funkci <strong>c</strong> (konstruktoru)
+předáme prvky různého typu? Můžeme si to snadno otestovat přímo
+v&nbsp;REPLu:</p>
+
+<pre>
+&gt; <strong>x &lt;- c(1, FALSE, TRUE, 42)</strong>
+</pre>
+
+<p>Pokud vypíšeme typ vektoru, zjistíme, že obsahuje numerické hodnoty:</p>
+
+<pre>
+&gt; <strong>class(x)</strong>
+&nbsp;
+[1] "numeric"
+</pre>
+
+<p>Je tomu tak z&nbsp;toho důvodu, že se interpret programovacího jazyka R
+pokusil o převod pravdivostních hodnot na celočíselné hodnoty 0 a 1 (což je
+ovšem v&nbsp;mnoha případech velmi výhodné chování). Výsledkem je tedy opět
+homogenní datová struktura:</p>
+
+<pre>
+&gt; <strong>x</strong>
+[1]  1  0  1 42
+&nbsp;
+&gt; <strong>l</strong>
+</pre>
+
+<p>V&nbsp;dalším demonstračním příkladu nejdříve vytvoříme vektor obsahující
+řetězce (pro jednoduchost jednopísmenné řetězce):</p>
+
+<pre>
+&gt; <strong>y &lt;- c("a", "b", "c")</strong>
+&nbsp;
+&gt; <strong>y</strong>
+[1] "a" "b" "c"
+</pre>
+
+<p>Přesvědčíme se o typu vektoru:</p>
+
+<pre>
+&gt; <strong>class(y)</strong>
+&nbsp;
+[1] "character"
+</pre>
+
+<p>Nyní se pokusíme vytvořit vektor s&nbsp;prvky typu řetězec a současně celé
+číslo:</p>
+
+<pre>
+&gt; <strong>z &lt;- c("a", 42, "c")</strong>
+</pre>
+
+<p>V&nbsp;tomto případě se jazyk R pokusí o převod celých čísel na řetězec, což
+je podporovaná operace:</p>
+
+<pre>
+&gt; <strong>class(z)</strong>
+&nbsp;
+[1] "character"
+</pre>
+
+<p>Výsledkem je vektor obsahující trojici řetězců (tedy opět homogenní datová
+struktura):</p>
+
+<pre>
+&gt; <strong>z</strong>
+&nbsp;
+[1] "a"  "42" "c" 
+</pre>
+
+<p>V&nbsp;případě typových konverzí se většinou provádí přímé konverze
+z&nbsp;jednoho typu přímo na typ požadovaný. To například znamená, že
+pravdivostní hodnota TRUE je přímo převedena na řetězec a nikoli napřed na celé
+číslo (1):</p>
+
+<pre>
+&gt; <strong>c(TRUE, 42, "foobar")</strong>
+&nbsp;
+[1] "TRUE"   "42"     "foobar"
+</pre>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. Funkce <strong>seq</strong></h2>
+
+<p>Minule jsme si taktéž řekli, že zápisem <strong>a:b</strong> je možné
+zkonstruovat vektor s&nbsp;prvky, které začínají hodnotou <strong>a</strong> a
+končí hodnotou <strong>b</strong> (a to včetně obou krajních hodnot). Následuje
+příklad použití takto pojaté konstrukce vektoru:</p>
+
+<pre>
+&gt; <strong>1:10</strong>
+&nbsp;
+ [1]  1  2  3  4  5  6  7  8  9 10
+</pre>
+
+<p>Počítat lze i zpět, tj.&nbsp;první hodnota může být větší než hodnota
+druhá:</p>
+
+<pre>
+&gt; <strong>10:1</strong>
+&nbsp;
+ [1] 10  9  8  7  6  5  4  3  2  1
+</pre>
+
+<p>Pro složitější případy (neceločíselné kroky či meze atd.) se používá funkce
+<strong>seq</strong>, což je zkratka od slova <i>sequence</i>. Vytvoření
+vektoru o deseti prvcích může vypadat následovně:</p>
+
+<pre>
+&gt; <strong>seq(1,10)</strong>
+&nbsp;
+ [1]  1  2  3  4  5  6  7  8  9 10
+</pre>
+
+<p>Pokud je první mezní hodnota větší než druhá, bude krok automaticky nastaven na -1:</p>
+
+<pre>
+&gt; <strong>seq(10,1)</strong>
+&nbsp;
+ [1] 10  9  8  7  6  5  4  3  2  1
+</pre>
+
+<p>Specifikovat je možné i krok (který je jinak explicitně nastavený na 1 nebo
+-1):</p>
+
+<pre>
+&gt; <strong>seq(1,5,by=0.5)</strong>
+&nbsp;
+[1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0
+</pre>
+
+<p>V&nbsp;některých případech je výhodnější specifikovat délku vektoru (počet
+prvků) a hodnoty prvního a posledního prvku:</p>
+
+<pre>
+&gt; <strong>seq(length=10, from=0, to=1)</strong>
+&nbsp;
+ [1] 0.0000000 0.1111111 0.2222222 0.3333333 0.4444444 0.5555556 0.6666667
+ [8] 0.7777778 0.8888889 1.0000000
+&nbsp;
+&nbsp;
+&gt; <strong>seq(length=11, from=0, to=1)</strong>
+&nbsp;
+ [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: podrobnější popis této funkce naleznete
+na stránce <a
+href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/seq">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/seq</a>.</div></p>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. Funkce <strong>rep</strong></h2>
+
+<p>Další funkcí, kterou je možné použít pro vytvoření nového vektoru, je funkce
+nazvaná <strong>rep</strong>, což je zkratka slova <i>repeat</i>. Tato funkce
+vytváří vektor opakováním prvku či prvků. Nejjednodušší je použití této funkce
+v&nbsp;případě, kdy je vstupem vektor s&nbsp;jediným prvkem:</p>
+
+<pre>
+&gt; <strong>rep(42, 10)</strong>
+&nbsp;
+ [1] 42 42 42 42 42 42 42 42 42 42
+</pre>
+
+<p>Opakovat ovšem můžeme i delší vektor, například dvouprvkový vektor:</p>
+
+<pre>
+&gt; <strong>a &lt;- c(1,2)</strong>
+&nbsp;
+&gt; <strong>rep(a, times=5)</strong>
+&nbsp;
+ [1] 1 2 1 2 1 2 1 2 1 2
+</pre>
+
+<p>Další varianta vytváří odlišný vektor, protože napřed opakuje první prvek
+pětkrát a následně druhý prvek (taktéž pětkrát):</p>
+
+<pre>
+&gt; <strong>a &lt;- c(1,2)</strong>
+&nbsp;
+&gt; <strong>rep(a, each=5)</strong>
+&nbsp;
+ [1] 1 1 1 1 1 2 2 2 2 2
+</pre>
+
+<p>Nic nám samozřejmě nebrání v&nbsp;tom opakovat vektor s&nbsp;logickými
+hodnotami a vytvořit tak vektor nový:</p>
+
+<pre>
+&gt; <strong>l &lt;- c(TRUE, FALSE)</strong>
+&nbsp;
+&gt; <strong>u &lt;- rep(l, 10)</strong>
+&nbsp;
+&gt; <strong>u</strong>
+&nbsp;
+ [1]  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE
+[13]  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE
+</pre>
+
+<p>Existuje ještě jedna zajímavá varianta, kterou je možné použít ve chvíli,
+kdy potřebujeme opakovat prvky nějakého vstupního vektoru, ovšem délka
+výsledného vektoru není celočíselným násobkem délky vektoru vstupního.
+V&nbsp;tomto případě se použije parametr nazvaný
+<strong>length.out</strong>:</p>
+
+<pre>
+&gt; <strong>a &lt;- c(1, 2, 3)</strong>
+&nbsp;
+&gt; <strong>rep(a, length.out=10)</strong>
+&nbsp;
+ [1] 1 2 3 1 2 3 1 2 3 1
+&nbsp;
+&nbsp;
+&gt; <strong>rep(a, length.out=20)</strong>
+ [1] 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: podrobnější popis této funkce naleznete
+na stránce <a
+href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/rep">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/rep</a>.</div></p>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Přístup k&nbsp;prvkům vektoru</h2>
+
+<p>Pro přečtení hodnoty nějakého prvku vektoru se používá
+&bdquo;indexovací&ldquo; operátor, který známe i z&nbsp;mnoha dalších
+programovacích jazyků. Ovšem musíme si dát pozor na to, že prvky jsou
+indexovány od jedničky a nikoli od nuly. První prvek vektoru má tedy index
+roven jedné, poslední prvek má index roven <strong>length(vector)</strong>
+atd.:</p>
+
+<pre>
+&gt; <strong>a &lt;- c("a", "b", "c", "d", "e", "f")</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] "a" "b" "c" "d" "e" "f"
+&nbsp;
+&gt; <strong>a[1]</strong>
+[1] "a"
+&nbsp;
+&gt; <strong>a[6]</strong>
+[1] "f"
+</pre>
+
+<p>Přístup k&nbsp;nultému prvku je možný, ovšem nevrací hodnotu prvku:</p>
+
+<pre>
+&gt; <strong>a[0]</strong>
+&nbsp;
+character(0)
+</pre>
+
+<p>Pokus o přístup k&nbsp;neexistujícímu prvku vrací hodnotu
+<strong>NA</strong> neboli <i>Not Available</i> (což je jedna ze čtyř
+speciálních hodnot):</p>
+
+<pre>
+&gt; <strong>a[7]</strong>
+&nbsp;
+[1] NA
+</pre>
+
+<p>Pokud se použije záporný index, bude vrácen původní vektor, ovšem bez prvku,
+který je reprezentován daným indexem (převedeným na absolutní hodnotu):</p>
+
+<pre>
+&gt; <strong>a[-1]</strong>
+&nbsp;
+[1] "b" "c" "d" "e" "f"
+&nbsp;
+&gt; <strong>a[-5]</strong>
+&nbsp;
+[1] "a" "b" "c" "d" "f"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: pozor &ndash; toto chování je značně
+odlišné od jiných programovacích jazyků, kde záporný index značí indexování od
+konce vektoru!</div></p>
+
+<p>Prvky vektoru je možné měnit (<i>mutovat</i>) v&nbsp;případě, že indexovaný
+prvek bude na pravé straně operátoru přiřazení:</p>
+
+<pre>
+&gt; <strong>a &lt;- rep(42, 10)</strong>
+&gt; <strong>a</strong>
+&nbsp;
+ [1] 42 42 42 42 42 42 42 42 42 42
+&nbsp;
+&gt; <strong>a[5] &lt;- 0</strong>
+&gt; <strong>a</strong>
+&nbsp;
+ [1] 42 42 42 42  0 42 42 42 42 42
+</pre>
+
+<p>Existuje ještě složitější kombinace, a to záporného indexu s&nbsp;přiřazením
+hodnoty do zbývajících prvků (kromě prvku NEvybraného):</p>
+
+<pre>
+&gt; <strong>a &lt;- rep(42, 10)</strong>
+&gt; <strong>a</strong>
+&nbsp;
+ [1] 42 42 42 42 42 42 42 42 42 42
+&nbsp;
+&gt; <strong>a[-4] = rep(0, 9)</strong>
+&gt; <strong>a</strong>
+ [1]  0  0  0 42  0  0  0  0  0  0
+</pre>
+
+<p>Tímto příkladem jsme změnili všechny prvky <i>kromě</i> prvku čtvrtého.</p>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Výběr většího množství prvků</h2>
+
+<p>V&nbsp;programovacím jazyku R je možné z&nbsp;vektoru současně vybrat i
+větší počet prvků, což je velmi užitečná operace. Indexy prvků, které se mají
+vybrat, jsou uloženy ve druhém (výběrovém) vektoru. Ovšem následující zápis
+není povolen (resp.  povolen je, ale ne pro jednorozměrné vektory):</p>
+
+<pre>
+&gt; <strong>a &lt;- c("a", "b", "c", "d", "e", "f")</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] "a" "b" "c" "d" "e" "f"
+&nbsp;
+&gt; <strong>a[2,3,4]</strong>
+Error in a[2, 3, 4] : incorrect number of dimensions
+</pre>
+
+<p>Namísto toho je nutné do operátoru indexování předat skutečný vektor.
+Vybereme tedy druhý, třetí a čtvrtý prvek:</p>
+
+<pre>
+&gt; <strong>a[c(2,3,4)]</strong>
+&nbsp;
+[1] "b" "c" "d"
+</pre>
+
+<p>Výběr prvků v&nbsp;odlišném pořadí je pochopitelně taktéž umožněn:</p>
+
+<pre>
+&gt; <strong>a[c(4,2,3)]</strong>
+&nbsp;
+[1] "d" "b" "c"
+</pre>
+
+<p>Pomocí zápisu 2:4 je taktéž vytvořen vektor, takže následující příkaz je
+legální a plně funkční:</p>
+
+<pre>
+&gt; <strong>a[2:4]</strong>
+&nbsp;
+[1] "b" "c" "d"
+</pre>
+
+<p>Výběr kopie původního vektoru:</p>
+
+<pre>
+&gt; <strong>a[1:length(a)]</strong>
+&nbsp;
+[1] "a" "b" "c" "d" "e" "f"
+</pre>
+
+<p>Pokud použijeme index prvku, který neexistuje, vrátí se NA:</p>
+
+<pre>
+&gt; <strong>a[1:10]</strong>
+&nbsp;
+[1] "a" "b" "c" "d" "e" "f" NA  NA  NA  NA
+</pre>
+
+<p>Operace s&nbsp;postupným filtrováním prvků z&nbsp;výsledků (opakuje se
+indexování se záporným indexem):</p>
+
+<pre>
+&gt; <strong>a &lt;- c("a", "b", "c", "d", "e", "f")</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] "a" "b" "c" "d" "e" "f"
+&nbsp;
+&gt; <strong>a[c(-2, -3, -4)]</strong>
+[1] "a" "e" "f"
+&nbsp;
+&gt; <strong>a[c(-2)]</strong>
+[1] "a" "c" "d" "e" "f"
+&nbsp;
+&gt; <strong>a[c(-2, -3)]</strong>
+[1] "a" "d" "e" "f"
+&nbsp;
+&gt; <strong>a[c(-2, -3, -4)]</strong>
+[1] "a" "e" "f"
+</pre>
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Operace prováděné nad vektory</h2>
+
+<p>Nad vektory, resp.&nbsp;přesněji řečeno nad prvky, z&nbsp;nichž se vektory
+skládají, lze provádět relativně velké množství operací, které si postupně
+popíšeme v&nbsp;navazujícím textu. Většina operací je definována nad vektory
+obsahujícími čísla, jen některé operace pracují s&nbsp;vektory řetězců nebo
+logických hodnot.</p>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Porovnávání vektorů prvek po prvku</h2>
+
+<p>Dvojici vektorů je možné porovnat s&nbsp;využitím jednoho ze šesti relačních
+operátorů. Výsledkem bude nový vektor obsahující pravdivostní hodnoty TRUE a
+FALSE. Délka výsledného vektoru bude rovna délce většího ze vstupních vektorů,
+protože jazyk R dokáže kratší vektor &bdquo;natáhnout&ldquo; (zrecyklovat) tak,
+aby jeho délka odpovídala druhému vektoru (recyklace je založena na opakování
+prvků vektoru, takže pokud nejsou délky soudělné, vypíše se varování):</p>
+
+<pre>
+&gt; <strong>a &lt;- 1:10</strong>
+&nbsp;
+&gt; <strong>a &lt; 5</strong>
+ [1]  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: v&nbsp;tomto případě se jednoprvkový
+vektor 5 natáhl na délku deseti prvků se stejnou hodnotou.</div></p>
+
+<p>Dtto, ale výběr těch prvků, které jsou větší než 5:</p>
+
+<pre>
+&gt; <strong>a &gt; 5</strong>
+&nbsp;
+ [1] FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE
+</pre>
+
+<p>Použití relačních operátorů rovnosti a nerovnosti:</p>
+
+<pre>
+&gt; <strong>a != 5</strong>
+&nbsp;
+ [1]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE
+&nbsp;
+&nbsp;
+&gt; <strong>a == 5</strong>
+&nbsp;
+ [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: pokud potřebujete zjistit rovnost celých
+vektorů, použije se funkce <strong>identical</strong>:</div></p>
+
+<pre>
+&gt; <strong>identical(a, b)</strong>
+&nbsp;
+[1] FALSE
+&nbsp;
+&nbsp;
+&gt; <strong>identical(a, a)</strong>
+&nbsp;
+[1] TRUE
+</pre>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Funkce <strong>all</strong></h2>
+
+<p>V&nbsp;některých případech sice potřebujeme porovnat prvky dvou vektorů
+(přesněji řečeno vždy dvojice prvků se stejným indexem), ovšem jako výsledek
+vyžadujeme hodnotu TRUE, pokud podmínka platí pro všechny dvojice a FALSE
+v&nbsp;případě, že alespoň pro jednu dvojici podmínka neplatí. V&nbsp;takových
+případech je vhodné použít funkci nazvanou <strong>all</strong>. Ukažme si nyní
+způsob jejího použití. Nejdříve vytvoříme zdrojové vektory:</p>
+
+<pre>
+&gt; <strong>a &lt;- 1:5</strong>
+&gt; <strong>b &lt;- c(2, 2, 3, 5, 5)</strong>
+</pre>
+
+<p>A poté zjistíme, zda nějaká podmínka (je větší, je menší nebo rovno atd.)
+platí pro všechny dvojice, tj.&nbsp;pro všechny prvky se shodným indexem:</p>
+
+<pre>
+&gt; <strong>all(a &lt; b)</strong>
+[1] FALSE
+&nbsp;
+&gt; <strong>all(a &lt;= b)</strong>
+[1] TRUE
+&nbsp;
+&gt; <strong>all(a == b)</strong>
+[1] FALSE
+&nbsp;
+&gt; <strong>all(a != b)</strong>
+[1] FALSE
+</pre>
+
+<p>Stejná operace, ovšem druhá skalární hodnota je převedena na vektor:</p>
+
+<pre>
+&gt; <strong>a &lt;- 1:5</strong>
+&nbsp;
+&gt; <strong>all(a&lt;10)</strong>
+[1] TRUE
+&nbsp;
+&gt; <strong>all(a&lt;5)</strong>
+[1] FALSE
+&nbsp;
+&gt; <strong>all(a!=0)</strong>
+[1] TRUE
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že ve skutečnosti tato
+funkce zpracovává vektor obsahující logické hodnoty &ndash; samotné podmínky
+jsou vyhodnoceny dříve.</div></p>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Funkce <strong>which</strong></h2>
+
+<p>Existuje ještě funkce nazvaná <strong>which</strong>, která vrací indexy
+těch dvojic prvků, které splňují určitou podmínku. Indexy se pochopitelně vrací
+ve tvaru vektoru:</p>
+
+<pre>
+&gt; <strong>a &lt- 1:5</strong>
+&nbsp;
+&gt; <strong>b &lt- c(2, 2, 3, 5, 5)</strong>
+&nbsp;
+&gt; <strong>which(a == b)</strong>
+[1] 2 3 5
+</pre>
+
+<p>Zjištění dalších vlastností vektorů:</p>
+
+<pre>
+&gt; <strong>which(a != b)</strong>
+[1] 1 4
+&nbsp;
+&gt; <strong>which(a &lt; b)</strong>
+[1] 1 4
+&nbsp;
+&gt; <strong>which(a &lt;= b)</strong>
+[1] 1 2 3 4 5
+</pre>
+
+<p>Popř.:</p>
+
+<pre>
+&gt; <strong>which(a &lt; 5)</strong>
+[1] 1 2 3 4
+&nbsp;
+&gt; <strong>which(a == 0)</strong>
+integer(0)
+&nbsp;
+&gt; <strong>which(a &gt; 1)</strong>
+[1] 2 3 4 5
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: opět si povšimněte, že ve skutečnosti
+tato funkce zpracovává vektor obsahující logické hodnoty &ndash; samotné
+podmínky jsou vyhodnoceny dříve.</div></p>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Součet vektorů prvek po prvku, automatické prodloužení vektorů</h2>
+
+<p>Prvky vektorů je možné sčítat, a to podobně, jako byly porovnávány &ndash;
+sečtou se vždy prvky s&nbsp;odpovídajícími indexy. A opět platí, že kratší
+vektor je dorovnán na délku vektoru delšího (pokud je to nutné). Tato operace
+je snadno pochopitelná, takže jen krátce:</p>
+
+<pre>
+&gt; <strong>a &lt;- 1:6</strong>
+&gt; <strong>b &lt;- c(2, 2, 3, 3, 5, 5)</strong>
+&gt; <strong>c &lt;- c(10, 20)</strong>
+&nbsp;
+&nbsp;
+&gt; <strong>a</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 2 2 3 3 5 5
+&nbsp;
+&gt; <strong>c</strong>
+[1] 10 20
+&nbsp;
+&nbsp;
+&gt; <strong>a + b</strong>
+[1]  3  4  6  7 10 11
+&nbsp;
+&gt; <strong>a + c</strong>
+[1] 11 22 13 24 15 26
+&nbsp;
+&gt; <strong>a + 10</strong>
+[1] 11 12 13 14 15 16
+</pre>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Ostatní operace prováděné nad prvky vektorů</h2>
+
+<p><a href="#k13">V&nbsp;předchozí kapitole</a> jsme si ukázali použití
+operátoru + na dvojic vektorů. Naprosto stejným způsobem lze pochopitelně
+použít i operátory - (rozdíl), * (součin) a / (podíl). Příslušné demonstrační
+příklady naleznete <a href="#k19">v&nbsp;repositáři</a>; v&nbsp;článku si je
+uvádět nebudeme, protože význam těchto operací (aplikovaných na skalární
+hodnoty) je pravděpodobně zřejmý. Pouze pro zajímavost si ukažme výpočet
+převrácené hodnoty komplexních čísel:</p>
+
+<pre>
+&gt; <strong>a &lt;- c(1+1i, 1+0i, 0+1i, 2+2i)</strong>
+&nbsp;
+&gt; <strong>1/a</strong>
+[1] 0.50-0.50i 1.00+0.00i 0.00-1.00i 0.25-0.25i
+</pre>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Dělení nulou</h2>
+
+<p>Zastavme se na chvíli u dělení nulou. V&nbsp;programovacím jazyku R se jedná
+o plně podporovanou operaci, která může vrátit kladné nekonečno, záporné
+nekonečno nebo speciální hodnotu <strong>NaN</strong> (<i>Not a Number</i>), a
+to i pro celočíselné hodnoty (některé jiné jazyky naproti tomu vyhodí
+výjimku):</p>
+
+<pre>
+&gt; <strong>1/0</strong>
+[1] Inf
+&nbsp;
+&gt; <strong>-1/0</strong>
+[1] -Inf
+&nbsp;
+&gt; <strong>0/0</strong>
+[1] NaN
+</pre>
+
+<p>Totéž platí i při dělení prvků vektorů, kdy prvky dělitele obsahují
+nuly:</p>
+
+<pre>
+&gt; <strong>a &lt;- 1:6</strong>
+&gt; <strong>b &lt;- c(0, 0, 0, 0, 0, 0)</strong>
+&gt; <strong>c &lt;- c(0, 0)</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 0 0 0 0 0 0
+&nbsp;
+&gt; <strong>c</strong>
+[1] 0 0
+&nbsp;
+&nbsp;
+&gt; <strong>a/b</strong>
+[1] Inf Inf Inf Inf Inf Inf
+&nbsp;
+&gt; <strong>a/c</strong>
+[1] Inf Inf Inf Inf Inf Inf
+&nbsp;
+&gt; <strong>a/0</strong>
+[1] Inf Inf Inf Inf Inf Inf
+</pre>
+
+<p>A pro záporné prvky:</p>
+
+<pre>
+&gt; <strong>a &lt;- -1:-6</strong>
+&gt; <strong>b &lt;- c(0, 0, 0, 0, 0, 0)</strong>
+&gt; <strong>c &lt;- c(0, 0)</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] -1 -2 -3 -4 -5 -6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 0 0 0 0 0 0
+&nbsp;
+&gt; <strong>c</strong>
+[1] 0 0
+&nbsp;
+&nbsp;
+&gt; <strong>a/b</strong>
+[1] -Inf -Inf -Inf -Inf -Inf -Inf
+&nbsp;
+&gt; <strong>a/c</strong>
+[1] -Inf -Inf -Inf -Inf -Inf -Inf
+&nbsp;
+&gt; <strong>a/0</strong>
+[1] -Inf -Inf -Inf -Inf -Inf -Inf
+</pre>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Dělení se zbytkem</h2>
+
+<p>Operátor <strong>%%</strong> slouží pro výpočet zbytku po dělení. Tento
+operátor lze opět použít i tehdy, pokud jsou jeho operandy vektory. Podívejme
+se nyní na jednoduchý příklad:</p>
+
+<pre>
+&gt; <strong>a &lt;- 1:6</strong>
+&gt; <strong>b &lt;- c(2, 2, 3, 3, 5, 5)</strong>
+&gt; <strong>c &lt;- c(10, 20)</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 2 2 3 3 5 5
+&nbsp;
+&gt; <strong>c</strong>
+[1] 10 20
+&nbsp;
+&nbsp;
+&gt; <strong>a %% b</strong>
+[1] 1 0 0 1 0 1
+&nbsp;
+&gt; <strong>a %% c</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>a %% 2</strong>
+[1] 1 0 1 0 1 0
+</pre>
+
+<p>V&nbsp;programovacím jazyku R existuje i operátor <strong>%/%</strong>,
+který provádí celočíselné dělení. Výsledky mohou v&nbsp;tomto případě vypadat
+následovně:</p>
+
+<pre>
+&gt; <strong>a &lt- 1:6</strong>
+&gt; <strong>b &lt- c(2, 2, 3, 3, 5, 5)</strong>
+&gt; <strong>c &lt- c(10, 20)</strong>
+&nbsp;
+&gt; <strong>a</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 2 2 3 3 5 5
+&nbsp;
+&gt; <strong>c</strong>
+[1] 10 20
+&nbsp;
+&nbsp;
+&gt; <strong>a %/% b</strong>
+[1] 0 1 1 1 1 1
+&nbsp;
+&gt; <strong>a %/% c</strong>
+[1] 0 0 0 0 0 0
+&nbsp;
+&gt; <strong>a %/% 2</strong>
+[1] 0 1 1 2 2 3
+</pre>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Logické operace nad prvky vektorů</h2>
+
+<p>Nad prvky vektorů (typicky nad vektory obsahujícími prvky s&nbsp;hodnotami
+TRUE a FALSE) lze provádět i logické operace &ndash; logický součin, logický
+součet, negaci atd.  Opět se podívejme na jednoduché příklady. Nejdříve
+vytvoříme dvojici vektorů obsahujících numerické hodnoty:</p>
+
+<pre>
+&gt; <strong>a &lt- 1:6</strong>
+&nbsp;
+&gt; <strong>b &lt- 6:1 - 1</strong>
+&nbsp;
+&nbsp;
+&gt; <strong>a</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 5 4 3 2 1 0
+</pre>
+
+<p>Dále z&nbsp;těchto dvou vektorů vytvoříme další dva vektory, které budou
+tentokrát obsahovat pouze logické hodnoty:</p>
+
+<pre>
+&gt; <strong>c &lt- a &lt b</strong>
+&nbsp;
+&gt; <strong>d &lt- a &lt= b</strong>
+&nbsp;
+&nbsp;
+&gt; <strong>c</strong>
+[1]  TRUE  TRUE FALSE FALSE FALSE FALSE
+&nbsp;
+&gt; <strong>d</strong>
+[1]  TRUE  TRUE  TRUE FALSE FALSE FALSE
+&nbsp;
+</pre>
+
+<p>Nyní je již možné na dvojici odpovídajících prvků vektorů <strong>c</strong>
+a <strong>d</strong> aplikovat vybrané logické operace:</p>
+
+<pre>
+&gt; <strong>c & d</strong>
+[1]  TRUE  TRUE FALSE FALSE FALSE FALSE
+&nbsp;
+&gt; <strong>c | d</strong>
+[1]  TRUE  TRUE  TRUE FALSE FALSE FALSE
+&nbsp;
+&gt; <strong>!c</strong>
+[1] FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+&nbsp;
+&gt; <strong>!d</strong>
+[1] FALSE FALSE FALSE  TRUE  TRUE  TRUE
+</pre>
+
+<p>Teoreticky je možné použít i skalární hodnoty TRUE a FALSE (z&nbsp;těch se
+opakováním vytvoří vektory potřebné délky), ovšem v&nbsp;praxi se pravděpodobně
+s&nbsp;tímto typem &bdquo;maskování&ldquo; příliš často nesetkáme:</p>
+
+<pre>
+&gt; <strong>c & TRUE</strong>
+[1]  TRUE  TRUE FALSE FALSE FALSE FALSE
+&nbsp;
+&gt; <strong>c & FALSE</strong>
+[1] FALSE FALSE FALSE FALSE FALSE FALSE
+&nbsp;
+&gt; <strong>c | TRUE</strong>
+[1] TRUE TRUE TRUE TRUE TRUE TRUE
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: jazyk R neobsahuje přímo operátor, který
+by odpovídal operaci <strong>xor</strong>. Namísto toho je nutné použít stejně
+pojmenovanou funkci:</div></p>
+
+<pre>
+&gt; <strong>xor(c, d)</strong>
+&nbsp;
+[1] FALSE FALSE  TRUE FALSE FALSE FALSE
+</pre>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Konsolidované logické operace</h2>
+
+<p>V&nbsp;některých algoritmech je potřebné získat jedinou pravdivostní hodnotu
+TRUE či FALSE, která je výsledkem postupné aplikace logické operace na
+odpovídající prvky vektoru (s&nbsp;tím, že pokud je již výsledek známý, je
+zbytek výpočtu ukončen) &ndash; takové výsledky se například mohou použít
+v&nbsp;podmínce <strong>if</strong>. Jedná se o operátory zapisované formou
+<strong>&amp;&amp;</strong> a <strong>||</strong>. Ty nejdříve provedou
+naznačenou operaci s&nbsp;prvními prvky obou vstupních vektorů a pokud je
+z&nbsp;tohoto mezivýsledku již zřejmý celkový výsledek (FALSE u logického
+součinu, TRUE u logického součtu), je výpočet ukončen.  Pokud celkový výsledek
+známý není, pokračuje se s&nbsp;druhými prvky vektorů, se třetími atd.</p>
+
+<p>Použijeme stejné vstupní vektory, jako tomu bylo v&nbsp;předchozí
+kapitole:</p>
+
+<pre>
+&gt; <strong>a &lt- 1:6</strong>
+&nbsp;
+&gt; <strong>b &lt- 6:1 - 1</strong>
+&nbsp;
+&nbsp;
+&gt; <strong>a</strong>
+[1] 1 2 3 4 5 6
+&nbsp;
+&gt; <strong>b</strong>
+[1] 5 4 3 2 1 0
+</pre>
+
+<p>Vytvoříme z&nbsp;nich vektory obsahující logické hodnoty:</p>
+
+<pre>
+&gt; <strong>c &lt- a &lt b</strong>
+&nbsp;
+&gt; <strong>d &lt- a &lt= b</strong>
+&nbsp;
+&nbsp;
+&gt; <strong>c</strong>
+[1]  TRUE  TRUE FALSE FALSE FALSE FALSE
+&nbsp;
+&gt; <strong>d</strong>
+[1]  TRUE  TRUE  TRUE FALSE FALSE FALSE
+&nbsp;
+</pre>
+
+<p>Nyní konečně můžeme použít zde popisované operátory pro získání jediné
+skalární hodnoty:</p>
+
+<pre>
+&gt; <strong>c &amp;&amp; d</strong>
+[1] TRUE
+&nbsp;
+&gt; <strong>c || d</strong>
+[1] TRUE
+</pre>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Obsah následujícího článku</h2>
+
+<p>Vektory sice tvoří primární datovou strukturu používanou ve výpočtech, ovšem
+reálná data (načítaná z&nbsp;externích zdrojů) většinou nemají podobu čistých
+vektorů &ndash; typicky se totiž jedná o tabulky, v&nbsp;nichž může každý
+sloupec nést hodnoty odlišného datového typu. A právě tabulkami,
+resp.&nbsp;přesněji řečeno způsobem práce s&nbsp;nimi, se budeme zabývat ve
+třetí části seriálu o programovacím jazyku R.</p>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+jen jednotky kilobajtů), můžete namísto toho použít odkazy na jednotlivé
+demonstrační příklady, které naleznete v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td> 1</td><td>01-class-integer.R</td><td>konstrukce vektoru s&nbsp;jediným prvkem</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/01-class-integer.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/01-class-integer.R</a></td></tr>
+<tr><td> 2</td><td>02-class-vector.R</td><td>konstrukce vektoru s&nbsp;více prvky</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/02-class-vector.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/02-class-vector.R</a></td></tr>
+<tr><td> 3</td><td>03-from-to.R</td><td>použití zápisu <strong>a:b</strong> při konstrukci vektoru</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/03-from-to.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/03-from-to.R</a></td></tr>
+<tr><td> 4</td><td>04-seq.R</td><td>konstruktor vektorů založený na funkci <strong>seq</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/04-seq.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/04-seq.R</a></td></tr>
+<tr><td> 5</td><td>05-rep.R</td><td>konstruktor vektorů založený na funkci <strong>seq</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/05-rep.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/05-rep.R</a></td></tr>
+<tr><td> 6</td><td>06-item-access.R</td><td>přístup k&nbsp;prvkům vektoru</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/06-item-access.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/06-item-access.R</a></td></tr>
+<tr><td> 7</td><td>07-more-item-access.R</td><td>výběr většího množství prvků vektoru</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/07-more-item-access.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/07-more-item-access.R</a></td></tr>
+<tr><td> 8</td><td>08-item-comparison.R</td><td>porovnání prvků vektorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/08-item-comparison.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/08-item-comparison.R</a></td></tr>
+<tr><td> 9</td><td>09-all-function.R</td><td>funkce <strong>all</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/09-all-function.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/09-all-function.R</a></td></tr>
+<tr><td>10</td><td>10-which-function.R</td><td>funkce <strong>which</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/10-which-function.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/10-which-function.R</a></td></tr>
+<tr><td>11</td><td>11-vector-add.R</td><td>součet prvků vektorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/11-vector-add.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/11-vector-add.R</a></td></tr>
+<tr><td>12</td><td>12-vector-sub.R</td><td>rozdíl prvků vektorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/12-vector-sub.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/12-vector-sub.R</a></td></tr>
+<tr><td>13</td><td>13-vector-mul.R</td><td>součin prvků vektorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/13-vector-mul.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/13-vector-mul.R</a></td></tr>
+<tr><td>14</td><td>14-vector-div.R</td><td>podíl prvků vektorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/14-vector-div.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/14-vector-div.R</a></td></tr>
+<tr><td>15</td><td>15-vector-div-by-zero.R</td><td>výsledek dělení nulou</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/15-vector-div-by-zero.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/15-vector-div-by-zero.R</a></td></tr>
+<tr><td>16</td><td>16-remainder.R</td><td>zbytek po dělení</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/16-remainder.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/16-remainder.R</a></td></tr>
+<tr><td>17</td><td>17-quotient.R</td><td>celočíselné dělení</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/17-quotient.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/17-quotient.R</a></td></tr>
+<tr><td>18</td><td>18-log-op.R</td><td>logické operace</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/18-log-op.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/18-log-op.R</a></td></tr>
+<tr><td>19</td><td>19-consolidated-log-op.R</td><td>konsolidované logické operace</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/19-consolidated-log-op.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/19-consolidated-log-op.R</a></td></tr>
+<tr><td>20</td><td>20-in.R</td><td>operátor &bdquo;in&ldquo;</td><td><a href="https://github.com/tisnik/r-examples/blob/master/02-language-basic/20-in.R">https://github.com/tisnik/r-examples/blob/master/02-language-basic/20-in.R</a></td></tr>
+</table>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded & Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>Cesta erka: Krok nultý &ndash; instalace &amp; nastavení – prostředí, projekty, package<br />
+<a href="https://www.jla-data.net/r4su/r4su-environment-setup/">https://www.jla-data.net/r4su/r4su-environment-setup/</a>
+</li>
+
+<li>Cesta erka: Krok první &ndash; operace a struktury – proměnné, rovnítka a dolary<br />
+<a href="https://www.jla-data.net/r4su/r4su-data-structures/">https://www.jla-data.net/r4su/r4su-data-structures/</a>
+</li>
+
+<li>Cesta erka: Krok druhý &ndash; načtení externích dat – csvčka, excely a databáze<br />
+<a href="https://www.jla-data.net/r4su/r4su-read-data/">https://www.jla-data.net/r4su/r4su-read-data/</a>
+</li>
+
+<li>Cesta erka: Krok třetí &ndash; manipulace s daty – dplyr, slovesa a pajpy<br />
+<a href="https://www.jla-data.net/r4su/r4su-manipulate-data/">https://www.jla-data.net/r4su/r4su-manipulate-data/</a>
+</li>
+
+<li>Cesta erka: Krok čtvrtý &ndash; podání výsledků – ggplot, geomy a estetiky<br />
+<a href="https://www.jla-data.net/r4su/r4su-report-results/">https://www.jla-data.net/r4su/r4su-report-results/</a>
+</li>
+
+<li>Cesta erka: Krok pátý &ndash; case study – případ piva v Praze<br />
+<a href="https://www.jla-data.net/r4su/r4su-case-study-beer/">https://www.jla-data.net/r4su/r4su-case-study-beer/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
