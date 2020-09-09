@@ -1,2 +1,2 @@
-diagonal = diag(-1, 4)
+diagonal <- diag(-1, 4)
 print(diagonal)
