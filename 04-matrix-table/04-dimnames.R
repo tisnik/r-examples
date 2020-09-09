@@ -1,5 +1,5 @@
 data <- 1:9
-dimension.names = list(
+dimension.names <- list(
     c("x", "y", "z"),
     c("u", "v", "w"))
 
