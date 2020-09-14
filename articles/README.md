@@ -8,3 +8,5 @@ All articles are online and available on address https://www.root.cz/serialy/pro
 
 1. [Introduction to R](r_01.htm)
 1. [Vector as a basic data type in R](r_02.htm)
+1. [Working with arrays](r_03.htm)
+1. [Working with matrices](r_04.htm)
