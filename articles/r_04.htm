@@ -1,0 +1,2127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Programovací jazyk R: práce s maticemi</title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1>Programovací jazyk R: práce s maticemi</h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>Třetím důležitým datovým typem programovacího jazyka R jsou matice. Dnes se seznámíme s funkcemi ze základní knihovny, které jsou určeny právě pro konstrukci matic popř. pro práci s nimi.</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Programovací jazyk R: práce s&nbsp;maticemi</a></p>
+<p><a href="#k02">2. Konstrukce matic funkcí <strong>matrix</strong></a></p>
+<p><a href="#k03">3. Zaplnění matice po sloupcích vs. po řádcích</a></p>
+<p><a href="#k04">4. Pojmenování řádků a sloupců matice</a></p>
+<p><a href="#k05">5. Tisk tabulky s&nbsp;názvy měsíců</a></p>
+<p><a href="#k06">6. Konstrukce čtvercové jednotkové matice</a></p>
+<p><a href="#k07">7. Specifikace hodnoty prvků na hlavní diagonále, nečtvercové matice</a></p>
+<p><a href="#k08">8. Horní a dolní trojúhelníkové matice</a></p>
+<p><a href="#k09">9. Funkce <strong>upper.tri</strong></a></p>
+<p><a href="#k10">10. Získání matice s&nbsp;indexy řádků nebo sloupců</a></p>
+<p><a href="#k11">11. Transpozice matic</a></p>
+<p><a href="#k12">12. Maticový součin</a></p>
+<p><a href="#k13">13. Výpočet determinantu matice</a></p>
+<p><a href="#k14">14. Výpočet inverzní matice</a></p>
+<p><a href="#k15">15. Suma prvků (po řádcích, po sloupcích, všech prvků v&nbsp;matici)</a></p>
+<p><a href="#k16">16. Průměr prvků (po řádcích, po sloupcích, všech prvků v&nbsp;matici)</a></p>
+<p><a href="#k17">17. Funkce <strong>cbind</strong> a <strong>rbind</strong> &ndash; konstrukce matice z&nbsp;několika vektorů</a></p>
+<p><a href="#k18">18. Spojení matic funkcemi <strong>cbind</strong> a <strong>rbind</strong></a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Programovací jazyk R: práce s&nbsp;maticemi</h2>
+
+<p>Po vektorech, které jsme si popsali <a
+href="https://www.root.cz/clanky/programovaci-jazyk-r-vektory-ve-funkci-zakladniho-datoveho-typu-jazyka/">ve
+druhé části</a> <a
+href="https://www.root.cz/serialy/programovaci-jazyk-r/">seriálu o
+programovacím jazyku R</a> a polích popsaných <a
+href="https://www.root.cz/clanky/programovaci-jazyk-r-pole-a-dalsi-podporovane-datove-typy/">v&nbsp;části
+třetí</a> si musíme popsat třetí velmi důležitý datový typ tohoto jazyka. Jedná
+se o matice (<i>matrix</i>), které jsou &ndash; na rozdíl od polí &ndash; vždy
+dvojrozměrné a homogenní. Ve standardní knihovně programovacího jazyka R
+existuje několik funkcí určených pro konstrukci matic i pro jejich zpracování.
+Některé z&nbsp;těchto funkcí si představíme v&nbsp;dnešním článku; opět přitom
+použijeme velké množství demonstračních příkladů. Ještě předtím si ale ve
+stručnosti připomeňme, jaké jsou největší rozdíly mezi poli a maticemi. Vybrané
+rozdíly mezi těmito datovými typy jsou vypsány v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th>#</th><th>Pole</th><th>Matice</th></tr>
+<tr><td>1</td><td>typ <strong>array</strong></td><td>typ <strong>matrix</strong></td></tr>
+<tr><td>2</td><td>1, 2, 3 ... N dimenzí</td><td>striktně dvě dimenze (2D struktura)</td></tr>
+<tr><td>3</td><td>homogenní typ</td><td>homogenní typ</td></tr>
+<tr><td>4</td><td>založeno na jediném vektoru s&nbsp;info o dimenzích</td><td>složeno ze sady vektorů shodné délky</td></tr>
+<tr><td>5</td><td>používáno primárně pro uložení dat</td><td>používáno primárně pro transformaci dat</td></tr>
+<tr><td>6</td><td>relativně malé množství operací</td><td>plná sada &bdquo;maticových&ldquo; operací</td></tr>
+<tr><td>7</td><td>nadmnožina nad maticemi</td><td>speciální případ pole se dvěma dimenzemi</td></tr>
+<tr><td>8</td><td>konstruktor <strong>array</strong></td><td>konstruktor <strong>matrix</strong></td></tr>
+</table>
+
+<p><div class="rs-tip-major">Poznámka: samozřejmě existuje možnost konverzí
+mezi všemi třemi zmíněnými datovými typy.</div></p>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Konstrukce matic funkcí <strong>matrix</strong></h2>
+
+<p>Obecné matice, které potřebujeme přímo inicializovat, se konstruují funkcí
+pojmenovanou <strong>matrix</strong>:</p>
+
+<pre>
+&gt; <strong>help(matrix)</strong>
+&nbsp;
+matrix                  package:base                   R Documentation
+&nbsp;
+Matrices
+&nbsp;
+Description:
+&nbsp;
+     ‘matrix’ creates a matrix from the given set of values.
+&nbsp;
+     ‘as.matrix’ attempts to turn its argument into a matrix.
+&nbsp;
+     ‘is.matrix’ tests if its argument is a (strict) matrix.
+&nbsp;
+Usage:
+&nbsp;
+     matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE,
+            dimnames = NULL)
+&nbsp;
+     as.matrix(x, ...)
+     ## S3 method for class 'data.frame'
+     as.matrix(x, rownames.force = NA, ...)
+&nbsp;
+     is.matrix(x)
+&nbsp;
+Arguments:
+&nbsp;
+    data: an optional data vector (including a list or ‘expression’
+          vector).  Non-atomic classed R objects are coerced by
+          ‘as.vector’ and all attributes discarded.
+&nbsp;
+    nrow: the desired number of rows.
+&nbsp;
+    ncol: the desired number of columns.
+&nbsp;
+   byrow: logical. If ‘FALSE’ (the default) the matrix is filled by
+          columns, otherwise the matrix is filled by rows.
+</pre>
+
+<p>Této funkci se typicky předává zdroj dat (což může být a většinou i bývá
+vektor) a v&nbsp;pojmenovaných parametrech <strong>nrow</strong> a
+<strong>ncol</strong> rozměry nově konstruované matice, tj.&nbsp;počet řádků a
+počet sloupců. Vytvářet lze (pochopitelně) i nečtvercové matice. Funkci
+konstruktoru <strong>matrix</strong> si ukážeme na demonstračním příkladu:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong></strong>
+&gt; <strong>m1 &lt;- matrix(data, nrow=1, ncol=12)</strong>
+&gt; <strong>print(m1)</strong>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+&gt; <strong></strong>
+&gt; <strong>m2 &lt;- matrix(data, nrow=2, ncol=6)</strong>
+&gt; <strong>print(m2)</strong>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    3    5    7    9   11
+[2,]    2    4    6    8   10   12
+&gt; <strong></strong>
+&gt; <strong>m3 &lt;- matrix(data, nrow=3, ncol=4)</strong>
+&gt; <strong>print(m3)</strong>
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+&gt; <strong></strong>
+&gt; <strong>m4 &lt;- matrix(data, nrow=4, ncol=3)</strong>
+&gt; <strong>print(m4)</strong>
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+&gt; <strong></strong>
+&gt; <strong>m5 &lt;- matrix(data, nrow=6, ncol=2)</strong>
+&gt; <strong>print(m5)</strong>
+     [,1] [,2]
+[1,]    1    7
+[2,]    2    8
+[3,]    3    9
+[4,]    4   10
+[5,]    5   11
+[6,]    6   12
+&gt; <strong></strong>
+&gt; <strong>m6 &lt;- matrix(data, nrow=12, ncol=1)</strong>
+&gt; <strong>print(m6)</strong>
+      [,1]
+ [1,]    1
+ [2,]    2
+ [3,]    3
+ [4,]    4
+ [5,]    5
+ [6,]    6
+ [7,]    7
+ [8,]    8
+ [9,]    9
+[10,]   10
+[11,]   11
+[12,]   12
+</pre>
+
+<p>V&nbsp;případě, že je počet prvků ve zdrojovém vektoru menší, než počet
+prvků vytvářené matice, jsou prvky opakovány až do chvíle, kdy je matice
+zaplněna:</p>
+
+<pre>
+data &lt;- c(1, 2, 3)
+&nbsp;
+m1 &lt;- matrix(data, nrow=1, ncol=12)
+print(m1)
+&nbsp;
+m2 &lt;- matrix(data, nrow=2, ncol=6)
+print(m2)
+&nbsp;
+m3 &lt;- matrix(data, nrow=3, ncol=4)
+print(m3)
+&nbsp;
+m4 &lt;- matrix(data, nrow=4, ncol=3)
+print(m4)
+&nbsp;
+m5 &lt;- matrix(data, nrow=6, ncol=2)
+print(m5)
+&nbsp;
+m6 &lt;- matrix(data, nrow=12, ncol=1)
+print(m6)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    1    2    3    1    2    3     1     2     3
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    3    2    1    3    2
+[2,]    2    1    3    2    1    3
+&nbsp;
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    1
+[2,]    2    2    2    2
+[3,]    3    3    3    3
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    2    3    1
+[3,]    3    1    2
+[4,]    1    2    3
+&nbsp;
+     [,1] [,2]
+[1,]    1    1
+[2,]    2    2
+[3,]    3    3
+[4,]    1    1
+[5,]    2    2
+[6,]    3    3
+&nbsp;
+      [,1]
+ [1,]    1
+ [2,]    2
+ [3,]    3
+ [4,]    1
+ [5,]    2
+ [6,]    3
+ [7,]    1
+ [8,]    2
+ [9,]    3
+[10,]    1
+[11,]    2
+[12,]    3
+</pre>
+
+<p>V&nbsp;mezním případě &ndash; pokud použijeme jediný zdrojový prvek &ndash;
+je tento prvek rozkopírován po celé matici. To mj.&nbsp;znamená, že můžeme
+velmi snadno vytvořit nulové matice libovolného tvaru:</p>
+
+<pre>
+data &lt;- 0
+&nbsp;
+m1 &lt;- <strong>matrix</strong>(data, nrow=1, ncol=12)
+print(m1)
+&nbsp;
+m2 &lt;- <strong>matrix</strong>(data, nrow=2, ncol=6)
+print(m2)
+&nbsp;
+m3 &lt;- <strong>matrix</strong>(data, nrow=3, ncol=4)
+print(m3)
+&nbsp;
+m4 &lt;- <strong>matrix</strong>(data, nrow=4, ncol=3)
+print(m4)
+&nbsp;
+m5 &lt;- <strong>matrix</strong>(data, nrow=6, ncol=2)
+print(m5)
+&nbsp;
+m6 &lt;- <strong>matrix</strong>(data, nrow=12, ncol=1)
+print(m6)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    0    0    0    0    0    0    0    0    0     0     0     0
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    0    0    0    0    0    0
+[2,]    0    0    0    0    0    0
+&nbsp;
+     [,1] [,2] [,3] [,4]
+[1,]    0    0    0    0
+[2,]    0    0    0    0
+[3,]    0    0    0    0
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+[3,]    0    0    0
+[4,]    0    0    0
+&nbsp;
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,]    0    0
+[4,]    0    0
+[5,]    0    0
+[6,]    0    0
+&nbsp;
+      [,1]
+ [1,]    0
+ [2,]    0
+ [3,]    0
+ [4,]    0
+ [5,]    0
+ [6,]    0
+ [7,]    0
+ [8,]    0
+ [9,]    0
+[10,]    0
+[11,]    0
+[12,]    0
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: samozřejmě není nutné explicitně
+používat pojmenovanou proměnnou <strong>data</strong> &ndash; vektor
+s&nbsp;nulou lze přímo předat konstruktoru <strong>matrix</strong>.</div></p>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. Zaplnění matice po sloupcích vs. po řádcích</h2>
+
+<p>V&nbsp;konstruktoru <strong>matrix</strong> je možné nepovinným parametrem
+(logickou hodnotou) <strong>byrow</strong> určit, zda bude matice zaplňována po
+řádcích nebo po sloupcích. <a href="#k02">V&nbsp;předchozí kapitole</a> jsme
+viděli způsob zaplňování po sloupcích (nejprve byl vytvořen celý první sloupec
+cílové matice, potom druhý sloupec atd.), takže si nyní pro změnu ukažme
+zaplňování po řádcích. V&nbsp;tomto případě musí být parametr
+<strong>byrow</strong> nastaven na pravdivostní hodnotu
+<strong>TRUE</strong>:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- <strong>matrix</strong>(data, nrow=1, ncol=12, byrow=TRUE)
+print(m1)
+&nbsp;
+m2 &lt;- <strong>matrix</strong>(data, nrow=2, ncol=6, byrow=TRUE)
+print(m2)
+&nbsp;
+m3 &lt;- <strong>matrix</strong>(data, nrow=3, ncol=4, byrow=TRUE)
+print(m3)
+&nbsp;
+m4 &lt;- <strong>matrix</strong>(data, nrow=4, ncol=3, byrow=TRUE)
+print(m4)
+&nbsp;
+m5 &lt;- <strong>matrix</strong>(data, nrow=6, ncol=2, byrow=TRUE)
+print(m5)
+&nbsp;
+m6 &lt;- <strong>matrix</strong>(data, nrow=12, ncol=1, byrow=TRUE)
+print(m6)
+</pre>
+
+<p>S&nbsp;těmito výsledky (sledujte, jak se prvky mění skutečně nejdříve na
+prvním řádku, posléze na řádku druhém atd.):</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    2    3    4    5    6
+[2,]    7    8    9   10   11   12
+&nbsp;
+     [,1] [,2] [,3] [,4]
+[1,]    1    2    3    4
+[2,]    5    6    7    8
+[3,]    9   10   11   12
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    4    5    6
+[3,]    7    8    9
+[4,]   10   11   12
+&nbsp;
+     [,1] [,2]
+[1,]    1    2
+[2,]    3    4
+[3,]    5    6
+[4,]    7    8
+[5,]    9   10
+[6,]   11   12
+&nbsp;
+      [,1]
+ [1,]    1
+ [2,]    2
+ [3,]    3
+ [4,]    4
+ [5,]    5
+ [6,]    6
+ [7,]    7
+ [8,]    8
+ [9,]    9
+[10,]   10
+[11,]   11
+[12,]   12
+</pre>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. Pojmenování řádků a sloupců matice</h2>
+
+<p><a
+href="https://www.root.cz/clanky/programovaci-jazyk-r-pole-a-dalsi-podporovane-datove-typy/#k07">Minule</a>
+jsme si mj.&nbsp;ukázali, jakým způsobem je možné pojmenovat řádky a sloupce
+dvojrozměrného pole (resp.&nbsp;přesněji řečeno pole o jakémkoli počtu
+dimenzí). Podobnou operaci lze provést i s&nbsp;maticemi &ndash; konstruktoru
+<strong>matrix</strong> postačuje předat v&nbsp;pojmenovaném parametru
+<strong>dimnames</strong> seznam vektorů, přičemž první vektor v&nbsp;seznamu
+obsahuje jména řádků a druhý vektor jména sloupců. Se seznamy jsme se sice
+prozatím nesetkali, ale ze zdrojového kódu dalšího demonstračního příkladu je
+patrné, že je jejich konstrukce pomocí <strong>list</strong> přímočará:</p>
+
+<pre>
+data &lt;- 1:9
+dimension.names &lt;- <strong>list</strong>(
+    c("x", "y", "z"),
+    c("u", "v", "w"))
+&nbsp;
+m33 &lt;- <strong>matrix</strong>(data, nrow=3, ncol=3, dimnames=dimension.names)
+print(m33)
+</pre>
+
+<p>Při tisku obsahu matice se nyní zobrazí námi zvolená jména řádků i
+sloupců:</p>
+
+<pre>
+  u v w
+x 1 4 7
+y 2 5 8
+z 3 6 9
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: znovu si připomeňme, že tečka
+v&nbsp;názvu proměnné nemá (alespoň v&nbsp;tomto případě) žádný speciální
+význam.</div></p>
+
+<p>Velikost vektorů musí odpovídat rozměrům matice:</p>
+
+<pre>
+data &lt;- 1:9
+dimension.names &lt;- list(
+    <strong>c("x", "y", "z", "a")</strong>,
+    c("u", "v", "w"))
+&nbsp; 
+m33 &lt;- matrix(data, nrow=3, ncol=3, dimnames=dimension.names)
+print(m33)
+</pre>
+
+<p>První vektor je o jeden prvek delší, což vede k&nbsp;chybě:</p>
+
+<pre>
+Error in matrix(data, nrow = 3, ncol = 3, dimnames = dimension.names) : 
+  length of 'dimnames' [1] not equal to array extent
+Execution halted
+</pre>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. Tisk tabulky s&nbsp;názvy měsíců</h2>
+
+<p>Díky možnosti pojmenovat řádky a sloupce tabulky můžeme poměrně snadno
+vytisknout tabulku s&nbsp;názvy měsíců, které budou rozděleny podle ročního
+období a navíc podle toho, jestli měsíc leží na začátku tohoto období,
+uprostřed nebo na konci. Samotné zkrácené názvy měsíců obsahuje konstanta
+nazvaná <strong>month.abb</strong> ze standardní knihovny a informace o ní
+pochopitelně nalezneme v&nbsp;nápovědě:</p>
+
+<pre>
+<strong>help("month.abb")</strong>
+&nbsp;
+     R has a small number of built-in constants.
+&nbsp;
+     The following constants are available:
+&nbsp;
+        • ‘LETTERS’: the 26 upper-case letters of the Roman alphabet;
+&nbsp;
+        • ‘letters’: the 26 lower-case letters of the Roman alphabet;
+&nbsp;
+        • ‘month.abb’: the three-letter abbreviations for the English
+          month names;
+&nbsp;
+        • ‘month.name’: the English names for the months of the year;
+&nbsp;
+        • ‘pi’: the ratio of the circumference of a circle to its
+          diameter.
+&nbsp;
+     These are implemented as variables in the base namespace taking
+     appropriate values.
+</pre>
+
+<p>Tento vektor si ostatně můžeme vytisknout a prozkoumat:</p>
+
+<pre>
+<strong>print(month.abb)</strong>
+&nbsp;
+ [1] "Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"
+</pre>
+
+<p>Nyní již můžeme vytisknout slíbenou tabulku s&nbsp;měsíci. Zdrojový vektor
+bude nepatrně upravený takovým způsobem, aby začínal prosincem a nikoli lednem
+(zvýrazněná část zdrojového kódu):</p>
+
+<pre>
+matrix(
+  month.abb[<strong>c(12, 1:11)</strong>],
+  nrow = 3,
+  dimnames = list(
+    c("start", "middle", "end"),
+    c("Winter", "Spring", "Summer", "Fall")
+  )
+)
+</pre>
+
+<p>Výsledek po spuštění tohoto příkladu by měl vypadat následovně:</p>
+
+<pre>
+       Winter Spring Summer Fall 
+start  "Dec"  "Mar"  "Jun"  "Sep"
+middle "Jan"  "Apr"  "Jul"  "Oct"
+end    "Feb"  "May"  "Aug"  "Nov"
+</pre>
+
+<p>Podobně existuje i konstanta nazvaná <strong>month.name</strong>
+s&nbsp;plnými jmény měsíců:</p>
+
+<pre>
+<strong>print(month.name)</strong>
+&nbsp;
+ [1] "January"   "February"  "March"     "April"     "May"       "June"     
+ [7] "July"      "August"    "September" "October"   "November"  "December" 
+</pre>
+
+<p>I tento zdrojový vektor můžeme použít pro konstrukci tabulky; příklad se
+přitom změní jen minimálně:</p>
+
+<pre>
+matrix(
+  month.name[c(12, 1:11)],
+  nrow = 3,
+  dimnames = list(
+    c("start", "middle", "end"),
+    c("Winter", "Spring", "Summer", "Fall")
+  )
+)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+       Winter     Spring  Summer   Fall       
+start  "December" "March" "June"   "September"
+middle "January"  "April" "July"   "October"  
+end    "February" "May"   "August" "November" 
+</pre>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Konstrukce čtvercové jednotkové matice</h2>
+
+<p>Velmi často se v&nbsp;praxi setkáme s&nbsp;požadavkem na vytvoření čtvercové
+jednotkové matice, tj.&nbsp;takové matice, která obsahuje jedničky na hlavní
+diagonále a nuly ve všech ostatních prvcích. Jednotková matice dostala svůj
+název z&nbsp;toho důvodu, že se při maticovém součinu skutečně chová jako
+jednotka &ndash; vynásobením jakékoli matice jednotkovou maticí získáme matici
+původní (v&nbsp;žádném případě to neplatí o matici, v&nbsp;níž by byly všechny
+prvky jednotkové).</p>
+
+<p>Čtvercovou jednotkovou matici získáme zavoláním funkce nazvané
+<strong>diag</strong>, které předáme jediný parametr &ndash; velikost čtvercové
+matice, tj.&nbsp;počet řádků a současně i počet sloupců. Podívejme se na
+jednoduchý příklad použití této funkce:</p>
+
+<pre>
+diagonal = <strong>diag</strong>(10)
+print(diagonal)
+</pre>
+
+<p>Po spuštění výše uvedeného demonstračního příkladu by se měla vypsat
+jednotková matice s&nbsp;deseti řádky a deseti sloupci:</p>
+
+<pre>
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    0    0    0    0    0    0    0     0
+ [2,]    0    1    0    0    0    0    0    0    0     0
+ [3,]    0    0    1    0    0    0    0    0    0     0
+ [4,]    0    0    0    1    0    0    0    0    0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0
+ [6,]    0    0    0    0    0    1    0    0    0     0
+ [7,]    0    0    0    0    0    0    1    0    0     0
+ [8,]    0    0    0    0    0    0    0    1    0     0
+ [9,]    0    0    0    0    0    0    0    0    1     0
+[10,]    0    0    0    0    0    0    0    0    0     1
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: lze vytvořit i jednotkovou matici
+s&nbsp;jediným prvkem:</div></p>
+
+<pre>
+diagonal = <strong>diag</strong>(1)
+print(diagonal)
+&nbsp;
+     [,1]
+[1,]    1
+</pre>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Specifikace hodnoty prvků na hlavní diagonále, nečtvercové matice</h2>
+
+<p>Ve skutečnosti jsou možnosti funkce <strong>diag</strong>, s&nbsp;níž jsme
+se v&nbsp;její nejjednodušší podobě seznámili <a href="#k06">v&nbsp;předchozí
+kapitole</a>, mnohem větší. Pokud totiž této funkci předáme <i>dva
+parametry</i>, bude první parametr představovat hodnotu/hodnoty na hlavní
+diagonále a druhý parametr rozměry konstruované matice:</p>
+
+<pre>
+diagonal = <strong>diag</strong>(-1, 4)
+print(diagonal)
+</pre>
+
+<p>Po spuštění příkladu se zobrazí matice 4&times;4 prvky, která bude na hlavní
+diagonále obsahovat hodnoty -1; ostatní prvky zůstanou nulové (stále se tedy
+bude jednat o <a
+href="https://cs.wikipedia.org/wiki/Diagon%C3%A1ln%C3%AD_matice">diagonální
+matici</a>):</p>
+
+<pre>
+     [,1] [,2] [,3] [,4]
+[1,]   -1    0    0    0
+[2,]    0   -1    0    0
+[3,]    0    0   -1    0
+[4,]    0    0    0   -1
+</pre>
+
+<p>Můžeme dokonce specifikovat i oba rozměry matice, tj.&nbsp;počet řádků
+následovaný počtem sloupců. Opět si uvedeme dva příklady:</p>
+
+<pre>
+diagonal1 = <strong>diag</strong>(-1, 10, 6)
+print(diagonal1)
+&nbsp;
+diagonal2 = <strong>diag</strong>(-1, 6, 10)
+print(diagonal2)
+</pre>
+
+<p>Výsledkem budou následující dvě matice, které již nejsou čtvercové:</p>
+
+<pre>
+      [,1] [,2] [,3] [,4] [,5] [,6]
+ [1,]   -1    0    0    0    0    0
+ [2,]    0   -1    0    0    0    0
+ [3,]    0    0   -1    0    0    0
+ [4,]    0    0    0   -1    0    0
+ [5,]    0    0    0    0   -1    0
+ [6,]    0    0    0    0    0   -1
+ [7,]    0    0    0    0    0    0
+ [8,]    0    0    0    0    0    0
+ [9,]    0    0    0    0    0    0
+[10,]    0    0    0    0    0    0
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1,]   -1    0    0    0    0    0    0    0    0     0
+[2,]    0   -1    0    0    0    0    0    0    0     0
+[3,]    0    0   -1    0    0    0    0    0    0     0
+[4,]    0    0    0   -1    0    0    0    0    0     0
+[5,]    0    0    0    0   -1    0    0    0    0     0
+[6,]    0    0    0    0    0   -1    0    0    0     0
+</pre>
+
+<p>A konečně se podívejme na to, jak lze zkonstruovat matici a přitom
+specifikovat hodnoty prvků na hlavní diagonále s&nbsp;využitím vektoru. Rozměry
+matice jsou odvozeny z&nbsp;délky tohoto vektoru:</p>
+
+<pre>
+diagonal1 = <strong>diag</strong>(1:10)
+print(diagonal1)
+</pre>
+
+<p>Výsledná matice:</p>
+
+<pre>
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    0    0    0    0    0    0    0     0
+ [2,]    0    2    0    0    0    0    0    0    0     0
+ [3,]    0    0    3    0    0    0    0    0    0     0
+ [4,]    0    0    0    4    0    0    0    0    0     0
+ [5,]    0    0    0    0    5    0    0    0    0     0
+ [6,]    0    0    0    0    0    6    0    0    0     0
+ [7,]    0    0    0    0    0    0    7    0    0     0
+ [8,]    0    0    0    0    0    0    0    8    0     0
+ [9,]    0    0    0    0    0    0    0    0    9     0
+[10,]    0    0    0    0    0    0    0    0    0    10
+</pre>
+
+<p>Popř.&nbsp;pro &bdquo;nepravidelné&ldquo; hodnoty:</p>
+
+<pre>
+diagonal1 = <strong>diag</strong>(c(1,10,2,9,3,8))
+print(diagonal1)
+</pre>
+
+<p>Výsledná matice:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    0    0    0    0    0
+[2,]    0   10    0    0    0    0
+[3,]    0    0    2    0    0    0
+[4,]    0    0    0    9    0    0
+[5,]    0    0    0    0    3    0
+[6,]    0    0    0    0    0    8
+</pre>
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Horní a dolní trojúhelníkové matice</h2>
+
+<p>V&nbsp;základní knihovně programovacího jazyka R nalezneme i konstruktory
+trojúhelníkových matic. Nejprve se podívejme na funkci nazvanou
+<strong>lower.tri</strong>, která nám může pomoci při konstrukci trojúhelníkové
+matice:</p>
+
+<pre>
+<strong>help(lower.tri)</strong>
+&nbsp;
+lower.tri                 package:base                 R Documentation
+&nbsp;
+Lower and Upper Triangular Part of a Matrix
+&nbsp;
+Description:
+&nbsp;
+     Returns a matrix of logicals the same size of a given matrix with
+     entries ‘TRUE’ in the lower or upper triangle.
+&nbsp;
+Usage:
+&nbsp;
+     lower.tri(x, diag = FALSE)
+     upper.tri(x, diag = FALSE)
+&nbsp;
+Arguments:
+&nbsp;
+       x: a matrix or other R object with ‘length(dim(x)) == 2’.  For
+          back compatibility reasons, when the above is not fulfilled,
+          ‘as.matrix(x)’ is called first.
+&nbsp;
+    diag: logical.  Should the diagonal be included?
+&nbsp;
+See Also:
+&nbsp;
+     ‘diag’, ‘matrix’; further ‘row’ and ‘col’ on which ‘lower.tri()’
+     and ‘upper.tri()’ are built.
+&nbsp;
+Examples:
+&nbsp;
+     (m2 &lt;- matrix(1:20, 4, 5))
+     lower.tri(m2)
+     m2[lower.tri(m2)] &lt;- NA
+     m2
+     &nbsp;
+</pre>
+
+<p>Z&nbsp;popisu uvedeného výše je patrné, že tato funkce nevrací skutečnou
+trojúhelníkovou matici, ale matici s&nbsp;logickými hodnotami TRUE a FALSE,
+přičemž hodnoty pod hlavní diagonálou jsou nastaveny na TRUE. Nepovinným
+parametrem <strong>diag</strong> lze zvolit hodnoty umístěné na hlavní
+diagonále:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+print(m55)
+&nbsp;
+tri1 &lt;- lower.tri(m55, diag=FALSE)
+print(tri1)
+&nbsp;
+tri2 &lt;- lower.tri(m55, diag=TRUE)
+print(tri2)
+</pre>
+
+<p>Výsledky (trojice matic) získaná po spuštění tohoto demonstračního
+příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+      [,1]  [,2]  [,3]  [,4]  [,5]
+[1,] FALSE FALSE FALSE FALSE FALSE
+[2,]  TRUE FALSE FALSE FALSE FALSE
+[3,]  TRUE  TRUE FALSE FALSE FALSE
+[4,]  TRUE  TRUE  TRUE FALSE FALSE
+[5,]  TRUE  TRUE  TRUE  TRUE FALSE
+&nbsp;
+     [,1]  [,2]  [,3]  [,4]  [,5]
+[1,] TRUE FALSE FALSE FALSE FALSE
+[2,] TRUE  TRUE FALSE FALSE FALSE
+[3,] TRUE  TRUE  TRUE FALSE FALSE
+[4,] TRUE  TRUE  TRUE  TRUE FALSE
+[5,] TRUE  TRUE  TRUE  TRUE  TRUE
+</pre>
+
+<p>Užitečnost matic s&nbsp;pravdivostními hodnotami spočívá v&nbsp;tom, že
+takové matice můžeme použít jako výběrovou masku a vytvořit tak horní či dolní
+<i>trojúhelníkovou matici z&nbsp;jiné matice</i>. Předchozí příklad upravíme
+tak, že nejdříve vytvoříme obecnou matici 5&times;5 prvků, dále matici
+s&nbsp;hodnotami TRUE a FALSE a nakonec z&nbsp;první matice vybereme prvky pod
+hlavní diagonálou, do kterých se předá nulová hodnota:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+print(m55)
+&nbsp;
+print(m55[lower.tri(m55, diag=FALSE)])
+&nbsp;
+m55[lower.tri(m55, diag=FALSE)] &lt;- 0
+print(m55)
+</pre>
+
+<p>Tento příklad již vypíše skutečnou horní trojúhelníkovou matici, která má
+pod hlavní diagonálou samé nuly:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+ [1]  2  3  4  5  8  9 10 14 15 20
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    0    7   12   17   22
+[3,]    0    0   13   18   23
+[4,]    0    0    0   19   24
+[5,]    0    0    0    0   25
+</pre>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Funkce <strong>upper.tri</strong></h2>
+
+<p>Funkce <strong>upper.tri</strong> je obdobou výše popsané funkce
+<strong>lower.tri</strong>, slouží ovšem pro konstrukci matice s&nbsp;logickými
+hodnotami TRUE nad hlavní diagonálou a hodnot FALSE pod diagonálou:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+print(m55)
+&nbsp;
+tri1 &lt;- upper.tri(m55, diag=FALSE)
+print(tri1)
+&nbsp;
+tri2 &lt;- upper.tri(m55, diag=TRUE)
+print(tri2)
+</pre>
+
+<p>S&nbsp;výslednými maticemi:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+      [,1]  [,2]  [,3]  [,4]  [,5]
+[1,] FALSE  TRUE  TRUE  TRUE  TRUE
+[2,] FALSE FALSE  TRUE  TRUE  TRUE
+[3,] FALSE FALSE FALSE  TRUE  TRUE
+[4,] FALSE FALSE FALSE FALSE  TRUE
+[5,] FALSE FALSE FALSE FALSE FALSE
+&nbsp;
+      [,1]  [,2]  [,3]  [,4] [,5]
+[1,]  TRUE  TRUE  TRUE  TRUE TRUE
+[2,] FALSE  TRUE  TRUE  TRUE TRUE
+[3,] FALSE FALSE  TRUE  TRUE TRUE
+[4,] FALSE FALSE FALSE  TRUE TRUE
+[5,] FALSE FALSE FALSE FALSE TRUE
+</pre>
+
+<p>Tuto funkci opět můžeme použít pro konstrukci trojúhelníkové matice pomocí
+maskování:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+print(m55)
+&nbsp;
+print(m55[upper.tri(m55, diag=FALSE)])
+&nbsp;
+m55[upper.tri(m55, diag=FALSE)] &lt;- 0
+print(m55)
+</pre>
+
+<p>Výsledkem nyní bude dolní trojúhelníková matice, která má nad hlavní
+diagonálou samé nuly:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+ [1]  6 11 12 16 17 18 21 22 23 24
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    2    7    0    0    0
+[3,]    3    8   13    0    0
+[4,]    4    9   14   19    0
+[5,]    5   10   15   20   25
+</pre>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Získání matice s&nbsp;indexy řádků nebo sloupců</h2>
+
+<p>Další užitečné funkce se jmenují <strong>row</strong> a
+<strong>col</strong>. První z&nbsp;těchto funkcí vrátí matici o stejných
+rozměrech, jako má matice předaná v&nbsp;parametru, ovšem prvky budou obsahovat
+čísla řádků. Podobně funkce <strong>col</strong> vrátí matici s&nbsp;čísly
+sloupců:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+print(m55)
+&nbsp;
+print(<strong>row</strong>(m55))
+print(<strong>col</strong>(m55))
+</pre>
+
+<p>Výsledek spuštění tohoto příkladu bude vypadat následovně:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    1    1    1    1
+[2,]    2    2    2    2    2
+[3,]    3    3    3    3    3
+[4,]    4    4    4    4    4
+[5,]    5    5    5    5    5
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    3    4    5
+[2,]    1    2    3    4    5
+[3,]    1    2    3    4    5
+[4,]    1    2    3    4    5
+[5,]    1    2    3    4    5
+</pre>
+
+<p>Tyto funkce nám umožňují tvořit další zajímavé matice:</p>
+
+<pre>
+data &lt;- 1:25
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+&nbsp;
+print(<strong>col</strong>(m55) - <strong>row</strong>(m55))
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    0    1    2    3    4
+[2,]   -1    0    1    2    3
+[3,]   -2   -1    0    1    2
+[4,]   -3   -2   -1    0    1
+[5,]   -4   -3   -2   -1    0
+</pre>
+
+<p>atd. atd.</p>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Transpozice matic</h2>
+
+<p>Transpozici matice zajišťuje funkce nazvaná jednoduše
+<strong>t</strong>:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m55 &lt;- matrix(data, nrow=5, ncol=5)
+print(m55)
+&nbsp;
+transposed &lt;- <strong>t</strong>(m55)
+print(transposed)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    3    4    5
+[2,]    6    7    8    9   10
+[3,]   11   12   13   14   15
+[4,]   16   17   18   19   20
+[5,]   21   22   23   24   25
+</pre>
+
+<p>Samozřejmě se nemusíme omezit pouze na čtvercové matice:</p>
+
+<pre>
+data &lt;- 1:24
+&nbsp; 
+m55 &lt;- matrix(data, nrow=2, ncol=6)
+print(m55)
+&nbsp;
+transposed &lt;- <strong>t</strong>(m55)
+print(transposed)
+</pre>
+
+<p>Tentokrát budou pochopitelně výsledky odlišné:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    3    5    7    9   11
+[2,]    2    4    6    8   10   12
+     [,1] [,2]
+&nbsp;
+[1,]    1    2
+[2,]    3    4
+[3,]    5    6
+[4,]    7    8
+[5,]    9   10
+[6,]   11   12
+</pre>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Maticový součin</h2>
+
+<p>Důležitou operací, kterou lze s&nbsp;maticemi provádět, je maticový součin.
+Ten je v&nbsp;programovacím jazyku R představován operátorem
+<strong>%*%</strong>, který se vkládá mezi dva operandy, podobně jako všechny
+ostatní binární operátory:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+&nbsp;
+m2 &lt;- diag(5)
+print(m2)
+&nbsp;
+print(m1 <strong>%*%</strong> m2)
+&nbsp;
+m2[3,3] &lt;- 10
+print(m1 <strong>%*%</strong> m2)
+</pre>
+
+<p>Výsledek maticového součinu několika matic:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0    1    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6  110   16   21
+[2,]    2    7  120   17   22
+[3,]    3    8  130   18   23
+[4,]    4    9  140   19   24
+[5,]    5   10  150   20   25
+</pre>
+
+<p>Opět nejsme omezeni pouze na čtvercové matice:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=4, ncol=3)
+print(m1)
+&nbsp;
+m2 &lt;- matrix(data, nrow=3, ncol=4)
+print(m2)
+&nbsp;
+print(m1 <strong>%*%</strong> m2)
+</pre>
+
+<pre>
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+&nbsp;
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+&nbsp;
+     [,1] [,2] [,3] [,4]
+[1,]   38   83  128  173
+[2,]   44   98  152  206
+[3,]   50  113  176  239
+[4,]   56  128  200  272
+</pre>
+
+<p>Další příklad, tentokrát pro matici se dvěma řádky a šesti sloupci, která je
+vynásobena maticí se šesti řádky a dvěma sloupci:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=2, ncol=6)
+print(m1)
+&nbsp;
+m2 &lt;- matrix(data, nrow=6, ncol=2)
+print(m2)
+&nbsp;
+print(m1 <strong>%*%</strong> m2)
+</pre>
+
+<p>Výsledkem je matice o velikosti 2&times;2 prvky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    3    5    7    9   11
+[2,]    2    4    6    8   10   12
+&nbsp;
+     [,1] [,2]
+[1,]    1    7
+[2,]    2    8
+[3,]    3    9
+[4,]    4   10
+[5,]    5   11
+[6,]    6   12
+&nbsp;
+     [,1] [,2]
+[1,]  161  377
+[2,]  182  434
+</pre>
+
+<p>Prohození první a druhé matice v&nbsp;operaci součinu (maticový součin není
+komutativní):</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=2, ncol=6)
+print(m1)
+&nbsp;
+m2 &lt;- matrix(data, nrow=6, ncol=2)
+print(m2)
+&nbsp;
+print(m2 <strong>%*%</strong> m1)
+</pre>
+
+<p>Výsledky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    3    5    7    9   11
+[2,]    2    4    6    8   10   12
+&nbsp;
+     [,1] [,2]
+[1,]    1    7
+[2,]    2    8
+[3,]    3    9
+[4,]    4   10
+[5,]    5   11
+[6,]    6   12
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]   15   31   47   63   79   95
+[2,]   18   38   58   78   98  118
+[3,]   21   45   69   93  117  141
+[4,]   24   52   80  108  136  164
+[5,]   27   59   91  123  155  187
+[6,]   30   66  102  138  174  210
+</pre>
+
+<p>Pokus o maticový součin s&nbsp;maticemi, jejichž tvar není pro součin vhodný:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp; 
+m1 &lt;- matrix(data, nrow=2, ncol=6)
+print(m1)
+&nbsp;
+m2 &lt;- matrix(data, nrow=4, ncol=3)
+print(m2)
+&nbsp;
+print(m1 <strong>%*%</strong> m2)
+</pre>
+
+<p>Chybové hlášení:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=2, ncol=6)
+print(m1)
+&nbsp;
+m2 &lt;- matrix(data, nrow=6, ncol=2)
+print(m2)
+&nbsp;
+print(m1 <strong>%*%</strong> m2)
+</pre>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Výpočet determinantu matice</h2>
+
+<p>Pro výpočet determinantu matice slouží funkce nazvaná <strong>det</strong>.
+Podívejme se na typický příklad použití:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>det</strong>(m1))
+&nbsp;
+m2 &lt;- diag(5)
+print(m2)
+print(<strong>det</strong>(m2))
+</pre>
+
+<p>S&nbsp;výsledky (determinant je zvýrazněn):</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1] <strong>0</strong>
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0    1    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+[1] <strong>1</strong>
+&nbsp;
+</pre>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Výpočet inverzní matice</h2>
+
+<p>Pro výpočet inverzní matice se používá (poměrně překvapivě) funkce nazvaná
+<strong>solve</strong>:</p>
+
+<pre>
+data &lt;- c(2, 3, 2, 2)
+&nbsp;
+m1 &lt;- matrix(data, nrow=2, ncol=2)
+print(m1)
+print(<strong>solve</strong>(m1))
+&nbsp;
+m2 &lt;- diag(5)
+print(m2)
+print(<strong>solve</strong>(m2))
+&nbsp;
+m3 &lt;- diag(5)
+m3[3, 3] = 42
+print(m3)
+print(<strong>solve</strong>(m3))
+</pre>
+
+<p>Výsledky získané předchozím příkladem:</p>
+
+<pre>
+     [,1] [,2]
+[1,]    2    2
+[2,]    3    2
+&nbsp;
+     [,1] [,2]
+[1,] -1.0    1
+[2,]  1.5   -1
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0    1    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0    1    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0   42    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+     [,1] [,2]       [,3] [,4] [,5]
+[1,]    1    0 0.00000000    0    0
+[2,]    0    1 0.00000000    0    0
+[3,]    0    0 0.02380952    0    0
+[4,]    0    0 0.00000000    1    0
+[5,]    0    0 0.00000000    0    1
+</pre>
+
+<p>Kontrola, zda součinem původní matice s&nbsp;maticí inverzní vznikne
+jednotková matice:</p>
+
+<pre>
+data &lt;- c(2, 3, 2, 2)
+&nbsp;
+m1 &lt;- matrix(data, nrow=2, ncol=2)
+print(m1)
+print(solve(m1))
+&nbsp;
+m2 &lt;- diag(5)
+print(m2)
+print(solve(m2))
+&nbsp;
+m3 &lt;- diag(5)
+m3[3, 3] = 42
+print(m3)
+print(solve(m3))
+</pre>
+
+<p>Výsledek je (prakticky, s&nbsp;přimhouřením oka) skutečně jednotková
+matice:</p>
+
+<pre>
+     [,1] [,2]
+[1,]    2    2
+[2,]    3    2
+&nbsp;
+     [,1] [,2]
+[1,] -1.0    1
+[2,]  1.5   -1
+&nbsp;
+     [,1]         [,2]
+[1,]    1 2.220446e-16
+[2,]    0 1.000000e+00
+</pre>
+
+<p>Ne vždy je možné inverzní matici vypočítat:</p>
+
+<pre>
+data &lt;- 0
+&nbsp; 
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+ &nbsp; 
+print(<strong>solve</strong>(m1))
+</pre>
+
+<p>Chybové hlášení:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    0    0    0    0    0
+[2,]    0    0    0    0    0
+[3,]    0    0    0    0    0
+[4,]    0    0    0    0    0
+[5,]    0    0    0    0    0
+Error in solve.default(m1) : 
+  <strong>Lapack routine dgesv: system is exactly singular: U[1,1] = 0</strong>
+Calls: print -&gt; solve -&gt; solve.default
+Execution halted
+</pre>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Suma prvků (po řádcích, po sloupcích, všech prvků v&nbsp;matici)</h2>
+
+<p>Funkce <strong>colSums</strong> vrátí vektor obsahující součty prvků
+v&nbsp;jednotlivých sloupcích:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>colSums</strong>(m1))
+</pre>
+
+<p>Výsledek běhu příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1]  15  40  65  90 115
+</pre>
+
+<p>Podobně funkce <strong>rowSums</strong> vypočte součty prvků na řádcích
+matice a opět je vrátí ve formě vektoru:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>rowSums</strong>(m1))
+</pre>
+
+<p>Výsledek běhu příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1] 55 60 65 70 75
+</pre>
+
+<p>A konečně funkce <strong>sum</strong> dokáže mj.&nbsp;vypočítat součet všech
+prvků v&nbsp;matici:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>sum</strong>(m1))
+</pre>
+
+<p>Výsledek běhu příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1] 325
+</pre>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Průměr prvků (po řádcích, po sloupcích, všech prvků v&nbsp;matici)</h2>
+
+<p>Existuje ještě trojice funkcí určených pro výpočet průměrů, a to opět po
+řádcích matice, po sloupcích, popř.&nbsp;pro průměr všech prvků v&nbsp;matici.
+Chování je velmi podobné funkcím popsaným <a href="#k15">v&nbsp;předchozí
+kapitole</a>, takže jen ve stručnosti.</p>
+
+<p>Získání vektoru obsahujícího průměrné hodnoty sloupců matice:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>colMeans</strong>(m1))
+</pre>
+
+<p>Výsledek běhu příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1]  3  8 13 18 23
+</pre>
+
+<p>Získání vektoru obsahujícího průměrné hodnoty řádků matice:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>rowMeans</strong>(m1))
+</pre>
+
+<p>Výsledek běhu příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1] 11 12 13 14 15
+</pre>
+
+<p>A konečně výpočet průměru ze všech prvků:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>mean</strong>(m1))
+</pre>
+
+<p>Výsledek běhu příkladu:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+[1] 13
+</pre>
+
+<p>Posun hodnot prvků matice tak, aby byl průměr nulový:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp; 
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+print(<strong>mean</strong>(m1))
+</pre>
+
+<p>Výsledky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]  -12   -7   -2    3    8
+[2,]  -11   -6   -1    4    9
+[3,]  -10   -5    0    5   10
+[4,]   -9   -4    1    6   11
+[5,]   -8   -3    2    7   12
+</pre>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Funkce <strong>cbind</strong> a <strong>rbind</strong> &ndash; konstrukce matice z&nbsp;několika vektorů</h2>
+
+<p>V&nbsp;dalším příkladu použijeme funkci nazvanou <strong>cbind</strong>,
+kterou je možné (mj.) použít pro konstrukci matice z&nbsp;několika vektorů:</p>
+
+<pre>
+vec1 &lt;- 1:10
+vec2 &lt;- 11:20
+vec3 &lt;- 10:1
+&nbsp;
+print(<strong>cbind</strong>(vec1, vec2, vec3))
+</pre>
+
+<p>Výsledek:</p>
+
+<pre>
+      vec1 vec2 vec3
+ [1,]    1   11   10
+ [2,]    2   12    9
+ [3,]    3   13    8
+ [4,]    4   14    7
+ [5,]    5   15    6
+ [6,]    6   16    5
+ [7,]    7   17    4
+ [8,]    8   18    3
+ [9,]    9   19    2
+[10,]   10   20    1
+</pre>
+
+<p>Dtto, ale nyní s&nbsp;využitím funkce <strong>rbind</strong>:</p>
+
+<pre>
+vec1 &lt;- 1:10
+vec2 &lt;- 11:20
+vec3 &lt;- 10:1
+&nbsp; 
+print(<strong>rbind</strong>(vec1, vec2, vec3))
+</pre>
+
+<p>Výsledek nyní vypadá odlišně:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+vec1    1    2    3    4    5    6    7    8    9    10
+vec2   11   12   13   14   15   16   17   18   19    20
+vec3   10    9    8    7    6    5    4    3    2     1
+</pre>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Spojení matic funkcemi <strong>cbind</strong> a <strong>rbind</strong></h2>
+
+<p>Funkce <strong>cbind</strong> a <strong>rbind</strong> nepracují pouze
+s&nbsp;vektory, ale například i s&nbsp;celými maticemi, které spojuje do matice
+větší. Ukažme si nejdříve použití <strong>cbind</strong>:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+&nbsp;
+m2 &lt;- diag(5)
+print(m2)
+&nbsp;
+print(<strong>cbind</strong>(m1, m2))
+</pre>
+
+<p>Výsledná matice bude mít stále pět řádků, ale deset sloupců:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0    1    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1,]    1    6   11   16   21    1    0    0    0     0
+[2,]    2    7   12   17   22    0    1    0    0     0
+[3,]    3    8   13   18   23    0    0    1    0     0
+[4,]    4    9   14   19   24    0    0    0    1     0
+[5,]    5   10   15   20   25    0    0    0    0     1
+</pre>
+
+<p>Použití funkce <strong>rbind</strong> pro spojení matic po řádcích:</p>
+
+<pre>
+data &lt;- 1:25
+&nbsp;
+m1 &lt;- matrix(data, nrow=5, ncol=5)
+print(m1)
+&nbsp;
+m2 &lt;- diag(5)
+print(m2)
+&nbsp;
+print(<strong>rbind</strong>(m1, m2))
+</pre>
+
+<p>Tentokrát bude mít výsledná matice pět sloupců (jako matice zdrojové), ovšem
+deset řádků:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    6   11   16   21
+[2,]    2    7   12   17   22
+[3,]    3    8   13   18   23
+[4,]    4    9   14   19   24
+[5,]    5   10   15   20   25
+&nbsp;
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    0    0    0    0
+[2,]    0    1    0    0    0
+[3,]    0    0    1    0    0
+[4,]    0    0    0    1    0
+[5,]    0    0    0    0    1
+&nbsp;
+      [,1] [,2] [,3] [,4] [,5]
+ [1,]    1    6   11   16   21
+ [2,]    2    7   12   17   22
+ [3,]    3    8   13   18   23
+ [4,]    4    9   14   19   24
+ [5,]    5   10   15   20   25
+ [6,]    1    0    0    0    0
+ [7,]    0    1    0    0    0
+ [8,]    0    0    1    0    0
+ [9,]    0    0    0    1    0
+[10,]    0    0    0    0    1
+</pre>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+stále jen jednotky kilobajtů), můžete namísto toho použít odkazy na jednotlivé
+demonstrační příklady, které naleznete v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td> 1</td><td>01-matrix-construction.R</td><td>konstrukce matic funkcí <strong>matrix</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/01-matrix-construction.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/01-matrix-construction.R</a></td></tr>
+<tr><td> 2</td><td>02-zero-matrix.R</td><td>konstrukce nulové funkcí <strong>matrix</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/02-zero-matrix.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/02-zero-matrix.R</a></td></tr>
+<tr><td> 3</td><td>03-matrix-construction-by-row.R</td><td>zaplnění matice po sloupcích vs. po řádcích</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/03-matrix-construction-by-row.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/03-matrix-construction-by-row.R</a></td></tr>
+<tr><td> 4</td><td>04-dimnames.R</td><td>pojmenování řádků a sloupců matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/04-dimnames.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/04-dimnames.R</a></td></tr>
+<tr><td> 5</td><td>05-months-abb.R</td><td>tisk tabulky se zkrácenýminázvy měsíců</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/05-months-abb.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/05-months-abb.R</a></td></tr>
+<tr><td> 6</td><td>06-months-names.R</td><td>tisk tabulky s&nbsp;plnými názvy měsíců</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/06-months-names.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/06-months-names.R</a></td></tr>
+<tr><td> 7</td><td>07-diagonal-square-matrix.R</td><td>konstrukce čtvercové jednotkové matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/07-diagonal-square-matrix.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/07-diagonal-square-matrix.R</a></td></tr>
+<tr><td> 8</td><td>08-diagonal-square-matrix-value.R</td><td>specifikace hodnoty prvků na hlavní diagonále</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/08-diagonal-square-matrix-value.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/08-diagonal-square-matrix-value.R</a></td></tr>
+<tr><td> 9</td><td>09-diagonal-non-square-matrix.R</td><td>konstrukce nečtvercové diagonální matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/09-diagonal-non-square-matrix.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/09-diagonal-non-square-matrix.R</a></td></tr>
+<tr><td>10</td><td>10-diagonal-range.R</td><td>konstrukce čtvercové diagonální matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/10-diagonal-range.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/10-diagonal-range.R</a></td></tr>
+<tr><td>11</td><td>11-lower-tri.R</td><td>konstrukce trojúhelníkové matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/11-lower-tri.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/11-lower-tri.R</a></td></tr>
+<tr><td>12</td><td>12-lower-tri-zeros.R</td><td>vynulování části pod hlavní diagonálou</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/12-lower-tri-zeros.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/12-lower-tri-zeros.R</a></td></tr>
+<tr><td>13</td><td>13-upper-tri.R</td><td>konstrukce trojúhelníkové matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/13-upper-tri.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/13-upper-tri.R</a></td></tr>
+<tr><td>14</td><td>14-upper-tri-zeros.R</td><td>vynulování části nad hlavní diagonálou</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/14-upper-tri-zeros.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/14-upper-tri-zeros.R</a></td></tr>
+<tr><td>15</td><td>15-row-col.R</td><td>indexy řádků a indexy sloupců</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/15-row-col.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/15-row-col.R</a></td></tr>
+<tr><td>16</td><td>16-transpose.R</td><td>transpozice matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/16-transpose.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/16-transpose.R</a></td></tr>
+<tr><td>17</td><td>17-multiply.R</td><td>násobení dvou čtvercových matic</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/17-multiply.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/17-multiply.R</a></td></tr>
+<tr><td>18</td><td>18-multiply-non-square.R</td><td>součin dvou nečtvercových matic</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/18-multiply-non-square.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/18-multiply-non-square.R</a></td></tr>
+<tr><td>19</td><td>19-multiply-non-square.R</td><td>součin dvou nečtvercových matic</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/19-multiply-non-square.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/19-multiply-non-square.R</a></td></tr>
+<tr><td>20</td><td>20-multiply-non-square.R</td><td>součin dvou nečtvercových matic</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/20-multiply-non-square.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/20-multiply-non-square.R</a></td></tr>
+<tr><td>21</td><td>21-determinant.R</td><td>výpočet determinantu matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/21-determinant.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/21-determinant.R</a></td></tr>
+<tr><td>22</td><td>22-inverse.R</td><td>výpočet inverzní matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/22-inverse.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/22-inverse.R</a></td></tr>
+<tr><td>23</td><td>23-colsums.R</td><td>výpočet sumy podle sloupců</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/23-colsums.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/23-colsums.R</a></td></tr>
+<tr><td>24</td><td>24-rowsums.R</td><td>výpočet sumy podle řádků</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/24-rowsums.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/24-rowsums.R</a></td></tr>
+<tr><td>25</td><td>25-sum.R</td><td>výpočet sumy všech prvků matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/25-sum.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/25-sum.R</a></td></tr>
+<tr><td>26</td><td>26-colmeans.R</td><td>výpočet průměru podle sloupců</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/26-colmeans.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/26-colmeans.R</a></td></tr>
+<tr><td>27</td><td>27-rowmeans.R</td><td>výpočet průměru podle řádků</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/27-rowmeans.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/27-rowmeans.R</a></td></tr>
+<tr><td>28</td><td>28-mean.R</td><td>výpočet průměru všech prvků matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/28-mean.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/28-mean.R</a></td></tr>
+<tr><td>29</td><td>29-cbind-vector.R</td><td>funkce <strong>cbind</strong> aplikovaná na vektory</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/29-cbind-vector.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/29-cbind-vector.R</a></td></tr>
+<tr><td>30</td><td>30-cbind-matrix.R</td><td>funkce <strong>cbind</strong> aplikovaná na matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/04-matrix-table/30-cbind-matrix.R">https://github.com/tisnik/r-examples/blob/master/04-matrix-table/30-cbind-matrix.R</a></td></tr>
+</table>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded &amp; Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>Cesta erka: Krok nultý &ndash; instalace &amp; nastavení – prostředí, projekty, package<br />
+<a href="https://www.jla-data.net/r4su/r4su-environment-setup/">https://www.jla-data.net/r4su/r4su-environment-setup/</a>
+</li>
+
+<li>Cesta erka: Krok první &ndash; operace a struktury – proměnné, rovnítka a dolary<br />
+<a href="https://www.jla-data.net/r4su/r4su-data-structures/">https://www.jla-data.net/r4su/r4su-data-structures/</a>
+</li>
+
+<li>Cesta erka: Krok druhý &ndash; načtení externích dat – csvčka, excely a databáze<br />
+<a href="https://www.jla-data.net/r4su/r4su-read-data/">https://www.jla-data.net/r4su/r4su-read-data/</a>
+</li>
+
+<li>Cesta erka: Krok třetí &ndash; manipulace s daty – dplyr, slovesa a pajpy<br />
+<a href="https://www.jla-data.net/r4su/r4su-manipulate-data/">https://www.jla-data.net/r4su/r4su-manipulate-data/</a>
+</li>
+
+<li>Cesta erka: Krok čtvrtý &ndash; podání výsledků – ggplot, geomy a estetiky<br />
+<a href="https://www.jla-data.net/r4su/r4su-report-results/">https://www.jla-data.net/r4su/r4su-report-results/</a>
+</li>
+
+<li>Cesta erka: Krok pátý &ndash; case study – případ piva v Praze<br />
+<a href="https://www.jla-data.net/r4su/r4su-case-study-beer/">https://www.jla-data.net/r4su/r4su-case-study-beer/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+<li>R - Arrays<br />
+<a href="https://www.tutorialspoint.com/r/r_arrays.htm">https://www.tutorialspoint.com/r/r_arrays.htm</a>
+</li>
+
+<li>Array vs Matrix in R Programming<br />
+<a href="https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp">https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp</a>
+</li>
+
+<li>Online R Language IDE<br />
+<a href="https://www.jdoodle.com/execute-r-online/">https://www.jdoodle.com/execute-r-online/</a>
+</li>
+
+<li>Execute R Online (R v3.4.1)<br />
+<a href="https://www.tutorialspoint.com/execute_r_online.php">https://www.tutorialspoint.com/execute_r_online.php</a>
+</li>
+
+<li>Snippets: Run any R code you like. There are over twelve thousand R packages preloaded<br />
+<a href="https://rdrr.io/snippets/">https://rdrr.io/snippets/</a>
+</li>
+
+<li>R Package Documentation<br />
+<a href="https://rdrr.io/">https://rdrr.io/</a>
+</li>
+
+<li>Data Reshaping in R – Popular Functions to Organise Data<br />
+<a href="https://techvidvan.com/tutorials/data-reshaping-in-r/">https://techvidvan.com/tutorials/data-reshaping-in-r/</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
