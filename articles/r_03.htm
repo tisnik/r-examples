@@ -1,0 +1,2076 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Programovací jazyk R: pole a další podporované datové typy</title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1>Programovací jazyk R: pole a další podporované datové typy</h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>Ve druhé části seriálu o programovacím jazyku R jsme si popsali vektory, které jsou základním a pravděpodobně i zdaleka nejpoužívanějším datovým typem tohoto jazyka. Dnes se zaměříme na popis práce s poli, které mohou mít prakticky libovolný počet dimenzí (na rozdíl od jednorozměrných vektorů).</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Programovací jazyk R: pole a další podporované datové typy</a></p>
+<p><a href="#k02">2. Konstrukce jednorozměrného a dvojrozměrného pole</a></p>
+<p><a href="#k03">3. Plnohodnotná dvojrozměrná pole</a></p>
+<p><a href="#k04">4. Chování ve chvíli, kdy zdrojový vektor neobsahuje dostatečný počet prvků</a></p>
+<p><a href="#k05">5. Pole se třemi dimenzemi</a></p>
+<p><a href="#k06">6. Opakování prvků při konstrukci trojrozměrných polí</a></p>
+<p><a href="#k07">7. Pojmenování řádků a sloupců pole</a></p>
+<p><a href="#k08">8. Pojmenování třetí dimenze trojrozměrného pole</a></p>
+<p><a href="#k09">9. Čtyřrozměrné pole</a></p>
+<p><a href="#k10">10. Pojmenování třetí a čtvrté dimenze čtyřrozměrného pole</a></p>
+<p><a href="#k11">11. Přístup k&nbsp;prvkům dvojrozměrného pole</a></p>
+<p><a href="#k12">12. Získání celého řádku dvojrozměrného pole</a></p>
+<p><a href="#k13">13. Získání celého sloupce dvojrozměrného pole</a></p>
+<p><a href="#k14">14. Záporné indexy při přístupu k&nbsp;prvkům pole</a></p>
+<p><a href="#k15">15. Filtrace řádků při výběru s&nbsp;využitím záporných indexů</a></p>
+<p><a href="#k16">16. Filtrace sloupců při výběru s&nbsp;využitím záporných indexů</a></p>
+<p><a href="#k17">17. Operace provedená nad korespondujícími prvky dvou polí</a></p>
+<p><a href="#k18">18. Od dvojrozměrných polí k&nbsp;maticím</a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Programovací jazyk R: pole a další podporované datové typy</h2>
+
+<p><a
+href="https://www.root.cz/clanky/programovaci-jazyk-r-vektory-ve-funkci-zakladniho-datoveho-typu-jazyka/">Ve
+druhé části</a> <a
+href="https://www.root.cz/serialy/programovaci-jazyk-r/">seriálu o doménově
+specifickém programovacím jazyku R</a> jsme se zabývali popisem práce
+s&nbsp;primárním datovým typem tohoto jazyka. Připomeňme si, že se jednalo o
+vektory (<i>vector</i>), což je homogenní a současně i měnitelný
+(<i>mutable</i>) datový typ, který může obsahovat logické hodnoty, celá čísla,
+čísla s&nbsp;plovoucí čárkou, komplexní čísla popř.&nbsp;řetězce. Ovšem
+v&nbsp;jazyku R je možné pracovat i s&nbsp;hodnotami, které jsou odlišného
+datového typu. A právě s&nbsp;těmito dalšími typy se seznámíme dnes. Při popisu
+všech datových typů budeme opět používat relativně velké množství
+demonstračních příkladů, které je možné buď zapsat přímo do konzole jazyka R,
+použít jednoduchá IDE dostupná online [<a
+href="https://www.jdoodle.com/execute-r-online/">1</a>] [<a
+href="https://www.tutorialspoint.com/execute_r_online.php">2</a>] [<a
+href="https://rdrr.io/snippets/">3</a>] nebo pro jejich spuštění použít nástroj
+<i>Rscript</i> (ten je součástí standardní sady nástrojů jazyka R):</p>
+
+<pre>
+$ <strong>Rscript </strong>
+&nbsp;
+Usage: /path/to/Rscript [--options] [-e expr [-e expr2 ...] | file] [args]
+&nbsp;
+--options accepted are
+  --help              Print usage and exit
+  --version           Print version and exit
+  --verbose           Print information on progress
+  --default-packages=list
+                      Where 'list' is a comma-separated set
+                        of package names, or 'NULL'
+or options to R, in addition to --no-echo --no-restore, such as
+  --save              Do save workspace at the end of the session
+  --no-environ        Don't read the site and user environment files
+  --no-site-file      Don't read the site-wide Rprofile
+  --no-init-file      Don't read the user R profile
+  --restore           Do restore previously saved objects at startup
+  --vanilla           Combine --no-save, --no-restore, --no-site-file
+                        --no-init-file and --no-environ
+&nbsp;
+'file' may contain spaces but not shell metacharacters
+Expressions (one or more '-e &lt;expr&gt;') may be used *instead* of 'file'
+See also  ?Rscript  from within R
+</pre>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Konstrukce jednorozměrného a dvojrozměrného pole</h2>
+
+<p>V&nbsp;této kapitole si ukážeme způsob konstrukce jednorozměrného a
+dvojrozměrného pole. Jednorozměrné pole je ve skutečnosti vektorem, který má
+ovšem specifikován atribut <strong>dim</strong>, což je další vektor obsahující
+specifikaci informace o dimenzích pole. Pokud například pole vytvoříme ze
+šestiprvkového vektoru a vektor s&nbsp;dimenzemi bude jednoprvkový
+<strong>c(6)</strong>, vytvoří se jednorozměrné pole se šesticí prvků.
+Povšimněte si způsobu konstrukce pole pomocí funkce <strong>array</strong>:</p>
+
+<pre>
+&gt; <strong>data &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>dimension1 &lt;- c(6)</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+[1] 1 2 3 4 5 6
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: jednorozměrné pole se neliší od
+vektoru.</div></p>
+
+<p>Dimenzi pole lze získat funkcí <strong>dim</strong>:</p>
+
+<pre>
+&gt; <strong>print(dim(a1))</strong>
+[1] 6
+</pre>
+
+<p>Alternativně je ovšem možné pole vytvořit i zdánlivým <i>přiřazením
+hodnoty</i> do návratové hodnoty funkce <strong>dim(a1)</strong>:</p>
+
+<pre>
+&gt; <strong>a1 &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>print(a1)</strong>
+&nbsp;
+&gt; <strong>dim(a1) &lt;- c(6)</strong>
+&gt; <strong>print(a1)</strong>
+</pre>
+
+<p>Nyní si ukažme vytvoření pole s&nbsp;jedním řádkem a šesti sloupci:</p>
+
+<pre>
+&gt; <strong>data &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>dimension2 &lt;- c(1, 6)</strong>
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    2    3    4    5    6
+</pre>
+
+<p>Naopak pole se šesti řádky a jedním sloupcem (sloupcový vektor) se
+vytvoří:</p>
+
+<pre>
+&gt; <strong>data &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>dimension2 &lt;- c(6, 1)</strong>
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+[1] 1 2 3 4 5 6
+     [,1]
+[1,]    1
+[2,]    2
+[3,]    3
+[4,]    4
+[5,]    5
+[6,]    6
+</pre>
+
+<p>Popř.:</p>
+
+<pre>
+&gt; <strong>a2 &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>print(a2)</strong>
+&nbsp;
+&gt; <strong>dimension2 &lt;- c(1, 6)</strong>
+&gt; <strong>dim(a2) &lt;- dimension2</strong>
+&gt; <strong>print(a2)</strong>
+</pre>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. Plnohodnotná dvojrozměrná pole</h2>
+
+<p>Nyní si ukažme konstrukci dvojrozměrného pole se třemi řádky a dvěma
+sloupci:</p>
+
+<pre>
+&gt; <strong>data &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>dimension1 &lt;- c(3, 2)</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+</pre>
+
+<p>A naopak &ndash; pole se třemi sloupci a dvěma řádky:</p>
+
+<pre>
+&gt; <strong></strong>
+&gt; <strong>dimension2 &lt;- c(2, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: z&nbsp;předchozích dvou příkladů je
+patrné, jakým způsobem se pole naplňuje prvky. Plnění v&nbsp;těchto případech
+probíhalo po sloupcích, což odpovídá chování FORTRANu (a nikoli
+céčka).</div></p>
+
+<p>Alternativní způsob se specifikací dimenze pole až po jeho vytvoření:</p>
+
+<pre>
+data &lt;- c(1, 2, 3, 4, 5, 6)
+dimension1 &lt;- c(3, 2)
+&nbsp;
+a1 &lt;- array(data, dim=dimension1)
+print(a1)
+&nbsp;
+dimension2 &lt;- c(2, 3)
+&nbsp;
+a2 &lt;- array(data, dim=dimension2)
+print(a2)
+</pre>
+
+<p>Samozřejmě můžeme vektor představující zdroj dat vytvořit i s&nbsp;využitím
+<i>range</i>, tedy zápisu <strong>prvek1:prvekN</strong>:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension1 &lt;- c(3, 4)</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+&nbsp;
+&nbsp;
+&nbsp;
+&gt; <strong>dimension2 &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+</pre>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. Chování ve chvíli, kdy zdrojový vektor neobsahuje dostatečný počet prvků</h2>
+
+<p>V&nbsp;dalším demonstračním příkladu se pokusíme vytvořit pole 3&times;4
+prvky, ovšem zdrojem bude vektor obsahující pouze trojici prvků. Nejedná se o
+chybu, protože v&nbsp;tomto případě dojde k&nbsp;opakování prvků zdrojového
+vektoru až do chvíle, kdy se výsledné pole zcela naplní:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:3</strong>
+&gt; <strong>dimension1 &lt;- c(3, 4)</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    1
+[2,]    2    2    2    2
+[3,]    3    3    3    3
+</pre>
+
+<p>Dtto při pokusu o vytvoření pole s&nbsp;rozměry 4&times;3 prvky:</p>
+
+<pre>
+&gt; <strong></strong>
+&gt; <strong>data &lt;- 1:4</strong>
+&gt; <strong>dimension2 &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+     [,1] [,2] [,3]
+[1,]    1    1    1
+[2,]    2    2    2
+[3,]    3    3    3
+[4,]    4    4    4
+</pre>
+
+<p>Tohoto chování můžeme využít při konstrukci pole, které obsahuje pouze
+nulové prvky (nebo samozřejmě jinou konstantní hodnotu):</p>
+
+<pre>
+data &lt;- 0
+dimension1 &lt;- c(3, 4)
+&nbsp;
+a1 &lt;- array(data, dim=dimension1)
+print(a1)
+&nbsp;
+data &lt;- 0
+dimension2 &lt;- c(4, 3)
+&nbsp;
+a2 &lt;- array(data, dim=dimension2)
+print(a2)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4]
+[1,]    0    0    0    0
+[2,]    0    0    0    0
+[3,]    0    0    0    0
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+[3,]    0    0    0
+[4,]    0    0    0
+</pre>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. Pole se třemi dimenzemi</h2>
+
+<p>Pole může být i vícedimenzionální. V&nbsp;dalším demonstračním příkladu
+postupně vytvoříme pole o rozměrech 2&times;3&times;4 prvky, 3&times;2&times;4
+prvky a konečně 4&times;3&times;2 prvky. Ve všech případech bude zdrojem hodnot
+prvků vektor obsahující celočíselné hodnoty 1, 2, ... 24 (což přesně odpovídá
+požadovanému počtu prvků výsledných trojrozměrných polí):</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:24</strong>
+&gt; <strong></strong>
+&gt; <strong>print("2x3x4")</strong>
+[1] "2x3x4"
+&gt; <strong>dimension1 &lt;- c(2, 3, 4)</strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    7    9   11
+[2,]    8   10   12
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   13   15   17
+[2,]   14   16   18
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   19   21   23
+[2,]   20   22   24
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, jak se tiskne
+trojrozměrné pole. Vždy se nejdříve vytiskne poslední dimenze (ta je v&nbsp;R
+nejvyšší) a posléze již 2D matice.</div></p>
+
+<p>Změna tvaru pole:</p>
+
+<pre>
+&gt; <strong>print("3x2x4")</strong>
+[1] "3x2x4"
+&gt; <strong>dimension2 &lt;- c(3, 2, 4)</strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+, , 1
+&nbsp;
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2]
+[1,]    7   10
+[2,]    8   11
+[3,]    9   12
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2]
+[1,]   13   16
+[2,]   14   17
+[3,]   15   18
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2]
+[1,]   19   22
+[2,]   20   23
+[3,]   21   24
+</pre>
+
+<p>A poslední změna tvaru pole:</p>
+
+<pre>
+&gt; <strong>print("4x3x2")</strong>
+[1] "4x3x2"
+&gt; <strong>dimension3 &lt;- c(4, 3, 2)</strong>
+&gt; <strong>a3 &lt;- array(data, dim=dimension3)</strong>
+&gt; <strong>print(a3)</strong>
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   13   17   21
+[2,]   14   18   22
+[3,]   15   19   23
+[4,]   16   20   24
+</pre>
+
+<p>Alternativně je ovšem možné dimenzi specifikovat až přiřazením do
+existujícího vektoru:</p>
+
+<pre>
+print("2x3x4")
+a1 &lt;- 1:24
+dimension1 &lt;- c(2, 3, 4)
+dim(a1) &lt;- dimension1
+print(a1)
+&nbsp;
+print("3x2x4")
+a2 &lt;- 1:24
+dimension2 &lt;- c(3, 2, 4)
+dim(a2) &lt;- dimension2
+print(a2)
+&nbsp;
+print("4x3x2")
+a3 &lt;- 1:24
+dimension3 &lt;- c(4, 3, 2)
+dim(a3) &lt;- dimension3
+print(a3)
+</pre>
+
+<p>Výsledky budou v&nbsp;tomto případě odpovídat předchozím třem příkladům.</p>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Opakování prvků při konstrukci trojrozměrných polí</h2>
+
+<p>Opět si ukažme chování programovacího jazyka R ve chvíli, kdy zdrojový
+vektor nebude obsahovat všechny potřebné prvky:</p>
+
+<pre>
+data &lt;- 1:12
+</pre>
+
+<p>Vektor obsahuje pouze dvanáct prvků, ovšem vyžadujeme konstrukci
+trojrozměrného pole s&nbsp;celkem 24 prvky. Prvky se tedy musí opakovat:</p>
+
+<pre>
+&gt; <strong>print("2x3x4")</strong>
+[1] "2x3x4"
+&gt; <strong>dimension1 &lt;- c(2, 3, 4)</strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    7    9   11
+[2,]    8   10   12
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    7    9   11
+[2,]    8   10   12
+</pre>
+
+<p>Dtto pro odlišný tvar trojrozměrného pole:</p>
+
+<pre>
+&gt; <strong>print("3x2x4")</strong>
+[1] "3x2x4"
+&gt; <strong>dimension2 &lt;- c(3, 2, 4)</strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+, , 1
+&nbsp;
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2]
+[1,]    7   10
+[2,]    8   11
+[3,]    9   12
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2]
+[1,]    7   10
+[2,]    8   11
+[3,]    9   12
+</pre>
+
+<p>Poslední varianta:</p>
+
+<pre>
+&gt; <strong>print("4x3x2")</strong>
+[1] "4x3x2"
+&gt; <strong>dimension3 &lt;- c(4, 3, 2)</strong>
+&gt; <strong>a3 &lt;- array(data, dim=dimension3)</strong>
+&gt; <strong>print(a3)</strong>
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+</pre>
+
+<p>Alternativní způsob zápisu &ndash; specifikace dimenze původně
+jednorozměrného vektoru:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+print("2x3x4")
+dimension1 &lt;- c(2, 3, 4)
+a1 &lt;- array(data, dim=dimension1)
+print(a1)
+&nbsp;
+print("3x2x4")
+dimension2 &lt;- c(3, 2, 4)
+a2 &lt;- array(data, dim=dimension2)
+print(a2)
+&nbsp;
+print("4x3x2")
+dimension3 &lt;- c(4, 3, 2)
+a3 &lt;- array(data, dim=dimension3)
+print(a3)
+</pre>
+
+<p>A konečně naplnění trojrozměrného pole nulami:</p>
+
+<pre>
+data &lt;- 0
+&nbsp;
+print("2x3x4")
+dimension1 &lt;- c(2, 3, 4)
+a1 &lt;- array(data, dim=dimension1)
+print(a1)
+&nbsp;
+print("3x2x4")
+dimension2 &lt;- c(3, 2, 4)
+a2 &lt;- array(data, dim=dimension2)
+print(a2)
+&nbsp;
+print("4x3x2")
+dimension3 &lt;- c(4, 3, 2)
+a3 &lt;- array(data, dim=dimension3)
+print(a3)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+[1] "2x3x4"
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+&nbsp;
+[1] "3x2x4"
+, , 1
+&nbsp;
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,]    0    0
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,]    0    0
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,]    0    0
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,]    0    0
+&nbsp;
+[1] "4x3x2"
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+[3,]    0    0    0
+[4,]    0    0    0
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+[3,]    0    0    0
+[4,]    0    0    0
+</pre>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Pojmenování řádků a sloupců pole</h2>
+
+<p>Řádky popř.&nbsp;sloupce pole je možné pojmenovat, což může být v&nbsp;praxi
+poměrně užitečné. Jména řádků jsou uložena do samostatného vektoru, stejně jako
+jména sloupců. Způsob nastavení je ukázán na následujícím demonstračním
+příkladu:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: vektory se jmény jsou uloženy do
+proměnných, které obsahují ve svém jménu tečku. V&nbsp;tomto případě se jedná o
+viditelné oddělení dvou slov od sebe &ndash; tečka tedy nemá speciální význam.
+Ostatně tečka se zapisuje jednodušeji než například podtržítko,
+VůbecNemluvěOVelbloudíNotaci, v&nbsp;níž navíc k&nbsp;viditelnému oddělení slov
+nedochází.</div></p>
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Pojmenování třetí dimenze trojrozměrného pole</h2>
+
+<p>Pojmenovat lze i vyšší dimenze trojrozměrných, čtyřrozměrných atd. polí.
+V&nbsp;následujícím demonstračním příkladu je název třetí dimenze uložen
+v&nbsp;proměnné nazvané <strong>matrix.names</strong>:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:24</strong>
+&gt; <strong>dimension &lt;- c(4, 3, 2)</strong>
+&gt; <strong></strong>
+&gt; <strong>matrix.names &lt;- c("matrix1", "matrix2")</strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names, matrix.names))</strong>
+&gt; <strong>print(a1)</strong>
+</pre>
+
+<p>Při výpisu obsahu pole <strong>a1</strong> se namísto indexů použijí všechny
+uvedené názvy, což vede k&nbsp;poněkud čitelnějším výstupům:</p>
+
+<pre>
+, , matrix1
+&nbsp;
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+&nbsp;
+, , matrix2
+&nbsp;
+     column1 column2 column3
+row1      13      17      21
+row2      14      18      22
+row3      15      19      23
+row4      16      20      24
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: jazyk R kontroluje, zda počet názvů
+odpovídá velikosti jednotlivých dimenzí, tj.&nbsp;počtu sloupců, počtu řádků,
+počtu matic atd.</div></p>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Čtyřrozměrné pole</h2>
+
+<p>Jen pro úplnost si ukažme, jakým způsobem je možné zkonstruovat čtyřrozměrná
+pole. Základem bude vektor se dvaceti čtyřmi prvky, který je použit
+v&nbsp;konstruktoru:</p>
+
+<pre>
+data &lt;- 1:24
+</pre>
+
+<p>Pole s&nbsp;tvarem 2&times;2&times;2&times;3 prvky:</p>
+
+<pre>
+&gt; <strong>print("2x2x2x3")</strong>
+[1] "2x2x2x3"
+&gt; <strong>dimension1 &lt;- c(2, 2, 2, 3)</strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension1)</strong>
+&gt; <strong>print(a1)</strong>
+, , 1, 1
+&nbsp;
+     [,1] [,2]
+[1,]    1    3
+[2,]    2    4
+&nbsp;
+, , 2, 1
+&nbsp;
+     [,1] [,2]
+[1,]    5    7
+[2,]    6    8
+&nbsp;
+, , 1, 2
+&nbsp;
+     [,1] [,2]
+[1,]    9   11
+[2,]   10   12
+&nbsp;
+, , 2, 2
+&nbsp;
+     [,1] [,2]
+[1,]   13   15
+[2,]   14   16
+&nbsp;
+, , 1, 3
+&nbsp;
+     [,1] [,2]
+[1,]   17   19
+[2,]   18   20
+&nbsp;
+, , 2, 3
+&nbsp;
+     [,1] [,2]
+[1,]   21   23
+[2,]   22   24
+</pre>
+
+<p>Pole s&nbsp;tvarem 2&times;2&times;3&times;2 prvky:</p>
+
+<pre>
+&gt; <strong>print("2x2x3x2")</strong>
+[1] "2x2x3x2"
+&gt; <strong>dimension2 &lt;- c(2, 2, 3, 2)</strong>
+&gt; <strong>a2 &lt;- array(data, dim=dimension2)</strong>
+&gt; <strong>print(a2)</strong>
+, , 1, 1
+&nbsp;
+     [,1] [,2]
+[1,]    1    3
+[2,]    2    4
+&nbsp;
+, , 2, 1
+&nbsp;
+     [,1] [,2]
+[1,]    5    7
+[2,]    6    8
+&nbsp;
+, , 3, 1
+&nbsp;
+     [,1] [,2]
+[1,]    9   11
+[2,]   10   12
+&nbsp;
+, , 1, 2
+&nbsp;
+     [,1] [,2]
+[1,]   13   15
+[2,]   14   16
+&nbsp;
+, , 2, 2
+&nbsp;
+     [,1] [,2]
+[1,]   17   19
+[2,]   18   20
+&nbsp;
+, , 3, 2
+&nbsp;
+     [,1] [,2]
+[1,]   21   23
+[2,]   22   24
+</pre>
+
+<p>Pole s&nbsp;tvarem 2&times;3&times;2&times;2 prvky:</p>
+
+<pre>
+&gt; <strong>print("2x3x2x2")</strong>
+[1] "2x3x2x2"
+&gt; <strong>dimension3 &lt;- c(2, 3, 2, 2)</strong>
+&gt; <strong>a3 &lt;- array(data, dim=dimension3)</strong>
+&gt; <strong>print(a3)</strong>
+, , 1, 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+&nbsp;
+, , 2, 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    7    9   11
+[2,]    8   10   12
+&nbsp;
+, , 1, 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   13   15   17
+[2,]   14   16   18
+&nbsp;
+, , 2, 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   19   21   23
+[2,]   20   22   24
+</pre>
+
+<p>Pole s&nbsp;tvarem 3&times;2&times;2&times;2 prvky:</p>
+
+<pre>
+&gt; <strong>print("3x2x2x2")</strong>
+[1] "3x2x2x2"
+&gt; <strong>dimension4 &lt;- c(3, 2, 2, 2)</strong>
+&gt; <strong>a4 &lt;- array(data, dim=dimension4)</strong>
+&gt; <strong>print(a4)</strong>
+, , 1, 1
+&nbsp;
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+&nbsp;
+, , 2, 1
+&nbsp;
+     [,1] [,2]
+[1,]    7   10
+[2,]    8   11
+[3,]    9   12
+&nbsp;
+, , 1, 2
+&nbsp;
+     [,1] [,2]
+[1,]   13   16
+[2,]   14   17
+[3,]   15   18
+&nbsp;
+, , 2, 2
+&nbsp;
+     [,1] [,2]
+[1,]   19   22
+[2,]   20   23
+[3,]   21   24
+</pre>
+
+<p>Alternativně lze samozřejmě použít přiřazení vektoru s&nbsp;tvarem pole do
+výsledku funkce <strong>dim</strong>:</p>
+
+<pre>
+print("2x2x2x3")
+a1 &lt;- 1:24
+dimension1 &lt;- c(2, 2, 2, 3)
+dim(a1) &lt;- dimension1
+print(a1)
+&nbsp;
+print("2x2x3x2")
+a2 &lt;- 1:24
+dimension2 &lt;- c(2, 2, 3, 2)
+dim(a2) &lt;- dimension2
+print(a2)
+&nbsp;
+print("2x3x2x2")
+a3 &lt;- 1:24
+dimension3 &lt;- c(2, 3, 2, 2)
+dim(a3) &lt;- dimension3
+print(a3)
+&nbsp;
+print("3x2x2x2")
+a4 &lt;- 1:24
+dimension4 &lt;- c(3, 2, 2, 2)
+dim(a4) &lt;- dimension4
+print(a4)
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: konstrukci vícerozměrných polí si již
+ukazovat nebudeme.</div></p>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Pojmenování třetí a čtvrté dimenze čtyřrozměrného pole</h2>
+
+<p>Pro úplnost si ještě uveďme, že pojmenovat lze nejenom řádky, sloupce a
+popř.&nbsp;celé submatice trojrozměrného pole, ale i větší prvky u polí
+s&nbsp;více dimenzemi:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:24</strong>
+&gt; <strong></strong>
+&gt; <strong>hypermatrix.names &lt;- c("hypermatrix A", "hypermatrix B", "hypermatrix C")</strong>
+&gt; <strong>matrix.names &lt;- c("matrix1", "matrix2")</strong>
+&gt; <strong>row.names &lt;- c("row1", "row2")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2") </strong>
+&gt; <strong></strong>
+&gt; <strong>print("2x2x2x3")</strong>
+[1] "2x2x2x3"
+&gt; <strong>dimension &lt;- c(2, 2, 2, 3)</strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names, matrix.names, hypermatrix.names))</strong>
+&gt; <strong>print(a1)</strong>
+, , matrix1, hypermatrix A
+&nbsp;
+     column1 column2
+row1       1       3
+row2       2       4
+&nbsp;
+, , matrix2, hypermatrix A
+&nbsp;
+     column1 column2
+row1       5       7
+row2       6       8
+&nbsp;
+, , matrix1, hypermatrix B
+&nbsp;
+     column1 column2
+row1       9      11
+row2      10      12
+&nbsp;
+, , matrix2, hypermatrix B
+&nbsp;
+     column1 column2
+row1      13      15
+row2      14      16
+&nbsp;
+, , matrix1, hypermatrix C
+&nbsp;
+     column1 column2
+row1      17      19
+row2      18      20
+&nbsp;
+, , matrix2, hypermatrix C
+&nbsp;
+     column1 column2
+row1      21      23
+row2      22      24
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: lze pracovat i s&nbsp;poli s&nbsp;větším
+počtem dimenzí, ovšem demonstrační příklady si ukazovat nebudeme &ndash; byly
+by stále velmi podobné.</div></p>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Přístup k&nbsp;prvkům dvojrozměrného pole</h2>
+
+<p>Připomeňme si, že programovací jazyk R umožňuje (pochopitelně) přístup
+k&nbsp;prvkům jednorozměrných vektorů. Indexy začínají od jedničky a zapisují
+se do hranatých závorek:</p>
+
+<pre>
+&gt; <strong>v &lt;- 1:12</strong>
+&gt; <strong>print(v[1])</strong>
+[1] 1
+</pre>
+
+<p>Pokud se použije záporný index, vrátí se vektor, ovšem prvek s&nbsp;daným
+indexem (převedeným na absolutní hodnotu) je odfiltrován:</p>
+
+<pre>
+&gt; <strong>v &lt;- 1:12</strong>
+&gt; <strong>print(v[-1])</strong>
+[1]  2  3  4  5  6  7  8  9 10 11 12
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: toto chování je značně odlišné například
+od Pythonu, v&nbsp;němž má záporný index jiný význam.</div></p>
+
+<p>Vybrat je možné i větší množství prvků. V&nbsp;tomto případě se nepoužije
+index, ale vektor s&nbsp;indexy:</p>
+
+<pre>
+&gt; <strong>v &lt;- 1:12</strong>
+&gt; <strong>print(v[4:6])</strong>
+[1] 4 5 6
+</pre>
+
+<p>Resp.&nbsp;obecněji:</p>
+
+<pre>
+&gt; <strong>v &lt;- 1:12</strong>
+&gt; <strong>print(v[c(2,4,6,8)])</strong>
+[1] 2 4 6 8
+</pre>
+
+<p>Podobně můžeme přistupovat i k&nbsp;prvkům dvojrozměrných, trojrozměrných
+atd. polí. Indexy se zapisují do mezi jednu dvojici hranatých závorek a
+oddělují se od sebe čárkou &ndash; to je opět odlišné od některých
+&bdquo;céčkovských&ldquo; jazyků, v&nbsp;nichž je každý index zapsán
+v&nbsp;samostatné dvojici závorek:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong></strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p>Přečtení prvku z&nbsp;prvního řádku a prvního sloupce:</p>
+
+<pre>
+&gt; <strong>print(a1[1, 1])</strong>
+[1] 1
+</pre>
+
+<p>Přečtení prvků ze čtvrtého řádku:</p>
+
+<pre>
+&gt; <strong>print(a1[4, 1])</strong>
+[1] 4
+&gt; <strong>print(a1[4, 2])</strong>
+[1] 8
+&gt; <strong>print(a1[4, 3])</strong>
+[1] 12
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: indexy začínají od jedničky, takže
+&bdquo;první řádek&ldquo; má skutečně index roven jedné a nikoli
+nule.</div></p>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Získání celého řádku dvojrozměrného pole</h2>
+
+<p>Zajímavé a dosti užitečné je, že pokud vynecháme jeden z&nbsp;indexů, vrátí
+se všechny prvky v&nbsp;dané dimenzi. To zní poměrně složitě, ovšem po pohledu
+na další demonstrační příklad bude celý koncept patrný:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong></strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p>Zápisem <strong>a1[1,]</strong> (tedy druhý index chybí) se vrátí celý první
+řádek:</p>
+
+<pre>
+&gt; <strong>print(a1[1,])</strong>
+column1 column2 column3 
+      1       5       9 
+</pre>
+
+<p>Podobně můžeme přečíst celý druhý řádek atd.:</p>
+
+<pre>
+&gt; <strong>print(a1[2,])</strong>
+column1 column2 column3 
+      2       6      10 
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: stejným způsobem jsou řešena i
+vícerozměrná pole.</div></p>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Získání celého sloupce dvojrozměrného pole</h2>
+
+<p>Zajímavé je, že je podporován i opačný zápis, tj.&nbsp;vynechání
+<i>prvního</i> indexu namísto indexu druhého (resp.&nbsp;posledního):</p>
+
+<pre>
+<strong>a1[,1]</strong>
+</pre>
+
+<p>Podívejme se nyní na ucelený demonstrační příklad, ve kterém se vybírají
+celé sloupce. Povšimněte si, že i když se jedná o výběr sloupců, jsou vráceny
+ve formě jednorozměrného pole (popis řádků je však zachován):</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong></strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+&gt; <strong>print(a1[,1])</strong>
+row1 row2 row3 row4 
+   1    2    3    4 
+&gt; <strong></strong>
+&gt; <strong>print(a1[,2])</strong>
+row1 row2 row3 row4 
+   5    6    7    8 
+</pre>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Záporné indexy při přístupu k&nbsp;prvkům pole</h2>
+
+<p>Víme již, že při výběru prvku z&nbsp;vektoru lze použít záporný index.
+V&nbsp;takovém případě se vrátí vektor, ovšem prvek s&nbsp;daným indexem
+(převedeným na absolutní hodnotu) je odfiltrován:</p>
+
+<pre>
+&gt; <strong>v &lt;- 1:12</strong>
+&gt; <strong>print(v[-1])</strong>
+[1]  2  3  4  5  6  7  8  9 10 11 12
+</pre>
+
+<p>Jak jsou však záporné indexy interpretovány u dvojrozměrných či
+vícerozměrných polí? Můžeme si to otestovat na dalším příkladu. Nejdříve pole
+zkonstruujeme a pro větší přehlednost pojmenujeme jeho řádky a sloupce:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong></strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p>Nyní vybereme řádek s&nbsp;indexem -2 a druhý sloupec. Druhý sloupec
+obsahuje prvky 5, 6, 7 a 8, ovšem prvek 6 není vybrán, neboť leží na druhém
+řádku, který je odfiltrován. Výsledkem je tedy tříprvkový vektor:</p>
+
+<pre>
+&gt; <strong>print(a1[-2, 2])</strong>
+row1 row3 row4 
+   5    7    8 
+</pre>
+
+<p>Podobně můžeme vybrat druhý řádek, tedy prvky 2, 6 a 10 a všechny sloupce
+kromě druhého (tím nám z&nbsp;vektoru vypadne prvek s&nbsp;hodnotou 6):</p>
+
+<pre>
+&gt; <strong>print(a1[2, -2])</strong>
+column1 column3 
+      2      10 
+</pre>
+
+<p>A konečně při použití dvojice indexů -2, -2 se vybere původní pole, ovšem
+<i>bez</i> druhého sloupce a současně i bez druhého řádku:</p>
+
+<pre>
+&gt; <strong>print(a1[-2, -2])</strong>
+     column1 column3
+row1       1       9
+row3       3      11
+row4       4      12
+</pre>
+
+<p>Podobně můžeme postupovat i u vícerozměrných polí:</p>
+
+<pre>
+a1 &lt;- 1:24
+dimension1 &lt;- c(2, 3, 4)
+dim(a1) &lt;- dimension1
+print(a1)
+&nbsp;
+print("----------")
+print(a1[-1, 1, 1])
+print("----------")
+print(a1[1, -1, 1])
+print("----------")
+print(a1[-1, 1, -1])
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+, , 1
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+&nbsp;
+, , 2
+&nbsp;
+     [,1] [,2] [,3]
+[1,]    7    9   11
+[2,]    8   10   12
+&nbsp;
+, , 3
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   13   15   17
+[2,]   14   16   18
+&nbsp;
+, , 4
+&nbsp;
+     [,1] [,2] [,3]
+[1,]   19   21   23
+[2,]   20   22   24
+&nbsp;
+[1] "----------"
+[1] 2
+[1] "----------"
+[1] 3 5
+[1] "----------"
+[1]  8 14 20
+</pre>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Filtrace řádků při výběru s&nbsp;využitím záporných indexů</h2>
+
+<p>Nyní můžeme zkombinovat dvě výběrové techniky popsané v&nbsp;předchozích
+kapitolách:</p>
+
+<ol>
+<li>Výběr celých řádků tím, že se vynechá index sloupce.</li>
+<li>Filtrace řádků s&nbsp;určitým indexem v&nbsp;případě, že se použije záporný index.</li>
+</ol>
+
+<p>Podívejme se na kód demonstračního příkladu. Nejdříve se zkonstruuje
+dvojrozměrné pole:</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong></strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p>Výběr všech řádků kromě prvního:</p>
+
+<pre>
+&gt; <strong>print(a1[-1, ])</strong>
+     column1 column2 column3
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p>Výběr všech řádků kromě druhého:</p>
+
+<pre>
+&gt; <strong>print(a1[-2, ])</strong>
+     column1 column2 column3
+row1       1       5       9
+row3       3       7      11
+row4       4       8      12
+</pre>
+
+<p>Výběr všech řádků kromě třetího:</p>
+
+<pre>
+&gt; <strong>print(a1[-3, ])</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row4       4       8      12
+</pre>
+
+<p>Řádky, které se mají vybírat, mohou být reprezentovány vektorem:</p>
+
+<pre>
+data &lt;- 1:12
+dimension &lt;- c(4, 3)
+&nbsp; 
+row.names &lt;- c("row1", "row2", "row3", "row4")
+column.names &lt;- c("column1", "column2", "column3")
+&nbsp; 
+a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))
+&nbsp; 
+print(a1[c(4,1), ])
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+     column1 column2 column3
+row4       4       8      12
+row1       1       5       9
+</pre>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Filtrace sloupců při výběru s&nbsp;využitím záporných indexů</h2>
+
+<p>Logicky bude následovat podobný demonstrační příklad, ovšem s&nbsp;filtrací
+sloupců.  V&nbsp;tomto příkladu se z&nbsp;původního dvojrozměrného pole získá
+nové pole, které bude mít shodný počet řádků s&nbsp;polem zdrojovým, ovšem
+sloupce budou filtrovány (vždy bude jeden z&nbsp;nich vynechán):</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong>dimension &lt;- c(4, 3)</strong>
+&gt; <strong></strong>
+&gt; <strong>row.names &lt;- c("row1", "row2", "row3", "row4")</strong>
+&gt; <strong>column.names &lt;- c("column1", "column2", "column3")</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))</strong>
+&gt; <strong></strong>
+&gt; <strong>print(a1)</strong>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+&gt; <strong>print(a1[, -1])</strong>
+     column2 column3
+row1       5       9
+row2       6      10
+row3       7      11
+row4       8      12
+&gt; <strong>print(a1[, -2])</strong>
+     column1 column3
+row1       1       9
+row2       2      10
+row3       3      11
+row4       4      12
+&gt; <strong>print(a1[, -3])</strong>
+     column1 column2
+row1       1       5
+row2       2       6
+row3       3       7
+row4       4       8
+</pre>
+
+<p>Výběr konkrétních sloupců s&nbsp;využitím výběrového vektoru:</p>
+
+<pre>
+data &lt;- 1:12
+dimension &lt;- c(4, 3)
+&nbsp; 
+row.names &lt;- c("row1", "row2", "row3", "row4")
+column.names &lt;- c("column1", "column2", "column3")
+&nbsp; 
+a1 &lt;- array(data, dim=dimension, dimnames=list(row.names, column.names))
+&nbsp; 
+print(a1)
+&nbsp; 
+print(a1[, c(3,2,1)])
+print(a1[, c(3,1)])
+print(a1[, c(1,1,1,1)])
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+     column1 column2 column3
+row1       1       5       9
+row2       2       6      10
+row3       3       7      11
+row4       4       8      12
+     column3 column2 column1
+row1       9       5       1
+row2      10       6       2
+row3      11       7       3
+row4      12       8       4
+     column3 column1
+row1       9       1
+row2      10       2
+row3      11       3
+row4      12       4
+     column1 column1 column1 column1
+row1       1       1       1       1
+row2       2       2       2       2
+row3       3       3       3       3
+row4       4       4       4       4
+</pre>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Operace provedená nad korespondujícími prvky dvou polí</h2>
+
+<p>Na dvojici polí lze aplikovat běžné aritmetické operátory. Ty jsou vždy
+aplikovány na korespondující prvky polí, operace se tedy provádí prvek po
+prvku. Příkladem může být &bdquo;součet polí&ldquo;, který vlastně
+v&nbsp;případě dvojrozměrných polí odpovídá součtu matic:</p>
+
+<pre>
+&gt; <strong>data1 &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>data2 &lt;- -6:-1</strong>
+&gt; <strong></strong>
+&gt; <strong>dimension &lt;- c(3, 2)</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data1, dim=dimension)</strong>
+&gt; <strong>print(a1)</strong>
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data2, dim=dimension)</strong>
+&gt; <strong>print(a2)</strong>
+     [,1] [,2]
+[1,]   -6   -3
+[2,]   -5   -2
+[3,]   -4   -1
+&gt; <strong></strong>
+&gt; <strong>print(a1 + a2)</strong>
+     [,1] [,2]
+[1,]   -5    1
+[2,]   -3    3
+[3,]   -1    5
+</pre>
+
+<p>Pole ovšem musí mít stejné rozměry (stejný tvar):</p>
+
+<pre>
+data1 &lt;- c(1, 2, 3, 4, 5, 6)
+data2 &lt;- -6:-1
+&nbsp;
+dimension1 &lt;- c(3, 2)
+a1 &lt;- array(data1, dim=dimension1)
+print(a1)
+&nbsp;
+dimension2 &lt;- c(2, 3)
+a2 &lt;- array(data2, dim=dimension2)
+print(a2)
+&nbsp;
+print(a1 + a2)
+</pre>
+
+<p>Pokus o spuštění tohoto příkladu skončí s&nbsp;chybou:</p>
+
+<pre>
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+     [,1] [,2] [,3]
+[1,]   -6   -4   -2
+[2,]   -5   -3   -1
+<strong>Error in a1 + a2 : non-conformable arrays</strong>
+<strong>Calls: print</strong>
+<strong>Execution halted</strong>
+</pre>
+
+<p>I dělení se provádí prvek po prvky, nejedná se tedy o pokus o dělení matic
+(tedy výpočet inverzní matice a vynásobení první matice s&nbsp;inverzí matice
+druhé):</p>
+
+<pre>
+&gt; <strong>data1 &lt;- c(1, 2, 3, 4, 5, 6)</strong>
+&gt; <strong>data2 &lt;- -6:-1</strong>
+&gt; <strong></strong>
+&gt; <strong>dimension &lt;- c(3, 2)</strong>
+&gt; <strong></strong>
+&gt; <strong>a1 &lt;- array(data1, dim=dimension)</strong>
+&gt; <strong>print(a1)</strong>
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+&gt; <strong></strong>
+&gt; <strong>a2 &lt;- array(data2, dim=dimension)</strong>
+&gt; <strong>print(a2)</strong>
+     [,1] [,2]
+[1,]   -6   -3
+[2,]   -5   -2
+[3,]   -4   -1
+&gt; <strong></strong>
+&gt; <strong>print(a1 / a2)</strong>
+           [,1]      [,2]
+[1,] -0.1666667 -1.333333
+[2,] -0.4000000 -2.500000
+[3,] -0.7500000 -6.000000
+</pre>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Od dvojrozměrných polí k&nbsp;maticím</h2>
+
+<p>V&nbsp;předchozím textu jsme se bavili převážně o polích &ndash;
+jednorozměrných, dvojrozměrných i vícerozměrných. U dvojrozměrných polí jsem se
+snažil vynechat označení &bdquo;matice&ldquo;, a to z&nbsp;toho důvodu, že
+matice (<i>matrix</i>) jsou v&nbsp;programovacím jazyku R samostatným datovým
+typem odlišným od polí. A skutečně &ndash; mezi poli a maticemi je několik
+rozdílů:</p>
+
+<table>
+<tr><th>#</th><th>Pole</th><th>Matice</th></tr>
+<tr><td>1</td><td>typ <strong>array</strong></td><td>typ <strong>matrix</strong></td></tr>
+<tr><td>2</td><td>1, 2, 3 ... N dimenzí</td><td>striktně dvě dimenze (2D struktura)</td></tr>
+<tr><td>3</td><td>homogenní typ</td><td>homogenní typ</td></tr>
+<tr><td>4</td><td>založeno na jediném vektoru s&nbsp;info o dimenzích</td><td>složeno ze sady vektorů shodné délky</td></tr>
+<tr><td>5</td><td>používáno primárně pro uložení dat</td><td>používáno primárně pro transformaci dat</td></tr>
+<tr><td>6</td><td>relativně malé množství operací</td><td>plná sada &bdquo;maticových&ldquo; operací</td></tr>
+<tr><td>7</td><td>nadmnožina nad maticemi</td><td>speciální případ pole se dvěma dimenzemi</td></tr>
+<tr><td>8</td><td>konstruktor <strong>array</strong></td><td>konstruktor <strong>matrix</strong></td></tr>
+</table>
+
+<p><div class="rs-tip-major">Poznámka: <i>homogenní typ</i> je takový datový
+typ (nebo chcete-li kontejner), který může obsahovat prvky shodného datového
+typu, například pouze celá čísla.</div></p>
+
+<p><div class="rs-tip-major">Poznámka<sup>2</sup>: na matice se tedy můžeme
+dívat jako na podmnožinu konkrétních typů polí (tedy méně obecný datový typ),
+pro které jsou ovšem k&nbsp;dispozici specializované operace.</div></p>
+
+<p>Matice si podrobně popíšeme příště, ovšem již nyní si můžeme ukázat způsob
+jejich konstrukce. Pro vytvoření matice se používá konstruktor nazvaný
+<strong>matrix</strong>, kterému se předá vektor s&nbsp;daty (hodnotami prvků),
+počet řádků a počet sloupců (popř.&nbsp;obráceně):</p>
+
+<pre>
+&gt; <strong>data &lt;- 1:12</strong>
+&gt; <strong></strong>
+&gt; <strong>m1 &lt;- matrix(data, nrow=1, ncol=12)</strong>
+&gt; <strong>print(m1)</strong>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+&gt; <strong></strong>
+&gt; <strong>m2 &lt;- matrix(data, nrow=2, ncol=6)</strong>
+&gt; <strong>print(m2)</strong>
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    3    5    7    9   11
+[2,]    2    4    6    8   10   12
+&gt; <strong></strong>
+&gt; <strong>m3 &lt;- matrix(data, nrow=3, ncol=4)</strong>
+&gt; <strong>print(m3)</strong>
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+&gt; <strong></strong>
+&gt; <strong>m4 &lt;- matrix(data, nrow=4, ncol=3)</strong>
+&gt; <strong>print(m4)</strong>
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+&gt; <strong></strong>
+&gt; <strong>m5 &lt;- matrix(data, nrow=6, ncol=2)</strong>
+&gt; <strong>print(m5)</strong>
+     [,1] [,2]
+[1,]    1    7
+[2,]    2    8
+[3,]    3    9
+[4,]    4   10
+[5,]    5   11
+[6,]    6   12
+&gt; <strong></strong>
+&gt; <strong>m6 &lt;- matrix(data, nrow=12, ncol=1)</strong>
+&gt; <strong>print(m6)</strong>
+      [,1]
+ [1,]    1
+ [2,]    2
+ [3,]    3
+ [4,]    4
+ [5,]    5
+ [6,]    6
+ [7,]    7
+ [8,]    8
+ [9,]    9
+[10,]   10
+[11,]   11
+[12,]   12
+</pre>
+
+<p>Opět můžeme využít toho, že pokud je vektor se zdrojovými daty kratší, než
+vyžaduje konstrukce matice, je postupně prodlužován. Takto se například vytvoří
+nulová matice:</p>
+
+<pre>
+zero &lt;- 0
+&nbsp;
+m1 &lt;- matrix(zero, nrow=10, ncol=10)
+print(m1)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    0    0    0    0    0    0    0    0    0     0
+ [2,]    0    0    0    0    0    0    0    0    0     0
+ [3,]    0    0    0    0    0    0    0    0    0     0
+ [4,]    0    0    0    0    0    0    0    0    0     0
+ [5,]    0    0    0    0    0    0    0    0    0     0
+ [6,]    0    0    0    0    0    0    0    0    0     0
+ [7,]    0    0    0    0    0    0    0    0    0     0
+ [8,]    0    0    0    0    0    0    0    0    0     0
+ [9,]    0    0    0    0    0    0    0    0    0     0
+[10,]    0    0    0    0    0    0    0    0    0     0
+</pre>
+
+<p>Podrobnější informace o způsobech využití matic si popíšeme
+v&nbsp;navazující části tohoto seriálu.</p>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+stále jen jednotky kilobajtů), můžete namísto toho použít odkazy na jednotlivé
+demonstrační příklady, které naleznete v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td> 1</td><td>01-array-construction-1D.R</td><td>konstrukce jednorozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/01-array-construction-1D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/01-array-construction-1D.R</a></td></tr>
+<tr><td> 2</td><td>02-array-set-dimensions-1D.R</td><td>změna dimenzí vektoru a jeho převod na jednorozměrné pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/02-array-set-dimensions-1D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/02-array-set-dimensions-1D.R</a></td></tr>
+<tr><td> 3</td><td>03-array-construction-1D-column-vector.R</td><td>řádkové a sloupcové vektory</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/03-array-construction-1D-column-vector.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/03-array-construction-1D-column-vector.R</a></td></tr>
+<tr><td> 4</td><td>04-array-set-dimensions-1D-column-vector.R</td><td>řádkové a sloupcové vektory</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/04-array-set-dimensions-1D-column-vector.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/04-array-set-dimensions-1D-column-vector.R</a></td></tr>
+<tr><td> 5</td><td>05-array-construction-2D.R</td><td>konstrukce dvojrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/05-array-construction-2D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/05-array-construction-2D.R</a></td></tr>
+<tr><td> 6</td><td>06-array-set-dimensions-2D.R</td><td>změna dimenzí vektoru a jeho převod na dvojrozměrné pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/06-array-set-dimensions-2D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/06-array-set-dimensions-2D.R</a></td></tr>
+<tr><td> 7</td><td>07-array-construction-2D-range.R</td><td>použití operátoru <i>range</i> při konstrukci zdroje dat</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/07-array-construction-2D-range.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/07-array-construction-2D-range.R</a></td></tr>
+<tr><td> 8</td><td>08-array-construction-2D-not-enough-values.R</td><td>opakování prvků vektoru při konstrukci dvojrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/08-array-construction-2D-not-enough-values.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/08-array-construction-2D-not-enough-values.R</a></td></tr>
+<tr><td> 9</td><td>09-array-construction-2D-fill-with-zeros.R</td><td>vytvoření dvojrozměrného pole s&nbsp;nulovými prvky</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/09-array-construction-2D-fill-with-zeros.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/09-array-construction-2D-fill-with-zeros.R</a></td></tr>
+<tr><td>10</td><td>10-array-set-dimensions-2D-fill-with-zeros-error.R</td><td>nefunkční alternativa k&nbsp;předchozímu příkladu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/10-array-set-dimensions-2D-fill-with-zeros-error.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/10-array-set-dimensions-2D-fill-with-zeros-error.R</a></td></tr>
+<tr><td>11</td><td>11-array-construction-3D.R</td><td>konstrukce trojrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/11-array-construction-3D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/11-array-construction-3D.R</a></td></tr>
+<tr><td>12</td><td>12-array-set-dimensions-3D.R</td><td>změna dimenzí vektoru a jeho převod na trojrozměrné pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/12-array-set-dimensions-3D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/12-array-set-dimensions-3D.R</a></td></tr>
+<tr><td>13</td><td>13-array-construction-3D-not-enough-values.R</td><td>opakování prvků vektoru při konstrukci trojrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/13-array-construction-3D-not-enough-values.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/13-array-construction-3D-not-enough-values.R</a></td></tr>
+<tr><td>14</td><td>14-array-construction-3D-fill-with-zero.R</td><td>vytvoření trojrozměrného pole s&nbsp;nulovými prvky</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/14-array-construction-3D-fill-with-zero.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/14-array-construction-3D-fill-with-zero.R</a></td></tr>
+<tr><td>15</td><td>15-rows-columns-names.R</td><td>pojmenování řádků a sloupců dvojrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/15-rows-columns-names.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/15-rows-columns-names.R</a></td></tr>
+<tr><td>16</td><td>16-matrix-name-3D.R</td><td>pojmenování řádků, sloupců a třetí dimenze trojrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/16-matrix-name-3D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/16-matrix-name-3D.R</a></td></tr>
+<tr><td>17</td><td>17-array-construction-4D.R</td><td>konstrukce čtyřrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/17-array-construction-4D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/17-array-construction-4D.R</a></td></tr>
+<tr><td>18</td><td>18-array-set-dimensions-4D.R</td><td>změna dimenzí vektoru a jeho převod na čtyřrozměrné pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/18-array-set-dimensions-4D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/18-array-set-dimensions-4D.R</a></td></tr>
+<tr><td>19</td><td>19-matrix-name-4D.R</td><td>pojmenování řádků, sloupců a třetí i čtvrté dimenze čtyřrozměrného pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/19-matrix-name-4D.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/19-matrix-name-4D.R</a></td></tr>
+<tr><td>20</td><td>20-access-item.R</td><td>přístup k&nbsp;prvkům pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/20-access-item.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/20-access-item.R</a></td></tr>
+<tr><td>21</td><td>21-access-row.R</td><td>přístup k&nbsp;celým řádkům pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/21-access-row.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/21-access-row.R</a></td></tr>
+<tr><td>22</td><td>22-access-column.R</td><td>přístup k&nbsp;celým sloupcům pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/22-access-column.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/22-access-column.R</a></td></tr>
+<tr><td>23</td><td>23-negative-index.R</td><td>negativní (záporné) indexy při přístupu k&nbsp;prvkům pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/23-negative-index.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/23-negative-index.R</a></td></tr>
+<tr><td>24</td><td>24-access-row-negative-index.R</td><td>přístup k&nbsp;celým řádkům s&nbsp;využitím negativních indexů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/24-access-row-negative-index.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/24-access-row-negative-index.R</a></td></tr>
+<tr><td>25</td><td>25-access-column-negative-index.R</td><td>přístup k&nbsp;celým sloupcům s&nbsp;využitím negativních indexů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/25-access-column-negative-index.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/25-access-column-negative-index.R</a></td></tr>
+<tr><td>26</td><td>26-array-add.R</td><td>součet odpovídajících prvků dvou polí</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/26-array-add.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/26-array-add.R</a></td></tr>
+<tr><td>27</td><td>27-array-sub.R</td><td>rozdíl odpovídajících prvků dvou polí</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/27-array-sub.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/27-array-sub.R</a></td></tr>
+<tr><td>28</td><td>28-array-mul.R</td><td>součin odpovídajících prvků dvou polí</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/28-array-mul.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/28-array-mul.R</a></td></tr>
+<tr><td>29</td><td>29-array-div.R</td><td>podíl odpovídajících prvků dvou polí</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/29-array-div.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/29-array-div.R</a></td></tr>
+<tr><td>30</td><td>30-matrix-construction.R</td><td>konstrukce dvojrozměrné matice z&nbsp;pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/03-arrays/30-matrix-construction.R">https://github.com/tisnik/r-examples/blob/master/03-arrays/30-matrix-construction.R</a></td></tr>
+</table>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded &amp; Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>Cesta erka: Krok nultý &ndash; instalace &amp; nastavení – prostředí, projekty, package<br />
+<a href="https://www.jla-data.net/r4su/r4su-environment-setup/">https://www.jla-data.net/r4su/r4su-environment-setup/</a>
+</li>
+
+<li>Cesta erka: Krok první &ndash; operace a struktury – proměnné, rovnítka a dolary<br />
+<a href="https://www.jla-data.net/r4su/r4su-data-structures/">https://www.jla-data.net/r4su/r4su-data-structures/</a>
+</li>
+
+<li>Cesta erka: Krok druhý &ndash; načtení externích dat – csvčka, excely a databáze<br />
+<a href="https://www.jla-data.net/r4su/r4su-read-data/">https://www.jla-data.net/r4su/r4su-read-data/</a>
+</li>
+
+<li>Cesta erka: Krok třetí &ndash; manipulace s daty – dplyr, slovesa a pajpy<br />
+<a href="https://www.jla-data.net/r4su/r4su-manipulate-data/">https://www.jla-data.net/r4su/r4su-manipulate-data/</a>
+</li>
+
+<li>Cesta erka: Krok čtvrtý &ndash; podání výsledků – ggplot, geomy a estetiky<br />
+<a href="https://www.jla-data.net/r4su/r4su-report-results/">https://www.jla-data.net/r4su/r4su-report-results/</a>
+</li>
+
+<li>Cesta erka: Krok pátý &ndash; case study – případ piva v Praze<br />
+<a href="https://www.jla-data.net/r4su/r4su-case-study-beer/">https://www.jla-data.net/r4su/r4su-case-study-beer/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+<li>R - Arrays<br />
+<a href="https://www.tutorialspoint.com/r/r_arrays.htm">https://www.tutorialspoint.com/r/r_arrays.htm</a>
+</li>
+
+<li>Array vs Matrix in R Programming<br />
+<a href="https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp">https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp</a>
+</li>
+
+<li>Online R Language IDE<br />
+<a href="https://www.jdoodle.com/execute-r-online/">https://www.jdoodle.com/execute-r-online/</a>
+</li>
+
+<li>Execute R Online (R v3.4.1)<br />
+<a href="https://www.tutorialspoint.com/execute_r_online.php">https://www.tutorialspoint.com/execute_r_online.php</a>
+</li>
+
+<li>Snippets: Run any R code you like. There are over twelve thousand R packages preloaded<br />
+<a href="https://rdrr.io/snippets/">https://rdrr.io/snippets/</a>
+</li>
+
+<li>R Package Documentation<br />
+<a href="https://rdrr.io/">https://rdrr.io/</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
