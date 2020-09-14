@@ -1,12 +1,12 @@
-# Articles
+# Obsah podadresáře `articles`
 
-Articles about the R programming language written for https://www.root.cz
+Plné texty článků o programovacím jazyku R, které vyšly na https://www.root.cz
 
-All articles are online and available on address https://www.root.cz/serialy/programovaci-jazyk-r/
+Články jsou (i s obrázky, odkazy atd.) dostupné na adrese https://www.root.cz/serialy/programovaci-jazyk-r/ 
 
-## List of articles
+## Seznam článků
 
-1. [Introduction to R](r_01.htm)
-1. [Vector as a basic data type in R](r_02.htm)
-1. [Working with arrays](r_03.htm)
-1. [Working with matrices](r_04.htm)
+1. [Úvodní informace o jazyku R](r_01.htm)
+1. [Vektory ve funkci základního datového typu](r_02.htm)
+1. [Pole a další podporované datové typy](r_03.htm)
+1. [Práce s maticemi](r_04.htm)
