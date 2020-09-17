@@ -6,7 +6,7 @@ Plné texty článků o programovacím jazyku R, které vyšly na https://www.ro
 
 ## Seznam článků
 
-1. [Úvodní informace o jazyku R](r_01.htm)
+1. [Úvodní informace o programovacím jazyku R](r_01.htm)
 1. [Vektory ve funkci základního datového typu](r_02.htm)
 1. [Pole a další podporované datové typy](r_03.htm)
 1. [Práce s maticemi](r_04.htm)
