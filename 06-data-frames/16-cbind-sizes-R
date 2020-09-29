@@ -1,0 +1,16 @@
+id_and_names <- data.frame(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R")
+)
+ 
+usages_and_changes <- data.frame(
+   usage = c(1, 99, 100),
+   change = c(0.74, -3.18, 0.59)
+)
+ 
+print(ncol(id_and_names))
+print(ncol(usages_and_changes))
+ 
+languages <- cbind(id_and_names, usages_and_changes)
+print(ncol(languages))
+print(languages)
