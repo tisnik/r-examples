@@ -1,0 +1,21 @@
+Language	Type
+C	compiler
+Java	compiler
+Python	interpreter
+C++	compiler
+C#	compiler
+Visual Basic	interpreter
+JavaScript	interpreter
+PHP	interpreter
+R	interpreter
+SQL	interpreter
+Go	compiler
+Swift	compiler
+Perl	interpreter
+Assembly language	assembler
+Ruby	interpreter
+MATLAB	interpreter
+Groovy	compiler
+Rust	compiler
+Objective-C	compiler
+Dart	transpiler
