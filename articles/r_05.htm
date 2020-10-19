@@ -1,0 +1,2099 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Programovací jazyk R: seznamy a datové rámce</title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1>Programovací jazyk R: seznamy a datové rámce</h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>Posledními dvěma datovými typy, s nimiž se seznámíme, jsou seznamy a datové rámce. V&nbsp;praxi (statistické výpočty atd.) jsou důležité především datové rámce, které svými vlastnostmi připomínají například databázové tabulky &ndash; jejich sloupce mohou mít různý typ.</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Programovací jazyk R: seznamy a datové rámce</a></p>
+<p><a href="#k02">2. Přístup k&nbsp;prvkům seznamů s&nbsp;využitím celočíselných indexů</a></p>
+<p><a href="#k03">3. Přístup k&nbsp;prvkům seznamů pomocí jejich jména</a></p>
+<p><a href="#k04">4. Spojení seznamů</a></p>
+<p><a href="#k05">5. Modifikace obsahu seznamů</a></p>
+<p><a href="#k06">6. Vytvoření nového seznamu ze sekvence</a></p>
+<p><a href="#k07">7. Vytvoření nového seznamu z&nbsp;vektoru</a></p>
+<p><a href="#k08">8. Vytvoření seznamu z&nbsp;jednodimenzionálního pole</a></p>
+<p><a href="#k09">9. Vytvoření seznamu z&nbsp;dvojdimenzionálního pole</a></p>
+<p><a href="#k10">10. Vytvoření seznamu z&nbsp;matice</a></p>
+<p><a href="#k11">11. Datové rámce &ndash; struktura používaná nejenom při statistických výpočtech</a></p>
+<p><a href="#k12">12. Konstrukce datového rámce</a></p>
+<p><a href="#k13">13. Hlídání délky vstupních dat</a></p>
+<p><a href="#k14">14. Neexistující hodnoty ve vstupních datech</a></p>
+<p><a href="#k15">15. Získání jmen sloupců a řádků datového rámce</a></p>
+<p><a href="#k16">16. Nastavení jmen sloupců a řádků</a></p>
+<p><a href="#k17">17. Přečtení prvních <i>n</i> či naopak posledních <i>n</i> řádků z&nbsp;datového rámce</a></p>
+<p><a href="#k18">18. Obsah následující části seriálu</a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Programovací jazyk R: seznamy a datové rámce</h2>
+
+<p>Na popis datových typů programovacího jazyka R, jemuž jsme se věnovali
+v&nbsp;předchozích článcích, dnes navážeme a celé (relativně rozsáhlé) téma
+zakončíme. Nejprve si popíšeme seznamy (<i>list</i>) a posléze velmi důležitý
+datový typ nazvaný datový rámec (<i>data frame</i>). Nejprve začněme popisem
+seznamů. Seznamy mohou obsahovat sekvenci hodnot libovolných typů, což znamená,
+že se (na rozdíl od vektorů nebo matic) nejedná o homogenní datový typ. Do
+seznamů lze prvky přidávat či naopak odebírat. Prvky seznamu jsou přístupné buď
+přes jejich celočíselný index nebo pomocí jména, samozřejmě za předpokladu, že
+jsou prvky pojmenovány (takový seznam pak připomíná svým chováním spíše
+slovník, dokonce i tím, že si lze zvolit, jestli mají být prvky podle jména
+setříděny či nikoli).</p>
+
+<p><div class="rs-tip-major">Poznámka: jazyk <i>R</i> se vyvinul
+z&nbsp;programovacího jazyka <i>S</i>, mezi jehož předky patří mj.&nbsp;i
+<i>Scheme</i>. Proto lze v&nbsp;R pracovat i s&nbsp;takzvanou tečka dvojicí
+typickou pro prakticky všechny lispovské jazyky.</div></p>
+
+<p>Pro vytvoření seznamu je možné použít několik konstruktorů, zejména
+konstruktor nazvaný <strong>list</strong>, dále převodní funkci pojmenovanou
+<strong>as.list</strong> atd. Všechny tyto funkce jsou pochopitelně popsány
+v&nbsp;nápovědě, o čemž se můžeme velmi snadno přesvědčit:</p>
+
+<pre>
+<strong>help(list)</strong>
+&nbsp;
+list                   package:base                    R Documentation
+&nbsp;
+Lists - Generic and Dotted Pairs
+&nbsp;
+Description:
+&nbsp;
+     Functions to construct, coerce and check for both kinds of R
+     lists.
+&nbsp;
+Usage:
+&nbsp;
+     list(...)
+     pairlist(...)
+&nbsp;
+     as.list(x, ...)
+     ## S3 method for class 'environment'
+     as.list(x, all.names = FALSE, sorted = FALSE, ...)
+     as.pairlist(x)
+&nbsp;
+     is.list(x)
+     is.pairlist(x)
+&nbsp;
+     alist(...)
+&nbsp;
+Arguments:
+&nbsp;
+     ...: objects, possibly named.
+&nbsp;
+       x: object to be coerced or tested.
+&nbsp;
+all.names: a logical indicating whether to copy all values or (default)
+          only those whose names do not begin with a dot.
+&nbsp;
+  sorted: a logical indicating whether the ‘names’ of the resulting
+          list should be sorted (increasingly).  Note that this is
+          somewhat costly, but may be useful for comparison of
+          environments.
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: tečka v&nbsp;názvu funkce nemá
+v&nbsp;tomto případě žádný zvláštní význam &ndash; jedná se o oddělovač stejně,
+jako bychom použili podtržítko v&nbsp;jiných programovacích jazycích.</div></p>
+
+<p>Vyzkoušejme si nyní základní konstruktor seznamu představovaný funkcí
+<strong>list</strong>. Této funkci se předávají prvky seznamu, které jsou
+zařazeny v&nbsp;takovém pořadí, v&nbsp;jakém jsou zapsány:</p>
+
+<pre>
+lst &lt;- <strong>list</strong>(1, 2, 3, 4)
+print(lst)
+</pre>
+
+<p>Funkce <strong>print</strong> vytiskne jednotlivé prvky seznamu a před
+každým prvkem je uveden jeho <i>selektor</i> (v&nbsp;podstatě zápis indexu
+prvku):</p>
+
+<pre>
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: jak je v&nbsp;R zvykem, jsou prvky
+seznamu považovány za jednoprvkové vektory.</div></p>
+
+<p>Ukažme si, že seznam může obsahovat i řetězce:</p>
+
+<pre>
+lst &lt;- <strong>list</strong>("foo", "bar", "baz")
+print(lst)
+</pre>
+
+<p>Výsledek:</p>
+
+<pre>
+[[1]]
+[1] "foo"
+&nbsp;
+[[2]]
+[1] "bar"
+&nbsp;
+[[3]]
+[1] "baz"
+</pre>
+
+<p>A konečně poslední seznam obsahuje pojmenované prvky, což znamená, že
+k&nbsp;prvkům lze přistupovat nejenom pomocí indexu, ale i jejich jména:</p>
+
+<pre>
+lst &lt;- <strong>list</strong>(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+print(lst)
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že prvky tohoto seznamu
+mají rozdílné typy hodnot.</div></p>
+
+<p>Tisk celého seznamu:</p>
+
+<pre>
+$name
+[1] "Fred"
+&nbsp;
+$wife
+[1] "Mary"
+&nbsp;
+$no.children
+[1] 3
+&nbsp;
+$child.ages
+[1] 4 7 9
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, jak jsou prvky
+pojmenovány &ndash; před jménem se nachází znak dolaru. Toto využijeme později
+při přístupu k&nbsp;prvkům.</div></p>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Přístup k&nbsp;prvkům seznamů s&nbsp;využitím celočíselných indexů</h2>
+
+<p>Přístup k&nbsp;prvkům seznamu (s&nbsp;využitím <i>selektoru</i>) může být
+zpočátku poněkud matoucí, protože se používají dva způsoby zápisu
+s&nbsp;rozdílným chováním. Nejprve vytvořme seznam pro otestování:</p>
+
+<pre>
+lst &lt;- <strong>list</strong>("foo", "bar", "baz")
+</pre>
+
+<p>Dále se pokusme přistoupit k&nbsp;prvnímu prvku seznamu, a to tak, že index
+prvku zapíšeme do jednoduché hranaté závorky:</p>
+
+<pre>
+print(<strong>lst[1]</strong>)
+</pre>
+
+<p>Výsledek bude následující:</p>
+
+<pre>
+[[1]]
+[1] "foo"
+</pre>
+
+<p>Sice to tak nemusí vypadat, ale výsledkem předchozí selekce je jednoprvkový seznam, tedy nikoli samotný prvek:</p>
+
+<pre>
+print(class(lst[1]))
+&nbsp;
+[1] "list"
+</pre>
+
+<p>Získání skutečné hodnoty prvního prvku musí vypadat nepatrně odlišně:</p>
+
+<pre>
+print(<strong>lst[[1]]</strong>)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+[1] "foo"
+</pre>
+
+<p>Který je typu:</p>
+
+<pre>
+<strong>print(class(lst[[1]]))</strong>
+&nbsp;
+[1] "character"
+</pre>
+
+<p>Podobným způsobem lze získat i všechny prvky kromě prvního atd.:</p>
+
+<pre>
+<strong>print(lst[-1])</strong>
+&nbsp;
+[[1]]
+[1] "bar"
+&nbsp;
+[[2]]
+[1] "baz"
+</pre>
+
+<p>Výsledkem této operace je tedy nový seznam, s&nbsp;nímž je možné pracovat
+jako s&nbsp;jakýmkoli jiným seznamem:</p>
+
+<pre>
+lst &lt;- list("foo", "bar", "baz")
+&nbsp;
+print("lst[[-1]][1]")
+print(<strong>lst[-1][1]</strong>)
+</pre>
+
+<p>Po spuštění tohoto příkladu se zobrazí:</p>
+
+<pre>
+[1] "lst[[-1]][1]"
+[[1]]
+[1] "bar"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: právě rozdíl mezi zápisy
+<strong>[index]</strong> a <strong>[[index]]</strong> může způsobit při práci
+se seznamy mnoho chyb.</div></p>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. Přístup k&nbsp;prvkům seznamů pomocí jejich jména</h2>
+
+<p><a href="#k01">V&nbsp;úvodní kapitole</a> jsme si řekli, že prvky seznamu
+mohou být pojmenovány, čímž se z&nbsp;klasických seznamů vytváří obdoba
+slovníků (<i>dictionary</i>). K&nbsp;těmto prvkům lze pochopitelně přistoupit
+právě i s&nbsp;použitím tohoto jména a dokonce jsou povoleny dva zápisy
+zvýrazněné v&nbsp;následujícím demonstračním příkladu:</p>
+
+<pre>
+lst &lt;- list(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+&nbsp;
+print(<strong>lst["name"]</strong>)
+print(<strong>lst[["name"]]</strong>)
+print(<strong>lst$name</strong>)
+</pre>
+
+<p>Podívejme se na výsledky získané po spuštění tohoto demonstračního
+příkladu:</p>
+
+<pre>
+$name
+[1] "Fred"
+&nbsp;
+[1] "Fred"
+[1] "Fred"
+</pre>
+
+<p>Z&nbsp;vytištěných výsledků je patrné, že prvním zápisem jsme získali nový
+jednoprvkový seznam a druhé dva zápisy vedly k&nbsp;přečtení stejného prvku
+seznamu. Prostřední zápis použijeme tehdy, pokud je jméno prvku uloženo
+v&nbsp;nějaké proměnné, poslední zápis pak při &bdquo;ručním&ldquo; přístupu
+k&nbsp;prvku, protože použití jména seznamu, dolaru a jména prvku se zapíše
+rychleji, než indexovací závorky a klíč v&nbsp;uvozovkách.</p>
+
+<p>V&nbsp;případě, že je výsledkem výběru vektor či další seznam, lze
+indexování v&nbsp;této datové struktuře zapsat do vlastních hranatých závorek,
+tedy naprosto stejným způsobem, jako je tomu i v&nbsp;dalších programovacích
+jazycích:</p>
+
+<pre>
+lst &lt;- list(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+&nbsp;
+print(<strong>lst["child.ages"][1]</strong>)
+print(<strong>lst[["child.ages"]][2]</strong>)
+print(<strong>lst$child.ages[2]</strong>)
+</pre>
+
+<p>Výsledky budou nyní vypadat následovně:</p>
+
+<pre>
+$child.ages
+[1] 4 7 9
+&nbsp;
+[1] 7
+[1] 7
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: vidíme, že první výběr je proveden
+odlišně &ndash; snažíme se vybrat první prvek z&nbsp;datového typu
+&bdquo;seznam&ldquo;.</div></p>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. Spojení seznamů</h2>
+
+<p>Pro spojení seznamů použijeme nám již známou funkci nazvanou
+<strong>c</strong>, jejíž jednopísmenné označení vychází z&nbsp;názvu
+<i>cons</i> popř.&nbsp;v&nbsp;tomto případě přesněji <i>concatenate</i>
+popř.&nbsp;<i>combine</i>. V&nbsp;následujícím demonstračním příkladu jsou
+nejprve vytvořeny dva seznamy, které jsou následně spojeny funkcí
+<strong>c</strong> do seznamu jediného. Povšimněte si odlišných typů prvků i
+toho, že v&nbsp;prvním seznamu jsou prvky pojmenovány, kdežto ve druhém
+nikoli:</p>
+
+<pre>
+lst1 &lt;- <strong>list</strong>(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+lst2 &lt;- <strong>list</strong>(1, 2, 3, 4)
+&nbsp;
+lst &lt;- <strong>c</strong>(lst1, lst2)
+&nbsp;
+print(lst)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+$name
+[1] "Fred"
+&nbsp;
+$wife
+[1] "Mary"
+&nbsp;
+$no.children
+[1] 3
+&nbsp;
+$child.ages
+[1] 4 7 9
+&nbsp;
+[[5]]
+[1] 1
+&nbsp;
+[[6]]
+[1] 2
+&nbsp;
+[[7]]
+[1] 3
+&nbsp;
+[[8]]
+[1] 4
+</pre>
+
+<p>Pokus o spojení seznamů, které mají stejně pojmenované prvky:</p>
+
+<pre>
+lst1 &lt;- <strong>list</strong>(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+lst2 &lt;- <strong>list</strong>(name="Mary", husband="Mary", no.children=3, child.ages=c(4,7,9))
+&nbsp;
+lst &lt;- <strong>c</strong>(lst1, lst2)
+&nbsp;
+print(lst)
+</pre>
+
+<p>Ve výsledném seznamu se objeví prvky se stejným jménem (což je jeden
+z&nbsp;rozdílů oproti klasickým slovníkům):</p>
+
+<pre>
+$name
+[1] "Fred"
+&nbsp;
+$wife
+[1] "Mary"
+&nbsp;
+$no.children
+[1] 3
+&nbsp;
+$child.ages
+[1] 4 7 9
+&nbsp;
+$name
+[1] "Mary"
+&nbsp;
+$husband
+[1] "Mary"
+&nbsp;
+$no.children
+[1] 3
+&nbsp;
+$child.ages
+[1] 4 7 9
+</pre>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. Modifikace obsahu seznamů</h2>
+
+<p>Seznamy jsou měnitelné datové struktury, takže jejich prvky můžeme měnit, a
+to běžným přiřazením. Podívejme se na příklad:</p>
+
+<pre>
+lst1 &lt;- list(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+lst2 &lt;- list(1, 2, 3, 4)
+&nbsp;
+print(lst1)
+print(lst2)
+print("----------------------------")
+&nbsp;
+<strong>lst1["name"]</strong> = "XXX"
+print(lst1)
+&nbsp;
+<strong>lst2[2]</strong> = 100
+print(lst2)
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: namísto = můžete v&nbsp;tomto případě
+použít přiřazovací operátor &lt;- (což je pro jazyk R více
+idiomatické):</div></p>
+
+<pre>
+lst1 &lt;- list(name="Fred", wife="Mary", no.children=3, child.ages=c(4,7,9))
+lst2 &lt;- list(1, 2, 3, 4)
+&nbsp;
+print(lst1)
+print(lst2)
+print("----------------------------")
+&nbsp;
+<strong>lst1["name"]</strong> &lt;- "XXX"
+print(lst1)
+&nbsp;
+<strong>lst2[2]</strong> &lt;- 100
+print(lst2)
+</pre>
+
+<p>Výsledky budou v&nbsp;obou případech totožné:</p>
+
+<pre>
+$name
+[1] "Fred"
+&nbsp;
+$wife
+[1] "Mary"
+&nbsp;
+$no.children
+[1] 3
+&nbsp;
+$child.ages
+[1] 4 7 9
+&nbsp;
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+&nbsp;
+[1] "----------------------------"
+$name
+[1] "XXX"
+&nbsp;
+$wife
+[1] "Mary"
+&nbsp;
+$no.children
+[1] 3
+&nbsp;
+$child.ages
+[1] 4 7 9
+&nbsp;
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 100
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+</pre>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Vytvoření nového seznamu ze sekvence</h2>
+
+<p>V&nbsp;předchozích kapitolách jsme si ukázali použití konstruktoru nazvaného
+<strong>list</strong>. Tomuto konstruktoru se předávají jednotlivé prvky
+seznamu, ovšem každá takto předaná hodnota je &ndash; nezávisle na svém obsahu
+&ndash; skutečně chápána jako jediný prvek, což může být matoucí. Příkladem
+může být pokus o vytvoření seznamu ze sekvence:</p>
+
+<pre>
+s &lt;- <strong>seq</strong>(1, 10)
+print(class(s))
+&nbsp;
+lst &lt;- <strong>list</strong>(s)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledkem bude seznam obsahující jediný prvek, který je typu &bdquo;vektor
+celých čísel&ldquo;:</p>
+
+<pre>
+[1] "integer"
+[[1]]
+ [1]  1  2  3  4  5  6  7  8  9 10
+&nbsp;
+[1] 1
+[1] "list"
+</pre>
+
+<p>Pokud potřebujeme ze sekvence vytvořit seznam tak, aby se každý prvek
+sekvence vložil jako samostatný prvek do seznamu, musíme použít konverzi
+<strong>as.list</strong>:</p>
+
+<pre>
+s &lt;- <strong>seq</strong>(1, 10)
+print(class(s))
+&nbsp;
+lst &lt;- <strong>as.list</strong>(s)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Nyní je výsledkem seznam s&nbsp;deseti prvky (každý prvek je jednoprvkovým
+vektorem):</p>
+
+<pre>
+[1] "integer"
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+&nbsp;
+[[5]]
+[1] 5
+&nbsp;
+[[6]]
+[1] 6
+&nbsp;
+[[7]]
+[1] 7
+&nbsp;
+[[8]]
+[1] 8
+&nbsp;
+[[9]]
+[1] 9
+&nbsp;
+[[10]]
+[1] 10
+&nbsp;
+[1] 10
+[1] "list"
+</pre>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Vytvoření nového seznamu z&nbsp;vektoru</h2>
+
+<p>Stejným způsobem můžeme vytvořit jednoprvkový seznam z&nbsp;tříprvkového
+vektoru:</p>
+
+<pre>
+v &lt;- <strong>c</strong>("foo", "bar", "baz")
+print(class(v))
+&nbsp;
+lst &lt;- <strong>list</strong>(v)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledek:</p>
+
+<pre>
+[1] "character"
+[[1]]
+[1] "foo" "bar" "baz"
+&nbsp;
+[1] 1
+[1] "list"
+</pre>
+
+<p>Či naopak tříprvkový seznam z&nbsp;tříprvkového vektoru:</p>
+
+<pre>
+v &lt;- <strong>c</strong>("foo", "bar", "baz")
+print(class(v))
+&nbsp;
+lst &lt;- <strong>as.list</strong>(v)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledek bude v&nbsp;tomto případě odlišný:</p>
+
+<pre>
+[1] "character"
+[[1]]
+[1] "foo"
+&nbsp;
+[[2]]
+[1] "bar"
+&nbsp;
+[[3]]
+[1] "baz"
+&nbsp;
+[1] 3
+[1] "list"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: v&nbsp;naprosté většině případů
+požadujeme chování ukázané ve druhém demonstračním příkladu.</div></p>
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Vytvoření seznamu z&nbsp;jednodimenzionálního pole</h2>
+
+<p>Seznam je pochopitelně možné vytvořit i z&nbsp;pole, ale platí zde stejná
+pravidla, jaká jsme si uvedli u vektorů &ndash; pokud použijeme konstruktor
+<strong>list</strong>, kterému celé pole předáme, vznikne jednoprvkový seznam.
+Pro konverzi typu &bdquo;prvek po prvku&ldquo; je nutné použít funkci
+<strong>as.list</strong>. Uveďme si nejdříve první příklad:</p>
+
+<pre>
+data &lt;- c(1, 2, 3, 4, 5, 6)
+dimension1 &lt;- c(6)
+&nbsp;
+a &lt;- array(data, dim=dimension1)
+&nbsp;
+print(class(a))
+&nbsp;
+lst &lt;- <strong>list</strong>(a)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Opět můžeme vidět, že se sice vytvoří seznam, který však bude obsahovat
+jediný prvek, který je typu pole:</p>
+
+<pre>
+[1] "array"
+[[1]]
+[1] 1 2 3 4 5 6
+&nbsp;
+[1] 1
+[1] "list"
+</pre>
+
+<p>Druhý demonstrační příklad ukazuje konverzi jednodimenzionálního pole na
+seznam s&nbsp;využitím funkce pojmenované <strong>as.list</strong>:</p>
+
+<pre>
+data &lt;- c(1, 2, 3, 4, 5, 6)
+dimension1 &lt;- c(6)
+&nbsp;
+a &lt;- array(data, dim=dimension1)
+&nbsp;
+print(class(a))
+&nbsp;
+lst &lt;- <strong>as.list</strong>(a)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Nyní je z&nbsp;pole vytvořen seznam se šesti prvky:</p>
+
+<pre>
+[1] "array"
+&nbsp;
+&nbsp;
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+&nbsp;
+[[5]]
+[1] 5
+&nbsp;
+[[6]]
+[1] 6
+&nbsp;
+[1] 6
+[1] "list"
+</pre>
+
+<p>Při převodu se použijí jména sloupců, pokud jsou samozřejmě v&nbsp;poli
+deklarovány:</p>
+
+<pre>
+data &lt;- 1:4
+dimension &lt;- c(4)
+&nbsp;
+row.names &lt;- c("row1", "row2", "row3", "row4")
+&nbsp;
+a1 &lt;- array(data, dim=dimension, dimnames=list(row.names))
+print(a1)
+&nbsp;
+lst &lt;- as.list(a1)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledek:</p>
+
+<pre>
+row1 row2 row3 row4 
+   1    2    3    4 
+&nbsp;
+&nbsp;
+&nbsp;
+$row1
+[1] 1
+&nbsp;
+$row2
+[1] 2
+&nbsp;
+$row3
+[1] 3
+&nbsp;
+$row4
+[1] 4
+&nbsp;
+[1] 4
+[1] "list"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: jedná se o velmi užitečné chování,
+protože jména sloupců jsou převedena na jména prvků, které ovšem můžeme či
+nemusíme použít (stále totiž existují celočíselné indexy prvků
+seznamu).</div></p>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Vytvoření seznamu z&nbsp;dvojdimenzionálního pole</h2>
+
+<p>Seznam lze zkonstruovat i s&nbsp;využitím dvojdimenzinálního pole
+s&nbsp;prvky, které se mají do seznamu vložit. První příklad ukazuje použití
+konstruktoru <strong>list</strong>, který &ndash; jak již víme &ndash; vytvoří
+jednoprvkový seznam:</p>
+
+<pre>
+data &lt;- c(1, 2, 3, 4, 5, 6)
+dimension1 &lt;- c(2, 3)
+&nbsp;
+a &lt;- array(data, dim=dimension1)
+&nbsp;
+print(class(a))
+&nbsp;
+lst &lt;- <strong>list</strong>(a)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledek ukazuje, že se skutečně vytvořil jednoprvkový seznam:</p>
+
+<pre>
+[1] "matrix"
+&nbsp;
+&nbsp;
+[[1]]
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6
+&nbsp;
+[1] 1
+[1] "list"
+</pre>
+
+<p>Dále, což bude zajímavější, se pokusíme o převod 2D pole na
+(jednodimenzionální) seznam:</p>
+
+<pre>
+data &lt;- c(1, 2, 3, 4, 5, 6)
+dimension1 &lt;- c(2, 3)
+&nbsp;
+a &lt;- array(data, dim=dimension1)
+&nbsp;
+print(class(a))
+&nbsp;
+lst &lt;- <strong>as.list</strong>(a)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledek může být překvapující: seznam bude obsahovat šest prvků získaných
+z&nbsp;pole 2&times;3 prvky. To znamená, že pole bylo &bdquo;nataženo&ldquo; do
+jedné dimenze:</p>
+
+<pre>
+[1] "matrix"
+&nbsp;
+&nbsp;
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+&nbsp;
+[[5]]
+[1] 5
+&nbsp;
+[[6]]
+[1] 6
+&nbsp;
+[1] 6
+[1] "list"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: ve skutečnosti je i pole interně
+reprezentováno jednodimenzionální strukturou, ke které jsou přiřazeny
+metainformace o dimenzi, tedy o tom, jak má být pole prezentováno uživatelům a
+jak má být realizováno indexování prvků.</div></p>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Vytvoření seznamu z&nbsp;matice</h2>
+
+<p>Poslední typ datové konverze, kterou si v&nbsp;dnešním článku ukážeme, je
+konverze matice na seznam. Samozřejmě můžeme opět použít konstruktor
+<strong>list</strong> s&nbsp;tím, že výsledný seznam bude obsahovat jediný
+prvek, kterým bude celá matice. Můžeme se o tom velmi snadno přesvědčit:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=1, ncol=12)
+print(m1)
+print(class(m1))
+&nbsp;
+lst &lt;- <strong>list</strong>(m1)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Po spuštění tohoto demonstračního příkladu se nejdříve vypíše obsah původní
+matice a následně pak jednoprvkový seznam s&nbsp;touž maticí:</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+[1] "matrix"
+&nbsp;
+&nbsp;
+[[1]]
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+&nbsp;
+[1] 1
+[1] "list"
+</pre>
+
+<p>Nyní se podívejme na chování konverzní funkce <strong>as.list</strong>:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=1, ncol=12)
+print(m1)
+print(class(m1))
+&nbsp;
+lst &lt;- <strong>as.list</strong>(m1)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledkem bude v&nbsp;tomto případě seznam s&nbsp;dvanácti prvky (typu
+jednoprvkový vektor):</p>
+
+<pre>
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+[1] "matrix"
+&nbsp;
+&nbsp;
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+&nbsp;
+[[5]]
+[1] 5
+&nbsp;
+[[6]]
+[1] 6
+&nbsp;
+[[7]]
+[1] 7
+&nbsp;
+[[8]]
+[1] 8
+&nbsp;
+[[9]]
+[1] 9
+&nbsp;
+[[10]]
+[1] 10
+&nbsp;
+[[11]]
+[1] 11
+&nbsp;
+[[12]]
+[1] 12
+&nbsp;
+[1] 12
+[1] "list"
+</pre>
+
+<p>Stejný výsledek ovšem dostaneme, i když budeme převádět matici
+s&nbsp;odlišným počtem řádků a sloupců &ndash; vždy se provede převod na
+lineární seznam:</p>
+
+<pre>
+data &lt;- 1:12
+&nbsp;
+m1 &lt;- matrix(data, nrow=4, ncol=3)
+print(m1)
+print(class(m1))
+&nbsp;
+lst &lt;- <strong>as.list</strong>(m1)
+&nbsp;
+print(lst)
+print(length(lst))
+print(class(lst))
+</pre>
+
+<p>Výsledek bude v&nbsp;tomto případě shodný s&nbsp;předchozím demonstračním
+příkladem:</p>
+
+<pre>
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+[1] "matrix"
+&nbsp;
+&nbsp;
+&nbsp;
+[[1]]
+[1] 1
+&nbsp;
+[[2]]
+[1] 2
+&nbsp;
+[[3]]
+[1] 3
+&nbsp;
+[[4]]
+[1] 4
+&nbsp;
+[[5]]
+[1] 5
+&nbsp;
+[[6]]
+[1] 6
+&nbsp;
+[[7]]
+[1] 7
+&nbsp;
+[[8]]
+[1] 8
+&nbsp;
+[[9]]
+[1] 9
+&nbsp;
+[[10]]
+[1] 10
+&nbsp;
+[[11]]
+[1] 11
+&nbsp;
+[[12]]
+[1] 12
+&nbsp;
+[1] 12
+&nbsp;
+[1] "list"
+</pre>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Datové rámce &ndash; struktura používaná nejenom při statistických výpočtech</h2>
+
+<p>Ve druhé části dnešního článku si popíšeme základy práce s&nbsp;takzvanými
+<i>datovými rámci</i> (<i>data frame</i>). Jedná se o velmi důležitý datový typ
+používaný zejména (ale nejenom) při statistických výpočtech. Datové rámce se
+v&nbsp;určitém ohledu podobají tabulkám používaným v&nbsp;relačních databázích:
+jednotlivé sloupce jsou pojmenované a současně může být každý sloupec jiného
+datového typu (všechny prvky ve sloupci toto kritérium musí splňovat). Tato
+vlastnost odlišuje datové rámce jak od dvojdimenzionálních polí, tak i od
+matic. S&nbsp;datovými rámci se ovšem nepracuje pouze v&nbsp;jazyku R;
+nalezneme je například i v&nbsp;knihovně Pandas určenou pro programovací jazyk
+Python. Datové rámce a operace s&nbsp;nimi jsou pochopitelně popsány
+v&nbsp;dokumentaci programovacího jazyka R. Příkladem může být dokumentace ke
+konstruktoru datových rámců:</p>
+
+<pre>
+<strong>help(data.frame)</strong>
+&nbsp;
+data.frame                package:base                 R Documentation
+&nbsp;
+Data Frames
+&nbsp;
+Description:
+&nbsp;
+     The function ‘data.frame()’ creates data frames, tightly coupled
+     collections of variables which share many of the properties of
+     matrices and of lists, used as the fundamental data structure by
+     most of R's modeling software.
+&nbsp;
+Usage:
+&nbsp;
+     data.frame(..., row.names = NULL, check.rows = FALSE,
+                check.names = TRUE, fix.empty.names = TRUE,
+                stringsAsFactors = default.stringsAsFactors())
+&nbsp;
+     default.stringsAsFactors()
+</pre>
+
+<p>Datové rámce většinou nevznikají přímo z&nbsp;dat dostupných ve zdrojovém
+kódu, ale jsou načítány ze souborů. Uloženy mohou být v&nbsp;relativně velmi
+jednoduchém textovém formátu, ovšem lze použít i známý formát CSV apod.
+Podrobnostmi se budeme zabývat příště, ovšem příslušné funkce jsou pochopitelně
+popsány v&nbsp;nápovědě:</p>
+
+<pre>
+<strong>help(read.csv)</strong>
+&nbsp;
+read.table                package:utils                R Documentation
+&nbsp;
+Data Input
+&nbsp;
+Description:
+&nbsp;
+     Reads a file in table format and creates a data frame from it,
+     with cases corresponding to lines and variables to fields in the
+     file.
+&nbsp;
+Usage:
+&nbsp;
+     read.table(file, header = FALSE, sep = "", quote = "\"'",
+                dec = ".", numerals = c("allow.loss", "warn.loss", "no.loss"),
+                row.names, col.names, as.is = !stringsAsFactors,
+                na.strings = "NA", colClasses = NA, nrows = -1,
+                skip = 0, check.names = TRUE, fill = !blank.lines.skip,
+                strip.white = FALSE, blank.lines.skip = TRUE,
+                comment.char = "#",
+                allowEscapes = FALSE, flush = FALSE,
+                stringsAsFactors = default.stringsAsFactors(),
+                fileEncoding = "", encoding = "unknown", text, skipNul = FALSE)
+&nbsp;
+     read.csv(file, header = TRUE, sep = ",", quote = "\"",
+              dec = ".", fill = TRUE, comment.char = "", ...)
+&nbsp;
+     read.csv2(file, header = TRUE, sep = ";", quote = "\"",
+               dec = ",", fill = TRUE, comment.char = "", ...)
+&nbsp;
+     read.delim(file, header = TRUE, sep = "\t", quote = "\"",
+                dec = ".", fill = TRUE, comment.char = "", ...)
+&nbsp;
+     read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
+                 dec = ",", fill = TRUE, comment.char = "", ...)
+</pre>
+
+<p>Dnes si popíšeme pouze několik základních operací s&nbsp;datovými rámci;
+důležitější funkce budou popsány příště, samozřejmě společně s&nbsp;ukázkou,
+jakým způsobem lze datové rámce použít při tvorbě grafů (resp.&nbsp;naopak
+&ndash; jak může datový rámec sloužit jako zdroj dat pro grafy).</p>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Konstrukce datového rámce</h2>
+
+<p>Již <a href="#k11">v&nbsp;předchozí kapitole</a> jsme si naznačili, že
+konstruktorem datového rámce je funkce pojmenovaná <strong>dat.frame</strong>.
+Této funkci se předají data představující jednotlivé sloupce, společně
+s&nbsp;názvy sloupců. Data si tedy nejdříve připravíme, a to buď ve formě
+vektorů nebo seznamů. Zdrojem dat bude prvních devět položek ze známého (a
+možná i trochu přeceňovaného) <a
+href="https://www.tiobe.com/tiobe-index/">Tiobe indexu</a> (samotný jazyk
+<i>R</i> se přitom umístil na velmi pěkném devátém místě, což je pro DSL takřka
+neuvěřitelně dobrá pozice):</p>
+
+<pre>
+ids = c(1:9)
+names = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R")
+usages = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37)
+changes = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že všechny vektory mají
+stejnou délku:</div></p>
+
+<pre>
+print(length(ids))
+print(length(names))
+print(length(usages))
+print(length(changes))
+</pre>
+
+<p>S&nbsp;totožnými výsledky:</p>
+
+<pre>
+[1] 9
+[1] 9
+[1] 9
+[1] 9
+</pre>
+
+<p>Datový rámec vytvoříme již zmíněným konstruktorem
+<strong>data.frame</strong>:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+    ids,
+    names,
+    usages,
+    changes
+)
+&nbsp;
+print(languages)
+</pre>
+
+<p>Obsah datového rámce:</p>
+
+<pre>
+  ids        names usages changes
+1   1            C  15.95    0.74
+2   2         Java  13.48   -3.18
+3   3       Python  10.47    0.59
+4   4          C++   7.11    1.48
+5   5           C#   4.58    1.18
+6   6 Visual Basic   4.12    0.83
+7   7   JavaScript   2.54    0.41
+8   8          PHP   2.49    0.62
+9   9            R   2.37    1.33
+</pre>
+
+<p>Máme ovšem možnost si sloupce pojmenovat s&nbsp;využitím následující
+syntaxe:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+    <strong>id</strong> = ids,
+    <strong>name</strong> = names,
+    <strong>usage</strong> = usages,
+    <strong>change</strong> = changes
+)
+&nbsp;
+print(languages)
+</pre>
+
+<p>Nyní mají sloupce odlišné názvy:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+<p>Samozřejmě nám nic nebrání ve vytvoření datového rámce přímo
+s&nbsp;deklarací dat uvnitř volání konstruktoru:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+    id = c(1:9),
+    name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+    usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+    change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(languages)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Hlídání délky vstupních dat</h2>
+
+<p>Datový rámec tvoří de facto tabulku, což znamená, že vektory představující
+vstupní data by měly mít totožnou délku. Ve skutečnosti je tato vlastnost
+hlídána samotným konstruktorem, o čemž se můžeme přesvědčit při jeho zavolání
+s&nbsp;vektory různé délky:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+    id = c(1:20),
+    name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+    usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54),
+    change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83)
+)
+&nbsp;
+print(languages)
+</pre>
+
+<p>Skutečnost, že vektory mají odlišnou délku, je detekována a vypíše se
+následující chybové hlášení:</p>
+
+<pre>
+Error in data.frame(id = c(1:20), name = c("C", "Java", "Python", "C++",  : 
+  arguments imply differing number of rows: 20, 9, 7, 6
+Execution halted
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: to znamená, že datový rámec není
+vytvořen.</div></p>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Neexistující hodnoty ve vstupních datech</h2>
+
+<p>Viděli jsme, že není možné vytvořit datový rámec z&nbsp;vektorů různé délky
+(což je ostatně logické). Ovšem mnoho vstupních dat neobsahuje vyplněné všechny
+položky (což v&nbsp;praxi můžeme vidět například <a
+href="https://docs.google.com/spreadsheets/d/1FFEDhS6VMWon_AWkJrf8j3XxjZ4J6UI1B2lO3IW-EEc/edit#gid=996854350">zde</a>)
+a jazyk R i s&nbsp;takovými daty musí nějakým způsobem pracovat. Neexistující
+(přesněji řečeno nedostupné) položky mohou být nahrazeny speciální hodnotou
+s&nbsp;identifikátorem <strong>NA</strong>, která je (velmi zjednodušeně
+řečeno) &bdquo;beztypová&ldquo;. Použití neexistujících položek si můžeme
+ukázat na nám již známých datech, v&nbsp;nichž některé původně známé položky
+nahradíme za <strong>NA</strong>:</p>
+
+<pre>
+ids = c(1:9)
+names = c("C", "Java", "Python", "C++", "C#", "Visual Basic", NA, "PHP", "R")
+usages = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, NA, 2.49, 2.37)
+changes = c(0.74, NA, 0.59, 1.48, 1.18, 0.83, 0.41, NA, 1.33)
+</pre>
+
+<p>Tato neúplná data jsou plně postačující pro vytvoření datového rámce:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = ids,
+   name = names,
+   usage = usages,
+   change = changes
+)
+&nbsp;
+print(languages)
+</pre>
+
+<p>Výsledná tabulka bude vypadat následovně:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48     NA
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7         &lt;NA&gt;    NA   0.41
+8  8          PHP  2.49     NA
+9  9            R  2.37   1.33
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že nedostupná hodnota ve
+sloupci řetězců je zobrazena odlišně od nedostupné hodnoty v&nbsp;numerickém
+sloupci.</div></p>
+
+<p>Tato hodnota se však chová jinak než například <strong>None</strong>
+z&nbsp;Pythonu, protože je ji například možné použít v&nbsp;aritmetických
+výrazech <strong>NA+3</strong> atd. Blíže viz:</p>
+
+<pre>
+<strong>help(NA)</strong>
+&nbsp;
+NA                    package:base                     R Documentation
+&nbsp;
+'Not Available' / Missing Values
+&nbsp;
+Description:
+&nbsp;
+     ‘NA’ is a logical constant of length 1 which contains a missing
+     value indicator.  ‘NA’ can be coerced to any other vector type
+     except raw.  There are also constants ‘NA_integer_’, ‘NA_real_’,
+     ‘NA_complex_’ and ‘NA_character_’ of the other atomic vector types
+     which support missing values: all of these are reserved words in
+     the R language.
+&nbsp;
+     The generic function ‘is.na’ indicates which elements are missing.
+&nbsp;
+     The generic function ‘is.na&lt;-’ sets elements to ‘NA’.
+&nbsp;
+     The generic function ‘anyNA’ implements ‘any(is.na(x))’ in a
+     possibly faster way (especially for atomic vectors).
+&nbsp;
+     ...
+     ...
+     ...
+</pre>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Získání jmen sloupců a řádků datového rámce</h2>
+
+<p>V&nbsp;této kapitole si ukážeme použití funkcí <strong>names()</strong>,
+<strong>colnames()</strong> a <strong>rownames()</strong>. Nejdříve si
+připravíme testovací data, která již velmi dobře známe:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+</pre>
+
+<p>Nyní si můžeme nechat vypsat názvy sloupců resp.&nbsp;i ostatních názvů
+přiřazených do datového rámce:</p>
+
+<pre>
+print(<strong>names(languages)</strong>)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+[1] "id"     "name"   "usage"  "change"
+</pre>
+
+<p>Specifičtější je dotaz přímo na jména sloupců, a to funkcí pojmenovanou
+<strong>colnames</strong>:</p>
+
+<pre>
+print(<strong>colnames(languages)</strong>)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+[1] "id"     "name"   "usage"  "change"
+</pre>
+
+<p>Dotázat se můžeme i na názvy řádků, které budou v&nbsp;našem případě
+numerické:</p>
+
+<pre>
+print(<strong>rownames(languages)</strong>)
+</pre>
+
+<p>Výsledkem je devítiprvkový vektor:</p>
+
+<pre>
+[1] "1" "2" "3" "4" "5" "6" "7" "8" "9"
+</pre>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Nastavení jmen sloupců a řádků</h2>
+
+<p>S&nbsp;využitím funkce <strong>colnames</strong>, s&nbsp;níž jsme se
+v&nbsp;krátkosti seznámili <a href="#k15">v&nbsp;předchozí kapitole</a>, lze
+jména sloupců změnit (nastavit). Podívejme se na následující příklad, kde se
+výsledek funkce <strong>colnames</strong> nachází na levé straně přiřazovacího
+výrazu:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(languages)
+&nbsp;
+<strong>colnames(languages)</strong> &lt;- c("ID", "Language", "Usage 2020", "Change")
+&nbsp;
+print("---------------------------------------")
+&nbsp;
+print(languages)
+</pre>
+
+<p>Po spuštění tohoto příkladu se nejdříve zobrazí původní datový rámec a
+posléze datový rámec s&nbsp;totožnými daty, ovšem s&nbsp;přejmenovanými
+sloupci:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+&nbsp;
+[1] "---------------------------------------"
+&nbsp;
+  ID     Language Usage 2020 Change
+1  1            C      15.95   0.74
+2  2         Java      13.48  -3.18
+3  3       Python      10.47   0.59
+4  4          C++       7.11   1.48
+5  5           C#       4.58   1.18
+6  6 Visual Basic       4.12   0.83
+7  7   JavaScript       2.54   0.41
+8  8          PHP       2.49   0.62
+9  9            R       2.37   1.33
+</pre>
+
+<p>Podobně lze přiřazením měnit i jména řádků datového rámce. V&nbsp;dalším
+demonstračním příkladu je přečíslujeme od devíti do jedné:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(languages)
+&nbsp;
+<strong>rownames(languages)</strong> &lt;- seq(9,1)
+&nbsp;
+print("---------------------------------------")
+&nbsp;
+print(languages)
+</pre>
+
+<p>S&nbsp;výsledky (původní datový rámec a rámec s&nbsp;přečíslovanými
+řádky):</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+&nbsp;
+[1] "---------------------------------------"
+&nbsp;
+  id         name usage change
+9  1            C 15.95   0.74
+8  2         Java 13.48  -3.18
+7  3       Python 10.47   0.59
+6  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+4  6 Visual Basic  4.12   0.83
+3  7   JavaScript  2.54   0.41
+2  8          PHP  2.49   0.62
+1  9            R  2.37   1.33
+</pre>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Přečtení prvních <i>n</i> či naopak posledních <i>n</i> řádků z&nbsp;datového rámce</h2>
+
+<p>Posledními dvěma funkcemi, s&nbsp;nimiž se dnes alespoň ve stručnosti
+seznámíme, jsou funkce pojmenované <strong>head</strong> a
+<strong>tail</strong>. Tyto funkce přečtou a vrátí začátek popř.&nbsp;konec
+datového rámce. Podobně jako stejně pojmenované unixové příkazy se implicitně
+zobrazí prvních deset řádků resp.&nbsp;posledních deset řádků, ovšem naše
+testovací data obsahují méně řádků, takže použijeme přídavný parametr určující,
+kolik prvních/posledních řádků se má získat. Nejprve zobrazíme prvních pět
+řádků datového rámce:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(<strong>head(languages, 5)</strong>)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+  id   name usage change
+1  1      C 15.95   0.74
+2  2   Java 13.48  -3.18
+3  3 Python 10.47   0.59
+4  4    C++  7.11   1.48
+5  5     C#  4.58   1.18
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: funkce <strong>head</strong> vrátí nový
+datový rámec, o čemž se lze snadno přesvědčit:</div></p>
+
+<pre>
+print(<strong>class(head(languages, 5))</strong>)
+</pre>
+
+<p>Toto volání vrátí:</p>
+
+<pre>
+[1] "data.frame"
+</pre>
+
+<p>Podobným způsobem pracuje funkce <strong>tail</strong>, která ovšem pro
+změnu získá a vrátí posledních <i>n</i> řádků datového rámce (implicitně deset
+řádků):</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(<strong>tail(languages, 5)</strong>)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+  id         name usage change
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: jedná se o potenciálně velmi užitečné
+funkce umožňující rychle zjistit, zda pracujeme se správnými daty.</div></p>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Obsah následující části seriálu</h2>
+
+<p>V&nbsp;navazující části <a
+href="https://www.root.cz/serialy/programovaci-jazyk-r/">seriálu o
+programovacím jazyku R</a> nejprve dokončíme popis práce s&nbsp;datovými rámci
+(k&nbsp;dispozici je totiž velké množství zajímavých operací) a posléze si
+ukážeme, jak je možné (nejenom) datové rámce použít pro tvorbu různých typů
+grafů, protože právě práce s&nbsp;grafy je v&nbsp;programovacím jazyku R
+poměrně elegantní.</p>
+
+<p>Příklad výpisu analýzy datového rámce popsané v&nbsp;navazujícím článku:</p>
+
+<pre>
+languages &lt;- data.frame(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(str(languages))
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+'data.frame':   9 obs. of  4 variables:
+ $ id    : int  1 2 3 4 5 6 7 8 9
+ $ name  : Factor w/ 9 levels "C","C#","C++",..: 1 4 7 3 2 9 5 6 8
+ $ usage : num  15.95 13.48 10.47 7.11 4.58 ...
+ $ change: num  0.74 -3.18 0.59 1.48 1.18 0.83 0.41 0.62 1.33
+NULL
+</pre>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+stále jen jednotky, maximálně desítky kilobajtů), můžete namísto toho použít
+odkazy na jednotlivé demonstrační příklady, které naleznete v&nbsp;následující
+tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td>1</td><td>01-list-constructor.R</td><td>vytvoření seznamu s&nbsp;vektory celých čísel</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/01-list-constructor.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/01-list-constructor.R</a></td></tr>
+<tr><td>2</td><td>02-list-constructor.R</td><td>vytvoření seznamu s&nbsp;řetězci</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/02-list-constructor.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/02-list-constructor.R</a></td></tr>
+<tr><td>3</td><td>03-list-constructor.R</td><td>vytvoření seznamu s&nbsp;pojmenovanými prvky</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/03-list-constructor.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/03-list-constructor.R</a></td></tr>
+<tr><td>4</td><td>04-indexing.R</td><td>získání podseznamu ze seznamu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/04-indexing.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/04-indexing.R</a></td></tr>
+<tr><td>5</td><td>05-index-of-index.R</td><td>získání konkrétního prvku ze seznamu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/05-index-of-index.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/05-index-of-index.R</a></td></tr>
+<tr><td>6</td><td>06-select-by-name-R</td><td>přístup k&nbsp;prvkům seznamu s&nbsp;využitím jejich jména</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/06-select-by-name-R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/06-select-by-name-R</a></td></tr>
+<tr><td>7</td><td>07-select-by-name-and-index.R</td><td>přístup k&nbsp;prvkům seznamu s&nbsp;využitím jejich jména, opakované indexování</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/07-select-by-name-and-index.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/07-select-by-name-and-index.R</a></td></tr>
+<tr><td>8</td><td>08-indexing-problems.R</td><td>možné problémy při indexování prvků v&nbsp;seznamu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/08-indexing-problems.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/08-indexing-problems.R</a></td></tr>
+<tr><td>9</td><td>09-concatenate.R</td><td>spojení dvou seznamů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/09-concatenate.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/09-concatenate.R</a></td></tr>
+<tr><td>10</td><td>10-list-modify.R</td><td>modifikace prvků seznamu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/10-list-modify.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/10-list-modify.R</a></td></tr>
+<tr><td>11</td><td>11-from-seq.R</td><td>vytvoření jednoprvkového seznamu ze sekvence</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/11-from-seq.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/11-from-seq.R</a></td></tr>
+<tr><td>12</td><td>12-from-seq.R</td><td>vytvoření víceprvkového seznamu ze sekvence</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/12-from-seq.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/12-from-seq.R</a></td></tr>
+<tr><td>13</td><td>13-from-vector.R</td><td>vytvoření jednoprvkového seznamu z&nbsp;vektoru</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/13-from-vector.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/13-from-vector.R</a></td></tr>
+<tr><td>14</td><td>14-from-vector.R</td><td>vytvoření víceprvkového seznamu z&nbsp;vektoru</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/14-from-vector.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/14-from-vector.R</a></td></tr>
+<tr><td>15</td><td>15-from-1D-array.R</td><td>vytvoření jednoprvkového seznamu z&nbsp;1D pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/15-from-1D-array.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/15-from-1D-array.R</a></td></tr>
+<tr><td>16</td><td>16-from-1D-array.R</td><td>vytvoření víceprvkového seznamu z&nbsp;1D pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/16-from-1D-array.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/16-from-1D-array.R</a></td></tr>
+<tr><td>17</td><td>17-from-2D-array.R</td><td>vytvoření jednoprvkového seznamu z&nbsp;2D pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/17-from-2D-array.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/17-from-2D-array.R</a></td></tr>
+<tr><td>18</td><td>18-from-2D-array.R</td><td>vytvoření víceprvkového seznamu z&nbsp;2D pole</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/18-from-2D-array.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/18-from-2D-array.R</a></td></tr>
+<tr><td>19</td><td>19-from-matrix.R</td><td>vytvoření jednoprvkového seznamu z&nbsp;matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/19-from-matrix.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/19-from-matrix.R</a></td></tr>
+<tr><td>20</td><td>20-from-matrix.R</td><td>vytvoření víceprvkového seznamu z&nbsp;matice</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/20-from-matrix.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/20-from-matrix.R</a></td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>21</td><td>21-data-frame-constructor.R</td><td>konstrukce datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/21-data-frame-constructor.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/21-data-frame-constructor.R</a></td></tr>
+<tr><td>22</td><td>22-data-frame-constructor.R</td><td>zkrácená konstrukce datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/22-data-frame-constructor.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/22-data-frame-constructor.R</a></td></tr>
+<tr><td>23</td><td>23-data-frame-constructor-diff-length.R</td><td>různé délky vstupních vektorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/23-data-frame-constructor-diff-length.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/23-data-frame-constructor-diff-length.R</a></td></tr>
+<tr><td>24</td><td>24-data-frame-constructor-NA.R</td><td>použití hodnot NA při konstrukci datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/24-data-frame-constructor-NA.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/24-data-frame-constructor-NA.R</a></td></tr>
+<tr><td>25</td><td>25-data-frame-names.R</td><td>datové rámce a funkce <strong>names()</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/25-data-frame-names.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/25-data-frame-names.R</a></td></tr>
+<tr><td>26</td><td>26-data-frame-colnames.R</td><td>datové rámce a funkce <strong>colnames()</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/26-data-frame-colnames.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/26-data-frame-colnames.R</a></td></tr>
+<tr><td>27</td><td>27-data-frame-rownames.R</td><td>datové rámce a funkce <strong>rownames()</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/27-data-frame-rownames.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/27-data-frame-rownames.R</a></td></tr>
+<tr><td>28</td><td>28-data-frame-set-colnames.R</td><td>nastavení jmen sloupců datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/28-data-frame-set-colnames.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/28-data-frame-set-colnames.R</a></td></tr>
+<tr><td>29</td><td>29-data-frame-set-rownames.R</td><td>nastavení jmen řádků datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/29-data-frame-set-rownames.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/29-data-frame-set-rownames.R</a></td></tr>
+<tr><td>30</td><td>30-data-frame-head.R</td><td>datové rámce a funkce <strong>head()</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/30-data-frame-head.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/30-data-frame-head.R</a></td></tr>
+<tr><td>31</td><td>31-data-frame-tail.R</td><td>datové rámce a funkce <strong>tail()</strong></td><td><a href="https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/31-data-frame-tail.R">https://github.com/tisnik/r-examples/blob/master/05-lists-and-data-frames/31-data-frame-tail.R</a></td></tr>
+</table>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded &amp; Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>Cesta erka: Krok nultý &ndash; instalace &amp; nastavení – prostředí, projekty, package<br />
+<a href="https://www.jla-data.net/r4su/r4su-environment-setup/">https://www.jla-data.net/r4su/r4su-environment-setup/</a>
+</li>
+
+<li>Cesta erka: Krok první &ndash; operace a struktury – proměnné, rovnítka a dolary<br />
+<a href="https://www.jla-data.net/r4su/r4su-data-structures/">https://www.jla-data.net/r4su/r4su-data-structures/</a>
+</li>
+
+<li>Cesta erka: Krok druhý &ndash; načtení externích dat – csvčka, excely a databáze<br />
+<a href="https://www.jla-data.net/r4su/r4su-read-data/">https://www.jla-data.net/r4su/r4su-read-data/</a>
+</li>
+
+<li>Cesta erka: Krok třetí &ndash; manipulace s daty – dplyr, slovesa a pajpy<br />
+<a href="https://www.jla-data.net/r4su/r4su-manipulate-data/">https://www.jla-data.net/r4su/r4su-manipulate-data/</a>
+</li>
+
+<li>Cesta erka: Krok čtvrtý &ndash; podání výsledků – ggplot, geomy a estetiky<br />
+<a href="https://www.jla-data.net/r4su/r4su-report-results/">https://www.jla-data.net/r4su/r4su-report-results/</a>
+</li>
+
+<li>Cesta erka: Krok pátý &ndash; case study – případ piva v Praze<br />
+<a href="https://www.jla-data.net/r4su/r4su-case-study-beer/">https://www.jla-data.net/r4su/r4su-case-study-beer/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+<li>R - Arrays<br />
+<a href="https://www.tutorialspoint.com/r/r_arrays.htm">https://www.tutorialspoint.com/r/r_arrays.htm</a>
+</li>
+
+<li>Array vs Matrix in R Programming<br />
+<a href="https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp">https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp</a>
+</li>
+
+<li>Online R Language IDE<br />
+<a href="https://www.jdoodle.com/execute-r-online/">https://www.jdoodle.com/execute-r-online/</a>
+</li>
+
+<li>Execute R Online (R v3.4.1)<br />
+<a href="https://www.tutorialspoint.com/execute_r_online.php">https://www.tutorialspoint.com/execute_r_online.php</a>
+</li>
+
+<li>Snippets: Run any R code you like. There are over twelve thousand R packages preloaded<br />
+<a href="https://rdrr.io/snippets/">https://rdrr.io/snippets/</a>
+</li>
+
+<li>R Package Documentation<br />
+<a href="https://rdrr.io/">https://rdrr.io/</a>
+</li>
+
+<li>Data Reshaping in R – Popular Functions to Organise Data<br />
+<a href="https://techvidvan.com/tutorials/data-reshaping-in-r/">https://techvidvan.com/tutorials/data-reshaping-in-r/</a>
+</li>
+
+<li>What is an R Data Frame?<br />
+<a href="https://magoosh.com/data-science/what-is-an-r-data-frame/">https://magoosh.com/data-science/what-is-an-r-data-frame/</a>
+</li>
+
+<li>What's a data frame?<br />
+<a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1">https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1</a>
+</li>
+
+<li>data.frame<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame</a>
+</li>
+
+<li>as.data.frame<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as.data.frame">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as.data.frame</a>
+</li>
+
+<li>table<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table</a>
+</li>
+
+<li>Python Pandas - DataFrame<br />
+<a href="https://www.tutorialspoint.com/python_pandas/python_pandas_dataframe.htm">https://www.tutorialspoint.com/python_pandas/python_pandas_dataframe.htm</a>
+</li>
+
+<li>The Pandas DataFrame: Make Working With Data Delightful<br />
+<a href="https://realpython.com/pandas-dataframe/">https://realpython.com/pandas-dataframe/</a>
+</li>
+
+<li>Python | Pandas DataFrame<br />
+<a href="https://www.geeksforgeeks.org/python-pandas-dataframe/">https://www.geeksforgeeks.org/python-pandas-dataframe/</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
