@@ -1,0 +1,1498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Základy tvorby grafů v programovacím jazyku R</title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1>Základy tvorby grafů v programovacím jazyku R</h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>V sedmé části seriálu o programovacím jazyku R se seznámíme se základními typy grafů, které je možné nalézt ve standardní knihovně tohoto jazyka. Posléze se zaměříme na popis velmi populární knihovny nazvané ggplot2.</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Tvorba grafů v&nbsp;programovacím jazyku R</a></p>
+<p><a href="#k02">2. Zdroj dat pro dnešní demonstrační příklady</a></p>
+<p><a href="#k03">3. Korelační diagram (bodový graf)</a></p>
+<p><a href="#k04">4. Přidání popisku grafu a popisků os</a></p>
+<p><a href="#k05">5. Nastavení limitů (rozsahů) na souřadných osách</a></p>
+<p><a href="#k06">6. Matice několika korelačních diagramů</a></p>
+<p><a href="#k07">7. Změna stylu vykreslení grafu</a></p>
+<p><a href="#k08">8. Přidání textu (popisků) k&nbsp;vykresleným bodům</a></p>
+<p><a href="#k09">9. Posun popisků v&nbsp;diagramu</a></p>
+<p><a href="#k10">10. Přikreslení úseček do diagramu</a></p>
+<p><a href="#k11">11. Vykreslení dvojice horizontálních úseček do diagramu</a></p>
+<p><a href="#k12">12. Nastavení stylu vykreslení úseček</a></p>
+<p><a href="#k13">13. Šest stylů úseček</a></p>
+<p><a href="#k14">14. Lineární regrese</a></p>
+<p><a href="#k15">15. Regresní přímka v&nbsp;diagramu</a></p>
+<p><a href="#k16">16. Průměr a směrodatná odchylka</a></p>
+<p><a href="#k17">17. Zakreslení obou statistických hodnot do diagramu</a></p>
+<p><a href="#k18">18. Získání koeficientů z&nbsp;regresního modelu</a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Tvorba grafů v&nbsp;programovacím jazyku R</h2>
+
+<p>Již <a
+href="https://www.root.cz/clanky/programovaci-jazyk-r-prace-s-datovymi-ramci-jednoduche-grafy/#k10">v&nbsp;předchozím
+článku</a> jsme se seznámili s&nbsp;principem tvorby jednoduchých sloupcových
+grafů popř.&nbsp;grafů, do nichž byl přidán i liniový průběh. Tato problematika
+je ovšem velmi rozsáhlá, takže se jí budeme zabývat mj.&nbsp;i dnes.
+V&nbsp;jazyku R lze grafy a popř.&nbsp;i jiné formy grafického výstupu
+realizovat s&nbsp;využitím několika knihoven, které se od sebe liší tím, zda
+používají nízkoúrovňový či vysokoúrovňový přístup při popisu grafu
+resp.&nbsp;při specifikaci jednotlivých kroků vykreslování. Navíc existuje
+několik knihoven, které jsou na dané úrovni použitelné. Některé z&nbsp;těchto
+knihoven jsou zmíněny v&nbsp;následujícím seznamu:</p>
+
+<ul>
+<li>Nízkoúrovňový přístup
+    <ul>
+    <li>Funkce ze základní knihovny jazyka R</li>
+    <li>Balíček <strong>grid</strong></li>
+    </ul>
+</li>
+<li>Vysokoúrovňový přístup
+    <ul>
+    <li>Balíček <strong>lattice</strong></li>
+    <li>Balíček <strong>ggplot</strong></li>
+    </ul>
+</li>
+</ul>
+
+<a href="https://www.root.cz/obrazek/415881/"><img src="https://i.iinfo.cz/images/240/r-plots-1-1-prev.png" class="image-415881" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 1: Jednoduchý sloupcový graf s&nbsp;hodnotami vyčtenými
+z&nbsp;datového rámce.</i></p>
+
+<p>Pro interaktivní grafy (či obecně grafiku) je možné využít například tyto
+knihovny:</p>
+
+<ul>
+<li>Balíček <strong>rggobi</strong></li>
+<li>Balíček <strong>iplots</strong></li>
+<li>Balíček <strong>rgl</strong></li>
+</ul>
+
+<a href="https://www.root.cz/obrazek/415888/"><img src="https://i.iinfo.cz/images/240/r-plots-1-8-prev.png" class="image-415888" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 2: Dvě skupiny sloupců na sloupcovém grafu zobrazené vedle
+sebe.</i></p>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Zdroj dat pro dnešní demonstrační příklady</h2>
+
+<p>Grafy, které budou použity v&nbsp;dnešních demonstračních příkladech, budou
+používat datový rámec, který je součástí základní knihovny programovacího
+jazyka R. Tento datový rámec je pojmenován <strong>mtcars</strong> a obsahuje
+informace o 32 modelech automobilů z&nbsp;roků 1973 a 1974. O každém automobilu
+je zaznamenáno jedenáct numerických informací:</p>
+
+<pre>
+<strong>help(mtcars)</strong>
+&nbsp;
+mtcars                package:datasets                 R Documentation
+&nbsp;
+Motor Trend Car Road Tests
+&nbsp;
+Description:
+&nbsp;
+     The data was extracted from the 1974 _Motor Trend_ US magazine,
+     and comprises fuel consumption and 10 aspects of automobile design
+     and performance for 32 automobiles (1973-74 models).
+&nbsp;
+Usage:
+&nbsp;
+     mtcars
+&nbsp;
+Format:
+&nbsp;
+     A data frame with 32 observations on 11 variables.
+&nbsp;
+       [, 1]  mpg   Miles/(US) gallon                        
+       [, 2]  cyl   Number of cylinders                      
+       [, 3]  disp  Displacement (cu.in.)                    
+       [, 4]  hp    Gross horsepower                         
+       [, 5]  drat  Rear axle ratio                          
+       [, 6]  wt    Weight (1000 lbs)                        
+       [, 7]  qsec  1/4 mile time                            
+       [, 8]  vs    V/S                                      
+       [, 9]  am    Transmission (0 = automatic, 1 = manual) 
+       [,10]  gear  Number of forward gears                  
+       [,11]  carb  Number of carburetors                    
+&nbsp;
+Source:
+&nbsp;
+     Henderson and Velleman (1981), Building multiple regression models
+     interactively.  _Biometrics_, *37*, 391-411.
+&nbsp;
+Examples:
+&nbsp;
+     require(graphics)
+     pairs(mtcars, main = "mtcars data")
+     coplot(mpg ~ disp | as.factor(cyl), data = mtcars,
+            panel = panel.smooth, rows = 1)
+</pre>
+
+<p>Podívejme se nyní na obsah tohoto datového rámce. Můžeme vidět, že
+jednotlivé sloupce jsou pojmenovány (což je obvyklé), ovšem pojmenovány jsou i
+řádky. Samotné jméno modelu automobilu tedy není uloženo v&nbsp;samostatném
+sloupci (tím lze datový rámec odlišit od běžné databázové tabulky):</p>
+
+<pre>
+<strong>print(mtcars)</strong>
+&nbsp;
+                     mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
+Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
+Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
+Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
+Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
+Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
+Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
+Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
+Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
+Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
+AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
+Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
+Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
+Fiat X1-9           27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+Lotus Europa        30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+Ford Pantera L      15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4
+Ferrari Dino        19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8
+Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+</pre>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. Korelační diagram (bodový graf)</h2>
+
+<p>První typ grafu, se kterým se dnes seznámíme, je <i>korelační diagram</i>,
+který je ovšem někdy známý i pod jménem <i>bodový graf</i> (<i>scatter
+plot</i>). Tento graf se vykresluje funkcí <strong>plot</strong>, které se
+předají minimálně informace o x-ových a y-ových souřadnicích bodů, jež se mají
+do grafu vykreslit:</p>
+
+<pre>
+<strong>plot(x, y, main, xlab, ylab, xlim, ylim, axes)</strong>
+</pre>
+
+<p>Tento graf využijeme pro zobrazení korelace mezi hmotností auta (tisíce
+liber) a spotřebou uvedenou v&nbsp;jednotkách míle/galon. Pro převod na
+jednotky používané v&nbsp;našem regionu lze využít tento graf:</p>
+
+<img src="https://i.iinfo.cz/images/651/r-plots-2-1.png" class="image-416292" alt="&#160;" width="734" height="478" />
+<p><i>Obrázek 3: Přepočet mezi spotřebou v&nbsp;jednotkách l/100 a mpg.<br />
+Zdroj: https://commons.wikimedia.org/wiki/File:Chart_MPG_to_L-100km_v2009-10-08.svg</i></p>
+
+<p>Nejprve si připomeňme, jakým způsobem se z&nbsp;datového rámce získají jen
+ty řádky, které nás zajímají. Jeden z&nbsp;možných způsobů:</p>
+
+<pre>
+<strong>input &lt;- mtcars[,c('wt','mpg')]</strong>
+<strong>print(input)</strong>
+&nbsp;
+                       wt  mpg
+Mazda RX4           2.620 21.0
+Mazda RX4 Wag       2.875 21.0
+Datsun 710          2.320 22.8
+Hornet 4 Drive      3.215 21.4
+Hornet Sportabout   3.440 18.7
+Valiant             3.460 18.1
+Duster 360          3.570 14.3
+Merc 240D           3.190 24.4
+Merc 230            3.150 22.8
+Merc 280            3.440 19.2
+Merc 280C           3.440 17.8
+Merc 450SE          4.070 16.4
+Merc 450SL          3.730 17.3
+Merc 450SLC         3.780 15.2
+Cadillac Fleetwood  5.250 10.4
+Lincoln Continental 5.424 10.4
+Chrysler Imperial   5.345 14.7
+Fiat 128            2.200 32.4
+Honda Civic         1.615 30.4
+Toyota Corolla      1.835 33.9
+Toyota Corona       2.465 21.5
+Dodge Challenger    3.520 15.5
+AMC Javelin         3.435 15.2
+Camaro Z28          3.840 13.3
+Pontiac Firebird    3.845 19.2
+Fiat X1-9           1.935 27.3
+Porsche 914-2       2.140 26.0
+Lotus Europa        1.513 30.4
+Ford Pantera L      3.170 15.8
+Ferrari Dino        2.770 19.7
+Maserati Bora       3.570 15.0
+Volvo 142E          2.780 21.4
+</pre>
+
+<p>Nyní již můžeme použít nový datový rámec a vybrat z&nbsp;něho hodnoty pro
+x-ové souřadnice a souřadnice y-ové:</p>
+
+<pre>
+input &lt;- mtcars[,c('wt','mpg')]
+&nbsp;
+<strong>plot(x = input$wt,y = input$mpg)</strong>
+</pre>
+
+<p>Výsledný diagram by měl vypadat následovně:</p>
+
+<a href="https://www.root.cz/obrazek/416293/"><img src="https://i.iinfo.cz/images/651/r-plots-2-2-prev.png" class="image-416293" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 4: Korelační diagram mezi hmotností a spotřebou auta.</i></p>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. Přidání popisku grafu a popisků os</h2>
+
+<p>Korelační diagram nyní můžeme snadno upravovat specifikací dalších
+(nepovinných) parametrů. S&nbsp;využitím parametrů <strong>xlab</strong>,
+<strong>ylab</strong> a <strong>main</strong> můžeme do grafu přidat jeho
+titulek a popisky jednotlivých os:</p>
+
+<pre>
+input &lt;- mtcars[,c('wt','mpg')]
+&nbsp;
+plot(x = input$wt, y = input$mpg,
+     <strong>xlab = "Weight",</strong>
+     <strong>ylab = "Mileage",</strong>
+     <strong>main = "Weight vs Mileage"</strong>
+)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416294/"><img src="https://i.iinfo.cz/images/651/r-plots-2-3-prev.png" class="image-416294" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 5: Graf s&nbsp;přidaným titulkem i popiskami obou os.</i></p>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. Nastavení limitů (rozsahů) na souřadných osách</h2>
+
+<p>Poměrně často se setkáme s&nbsp;tím, že ze všech bodů (tedy dvojic souřadnic
+[x,y]) budeme chtít vybrat pouze body ležící v&nbsp;nějaké oblasti.
+V&nbsp;korelačním diagramu pochopitelně můžeme nastavovat limity (nebo rozsahy)
+na obou souřadných osách. K&nbsp;tomuto účelu slouží nepovinné parametry
+nazvané <strong>xlim</strong> a <strong>ylim</strong>, kterým se předává
+dvouprvkový vektor s&nbsp;minimální a maximální hodnotou na dané ose:</p>
+
+<pre>
+input &lt;- mtcars[,c('wt','mpg')]
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+     xlab = "Weight",
+     ylab = "Mileage",
+     main = "Weight vs Mileage",
+     <strong>xlim = c(2.5,5),</strong>
+     <strong>ylim = c(15,30)</strong>
+)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416295/"><img src="https://i.iinfo.cz/images/651/r-plots-2-4-prev.png" class="image-416295" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 6: Výřez hodnot z&nbsp;předchozího grafu.</i></p>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Matice několika korelačních diagramů</h2>
+
+<p>V&nbsp;úvodních kapitolách jsme si ukázali datový rámec, který obsahuje
+celkem jedenáct různých numerických hodnot o každém modelu automobilu. Mezi
+některými hodnotami typicky existují různé korelace. A právě zde nastává
+problém &ndash; jakým způsobem zobrazit nebo vůbec nalézt korelace mezi
+několika hodnotami? Ke zkoumání korelací může posloužit skupina grafů zobrazená
+funkcí <strong>pairs</strong>, která zobrazí nikoli jeden korelační diagram,
+ale matici několika diagramů:</p>
+
+<pre>
+<strong>help(pairs)</strong>
+&nbsp;
+pairs                 package:graphics                 R Documentation
+&nbsp;
+Scatterplot Matrices
+&nbsp;
+Description:
+&nbsp;
+     A matrix of scatterplots is produced.
+&nbsp;
+Usage:
+&nbsp;
+     pairs(x, ...)
+&nbsp;
+     ## S3 method for class 'formula'
+     pairs(formula, data = NULL, ..., subset,
+           na.action = stats::na.pass)
+&nbsp;
+     ## Default S3 method:
+     pairs(x, labels, panel = points, ...,
+           horInd = 1:nc, verInd = 1:nc,
+           lower.panel = panel, upper.panel = panel,
+           diag.panel = NULL, text.panel = textPanel,
+           label.pos = 0.5 + has.diag/3, line.main = 3,
+           cex.labels = NULL, font.labels = 1,
+           row1attop = TRUE, gap = 1, log = "")
+     ...
+     ...
+     ...
+     Details:
+&nbsp;
+     The ijth scatterplot contains ‘x[,i]’ plotted against ‘x[,j]’.
+     The scatterplot can be customised by setting panel functions to
+     appear as something completely different. The off-diagonal panel
+     functions are passed the appropriate columns of ‘x’ as ‘x’ and
+     ‘y’: the diagonal panel function (if any) is passed a single
+     column, and the ‘text.panel’ function is passed a single ‘(x, y)’
+     location and the column name.  Setting some of these panel
+     functions to ‘NULL’ is equivalent to _not_ drawing anything there.
+</pre>
+
+<p>Podívejme se nyní na demonstrační příklady. V&nbsp;prvním příkladu je
+zobrazena matice s&nbsp;korelacemi mezi sloupcem <strong>wt</strong> a
+<strong>mpg</strong> a současně i diagram s&nbsp;opačnou korelací (tento
+diagram odpovídá grafu původnímu, pouze je zrcadlen). Diagonální diagramy
+obsahují jméno hodnoty, takže lze velmi snadno dohledat, jakou závislost každý
+z&nbsp;poddiagramů zobrazuje:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+pairs(<strong>~wt+mpg</strong>, data = input,
+      main = "Scatterplot Matrix", cex.axis=0.5)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416296/"><img src="https://i.iinfo.cz/images/651/r-plots-2-5-prev.png" class="image-416296" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 7: Korelace mezi hodnotami ve dvou sloupcích.</i></p>
+
+<p>Ovšem velmi snadno můžeme přidat i další sloupec, takže se nám zobrazí
+šestice různých korelačních diagramů:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+pairs(<strong>~wt+mpg+disp</strong>, data = input,
+      main = "Scatterplot Matrix", cex.axis=0.5)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416297/"><img src="https://i.iinfo.cz/images/651/r-plots-2-6-prev.png" class="image-416297" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 8: Korelace mezi hodnotami ve třech sloupcích.</i></p>
+
+<p>Nic nám nebrání v&nbsp;přidání čtvrtého sloupce &ndash; počet válců (zde
+jsou hodnoty nejméně náhodné):</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+pairs(~wt+mpg+disp+cyl, data = input,
+      main = "Scatterplot Matrix", cex.axis=0.5)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416298/"><img src="https://i.iinfo.cz/images/651/r-plots-2-7-prev.png" class="image-416298" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 9: Korelace mezi hodnotami ve čtyřech sloupcích.</i></p>
+
+<p>Popř.&nbsp;můžeme zobrazit všechny možné kombinace korelací, což ovšem
+s&nbsp;ohledem na omezené rozlišení výsledných obrázků není vůbec praktické
+(muselo by se použít mnohem větší rozlišení):</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+pairs(<strong>input</strong>, data = input,
+      main = "Scatterplot Matrix", cex.axis=0.5)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416299/"><img src="https://i.iinfo.cz/images/651/r-plots-2-8-prev.png" class="image-416299" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 10: Korelace mezi hodnotami ve všech jedenácti sloupcích.</i></p>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Změna stylu vykreslení grafu</h2>
+
+<p>Vraťme se nyní k&nbsp;funkci <strong>plot</strong>. Pokud se podíváme na
+původní grafy, zjistíme, že by je bylo možné vizuálně vylepšit. Původní
+korelační diagram:</p>
+
+<a href="https://www.root.cz/obrazek/416300/"><img src="https://i.iinfo.cz/images/651/r-plots-2-9-prev.png" class="image-416300" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 11: Původní korelační diagram.</i></p>
+
+<p>změníme na:</p>
+
+<a href="https://www.root.cz/obrazek/416301/"><img src="https://i.iinfo.cz/images/651/r-plots-2-10-prev.png" class="image-416301" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 12: Korelační diagram s&nbsp;upravenými styly.</i></p>
+
+<p>Musíme tedy změnit tvar bodů a jejich barvu. K&nbsp;tomu slouží nepovinné
+parametry <strong>pch</strong> a <strong>col</strong>:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+     xlab = "Weight",
+     ylab = "Mileage",
+     main = "Weight vs Mileage",
+     <strong>pch=20,</strong>
+     <strong>col="red"</strong>
+)
+</pre>
+
+<p>Tvar bodů (resp.&nbsp;číslo tvaru) si vyberte z&nbsp;následujícího
+seznamu:</p>
+
+<img src="https://i.iinfo.cz/images/651/r-plots-2-11.png" class="image-416302" alt="&#160;" width="576" height="576" />
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Přidání textu (popisků) k&nbsp;vykresleným bodům</h2>
+
+<p>Do korelačního diagramu je možné přidat i text, resp.&nbsp;přesněji řečeno
+návěští k&nbsp;jednotlivým vykresleným bodům. K&nbsp;tomuto účelu slouží funkce
+nazvaná <strong>text</strong>, kterou lze zavolat po vykreslení grafu. Této
+funkci se předají x-ové souřadnice, y-ové souřadnice a vlastní textové popisky,
+což jsou v&nbsp;našem případě jména jednotlivých řádků v&nbsp;datovém
+rámci:</p>
+
+<pre>
+<strong>text(input$wt, input$mpg, rownames(input), cex=0.5)</strong>
+        ^          ^           ^
+        x          y         vlastní text
+</pre>
+
+<p>Úplný zdrojový kód tohoto demonstračního příkladu vypadá následovně:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+<strong>text(input$wt, input$mpg, rownames(input), cex=0.5)</strong>
+</pre>
+
+<a href="https://www.root.cz/obrazek/416303/"><img src="https://i.iinfo.cz/images/651/r-plots-2-12-prev.png" class="image-416303" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 13: Přidání popisků do korelačního diagramu.</i></p>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Posun popisků v&nbsp;diagramu</h2>
+
+<p>Na předchozím obrázku je patrné, že se popisky překrývají s&nbsp;body, které
+mají popisovat. Tento nedostatek je možné do určité míry napravit tak, že text
+popisků posuneme (samotné body samozřejmě posunovat nesmíme, protože by
+nekorespondovaly s&nbsp;osami). Posun popisků lze snadno provést, protože jeden
+sloupec datového rámce je považován za vektor a k&nbsp;prvkům vektoru se může
+připočítat skalární hodnota (resp.&nbsp;se opět jedná o vektor, který je
+&bdquo;natažen&ldquo; do správné délky):</p>
+
+<pre>
+<strong>input &lt;- mtcars</strong>
+&nbsp;
+<strong>input$wt</strong>
+&nbsp;
+<strong>input$mpg</strong>
+</pre>
+
+<p>Příklad vypíše původní vektory:</p>
+
+<pre>
+ [1] 2.620 2.875 2.320 3.215 3.440 3.460 3.570 3.190 3.150 3.440 3.440 4.070
+[13] 3.730 3.780 5.250 5.424 5.345 2.200 1.615 1.835 2.465 3.520 3.435 3.840
+[25] 3.845 1.935 2.140 1.513 3.170 2.770 3.570 2.780
+&nbsp;
+ [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2 10.4
+[16] 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4 15.8 19.7
+[31] 15.0 21.4
+</pre>
+
+<p>Posun vektorů:</p>
+
+<pre>
+<strong>input &lt;- mtcars</strong>
+&nbsp;
+<strong>input$wt + 2</strong>
+&nbsp;
+<strong>input$mpg + 0.7</strong>
+</pre>
+
+<p>Výsledky:</p>
+
+<pre>
+ [1] 4.620 4.875 4.320 5.215 5.440 5.460 5.570 5.190 5.150 5.440 5.440 6.070
+[13] 5.730 5.780 7.250 7.424 7.345 4.200 3.615 3.835 4.465 5.520 5.435 5.840
+[25] 5.845 3.935 4.140 3.513 5.170 4.770 5.570 4.780
+&nbsp;
+ [1] 21.7 21.7 23.5 22.1 19.4 18.8 15.0 25.1 23.5 19.9 18.5 17.1 18.0 15.9 11.1
+[16] 11.1 15.4 33.1 31.1 34.6 22.2 16.2 15.9 14.0 19.9 28.0 26.7 31.1 16.5 20.4
+[31] 15.7 22.1
+</pre>
+
+<p>Stejnou operaci můžeme provést při volání funkce <strong>text</strong>, což
+je patrné ze zdrojového kódu následujícího demonstračního příkladu:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red",
+   xlim = <strong>c(2.5,4.3)</strong>,
+   ylim = <strong>c(15,26)</strong>,             
+
+)
+&nbsp;
+text(<strong>input$wt+0</strong>, <strong>input$mpg+0.7</strong>, rownames(input), cex=0.4)
+</pre>
+
+<p>Nyní by měly být popisky posunuty a současně by se měl ukázat jen výřez ze
+všech hodnot:</p>
+
+<a href="https://www.root.cz/obrazek/416304/"><img src="https://i.iinfo.cz/images/651/r-plots-2-13-prev.png" class="image-416304" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 14: Posun popisků a zobrazení výrazu z&nbsp;grafu.</i></p>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Přikreslení úseček do diagramu</h2>
+
+<p>Mnohdy je zapotřebí do diagramu (prakticky libovolného typu) přikreslit
+úsečky, které například budou ukazovat lineární trend, nějaké vymezené hodnoty
+apod. Příkladem může být graf, který jsme si ukázali v&nbsp;první části tohoto
+seriálu a který ukazuje teoretický poměr korelace mezi popularitou
+programovacích jazyků na serverech StackOverflow a na GitHubu:</p>
+
+<a href="https://www.root.cz/obrazek/414215/"><img src="https://i.iinfo.cz/images/347/r01-8-prev.png" class="image-414215" alt="&#160;" width="344" height="270" /></a>
+<p><i>Obrázek 15: Jazyk R na RedMonku (viz zvýrazněnou část) + teoretická
+korelace mezi popularitou programovacích jazyků na serverech StackOverflow a na
+GitHubu.<br />
+Zdroj: <a href="https://redmonk.com/">https://redmonk.com/</a></i></p>
+
+<p>Úsečky je možné do grafu zakreslit funkcí pojmenovanou
+<strong>abline</strong>, kterou opět nalezneme ve standardní knihovně
+programovacího jazyka R:</p>
+
+<pre>
+<strong>help(abline)</strong>
+&nbsp;
+abline                package:graphics                 R Documentation
+&nbsp;
+Add Straight Lines to a Plot
+&nbsp;
+Description:
+&nbsp;
+     This function adds one or more straight lines through the current
+     plot.
+&nbsp;
+Usage:
+&nbsp;
+     abline(a = NULL, b = NULL, h = NULL, v = NULL, reg = NULL,
+            coef = NULL, untf = FALSE, ...)
+     &nbsp;
+Arguments:
+&nbsp;
+    a, b: the intercept and slope, single values.
+&nbsp;
+    untf: logical asking whether to _untransform_.  See ‘Details’.
+&nbsp;
+       h: the y-value(s) for horizontal line(s).
+&nbsp;
+       v: the x-value(s) for vertical line(s).
+&nbsp;
+    coef: a vector of length two giving the intercept and slope.
+&nbsp;
+     reg: an object with a ‘coef’ method.  See ‘Details’.
+&nbsp;
+     ...: graphical parameters such as ‘col’, ‘lty’ and ‘lwd’ (possibly
+          as vectors: see ‘Details’) and ‘xpd’ and the line
+          characteristics ‘lend’, ‘ljoin’ and ‘lmitre’.
+</pre>
+
+<p>Povšimněte si, že úsečku je možné zadat několika způsoby:</p>
+
+<ol>
+<li>posunem a sklonem</li>
+<li>y-ovou souřadnicí v&nbsp;případě horizontální úsečky</li>
+<li>x-ovou souřadnicí v&nbsp;případě úsečky vertikální</li>
+<li>vektorem obsahujícím posun a sklon</li>
+<li>výsledkem výpočtu lineární regrese</li>
+<li>atd.</li>
+</ol>
+
+<p><div class="rs-tip-major">Poznámka: ve skutečnosti koeficienty odpovídají
+<i>přímce</i> a nikoli <i>úsečce</i>, ovšem pochopitelně se vykreslí pouze ta
+část přímky, která leží v&nbsp;ploše grafu. V&nbsp;angličtině problém
+s&nbsp;rozlišením nenastává, protože se může použít slovo
+<strong>line</strong>, které mívá (nepřesně) oba významy.</div></p>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Vykreslení dvojice horizontálních úseček do diagramu</h2>
+
+<p>Podívejme se nyní na způsob vykreslení dvojice horizontálních úseček do
+diagramu. V&nbsp;tomto případě nám postačuje zadat pouze posun a žádné další
+hodnoty (popř.&nbsp;pouze parametr <strong>h</strong>):</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex=0.2)
+&nbsp;
+<strong>abline(20,0)</strong>
+<strong>abline(25,0)</strong>
+</pre>
+
+<a href="https://www.root.cz/obrazek/416305/"><img src="https://i.iinfo.cz/images/651/r-plots-2-14-prev.png" class="image-416305" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 16: Dvojice horizontálních úseček dokreslená do diagramu.</i></p>
+
+<p>Alternativní způsob zápisu:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex=0.2)
+&nbsp;
+<strong>abline(a=20, b=0)</strong>
+<strong>abline(a=25, b=0)</strong>
+</pre>
+
+<p>Popř.&nbsp;je možné specifikovat vzdálenost horizontálních úseček od osy x:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex=0.2)
+&nbsp;
+<strong>abline(h=20)</strong>
+<strong>abline(h=25)</strong>
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: všechny tři výše uvedené demonstrační
+příklady vykreslí stejný diagram.</div></p>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Nastavení stylu vykreslení úseček</h2>
+
+<p>Styl vykreslení úseček lze ovlivnit několika parametry, zejména pak
+parametry <strong>col</strong>, <strong>lty</strong> a
+<strong>lwd</strong>:</p>
+
+<table>
+<tr><th>#</th><th>Parametr</th><th>Stručný popis</th></tr>
+<tr><td>1</td><td>col</td><td>barva úsečky</td></tr>
+<tr><td>2</td><td>lty</td><td>styl čáry zapsaný celým číslem 1 až 6</td></tr>
+<tr><td>3</td><td>lwd</td><td>šířka vykreslení úsečky</td></tr>
+</table>
+
+<p>Podívejme se na příklad, v&nbsp;němž se vykreslí dvě úsečky s&nbsp;různým
+stylem:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex=0.2)
+&nbsp;
+<strong>abline(20, 0, col='blue', lty=2, lwd=1)</strong>
+<strong>abline(25, 0, col='darkgreen', lty=2, lwd=1)</strong>
+</pre>
+
+<a href="https://www.root.cz/obrazek/416306/"><img src="https://i.iinfo.cz/images/651/r-plots-2-15-prev.png" class="image-416306" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 17: Změna stylu vykreslení úseček.</i></p>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Šest stylů úseček</h2>
+
+<p>Samotný styl úseček (což je celé číslo v&nbsp;rozsahu 1 až 6),
+resp.&nbsp;přesněji řečeno všech šest stylů, si ukážeme takto:</p>
+
+<pre>
+plot(0, xlim=c(1,7), ylim=c(1,6))
+&nbsp;
+abline(h=1, lwd=1, lty=1, col="black")
+abline(h=2, lwd=1, lty=2, col="blue")
+abline(h=3, lwd=1, lty=3, col="cyan")
+abline(h=4, lwd=1, lty=4, col="green")
+abline(h=5, lwd=1, lty=5, col="orange")
+abline(h=6, lwd=1, lty=6, col="red")
+</pre>
+
+<a href="https://www.root.cz/obrazek/416307/"><img src="https://i.iinfo.cz/images/651/r-plots-2-16-prev.png" class="image-416307" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 18: Šest stylů úseček.</i></p>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že se jedná o vykreslení
+prázdného grafu, v&nbsp;němž je pouze specifikována jeho plocha (limity na
+souřadných osách, ale žádný průběh s&nbsp;daty).</div></p>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Lineární regrese</h2>
+
+<p>Programovací jazyk R obsahuje již ve své základní knihovně velmi užitečnou
+funkci pro výpočet lineární regrese, tj.&nbsp;pro proložení souboru bodů
+v&nbsp;grafu přímkou, a to tak, aby odchylky bodů od této přímky byly
+(v&nbsp;součtu, resp.&nbsp;součtu čtverců) co nejmenší. Předpokládá se přitom,
+že body představují naměřenou veličinu s&nbsp;lineárním průběhem. Pro výpočet
+lineární regrese se používá funkce nazvaná <strong>lm</strong>:</p>
+
+<pre>
+<strong>help(lm)</strong>
+&nbsp;
+lm                    package:stats                    R Documentation
+&nbsp;
+Fitting Linear Models
+&nbsp;
+Description:
+&nbsp;
+     ‘lm’ is used to fit linear models.  It can be used to carry out
+     regression, single stratum analysis of variance and analysis of
+     covariance (although ‘aov’ may provide a more convenient interface
+     for these).
+&nbsp;
+Usage:
+&nbsp;
+     lm(formula, data, subset, weights, na.action,
+        method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
+        singular.ok = TRUE, contrasts = NULL, offset, ...)
+     ...
+     ...
+     ...
+</pre>
+
+<p>Jednoduchý příklad pro výpočet regresní přímky pro soustavu bodů, které
+skutečně na přímce leží:</p>
+
+<pre>
+x &lt;- c(1,2,3,4)
+y &lt;- c(2,4,6,8) + 10
+&nbsp;
+regression &lt;- lm(y~x)
+regression
+</pre>
+
+<p>Výsledek nám říká, že sklon přímky (směrnice) je roven 2 a posun 10:</p>
+
+<pre>
+Call:
+lm(formula = y ~ x)
+&nbsp;
+Coefficients:
+(Intercept)            x  
+         10            2
+</pre>
+
+<p>Můžeme se například pokusit získat regresní přímku, která by odpovídala
+korelaci mezi hodnotami ve sloupcích <strong>mpg</strong> (spotřeba) a
+<strong>wt</strong> (váha):</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp; 
+regression &lt;- lm(input$mpg~input$wt)
+regression
+</pre>
+
+<p>Výsledkem by měly být koeficienty vypočtené přímky (opět posun a
+sklon/směrnice):</p>
+
+<pre>
+Call:
+lm(formula = input$mpg ~ input$wt)
+&nbsp;
+Coefficients:
+(Intercept)     input$wt  
+     37.285       -5.344
+</pre>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Regresní přímka v&nbsp;diagramu</h2>
+
+<p>Přidání regresní přímky do korelačního diagramu je snadné, což je ostatně
+patrné i ze zdrojového kódu následujícího demonstračního příkladu. Povšimněte
+si přitom, že výsledek výpočtu regrese nemusíme rozkládat na posun a směrnici,
+protože ve funkci <strong>abline</strong> lze použít parametr
+<strong>reg</strong>:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex=0.2)
+&nbsp;
+abline(20,0,col='blue', lty=2, lwd=1)
+abline(25,0,col='darkgreen', lty=2, lwd=1)
+&nbsp;
+regression &lt;- lm(input$mpg~input$wt)
+abline(reg=regression, col='lightblue', lwd=2)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416308/"><img src="https://i.iinfo.cz/images/651/r-plots-2-17-prev.png" class="image-416308" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 19: Regresní přímka v&nbsp;diagramu.</i></p>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Průměr a směrodatná odchylka</h2>
+
+<p>Do našeho korelačního diagramu přidáme několik úseček, které mají praktický
+význam. Jedna z&nbsp;úseček bude reprezentovat průměr hodnot (<i>mean</i>),
+druhé dvě pak směrodatnou odchylku (<i>standard deviation</i>). Průměr se
+vypočte velmi snadno funkcí nazvanou přímočaře <strong>mean</strong>:</p>
+
+<pre>
+<strong>help(mean)</strong>
+&nbsp;
+mean                   package:base                    R Documentation
+&nbsp;
+Arithmetic Mean
+&nbsp;
+Description:
+&nbsp;
+     Generic function for the (trimmed) arithmetic mean.
+&nbsp;
+Usage:
+&nbsp;
+     mean(x, ...)
+&nbsp;
+     ## Default S3 method:
+     mean(x, trim = 0, na.rm = FALSE, ...)
+</pre>
+
+<p>Příklad výpočtu:</p>
+
+<pre>
+<strong>input &lt;- mtcars</strong>
+<strong>mean(input$mpg)</strong>
+&nbsp;
+[1] 20.09062
+</pre>
+
+<p>Směrodatná odchylka se vypočte funkcí nazvanou <strong>sd</strong>:</p>
+
+<pre>
+<strong>help(sd)</strong>
+&nbsp;
+sd                    package:stats                    R Documentation
+&nbsp;
+Standard Deviation
+&nbsp;
+Description:
+&nbsp;
+     This function computes the standard deviation of the values in
+     ‘x’.  If ‘na.rm’ is ‘TRUE’ then missing values are removed before
+     computation proceeds.
+&nbsp;
+Usage:
+&nbsp;
+     sd(x, na.rm = FALSE)
+</pre>
+
+<p>Příklad výpočtu:</p>
+
+<pre>
+<strong>input &lt;- mtcars</strong>
+<strong>sd(input$mpg)</strong>
+&nbsp;
+[1] 6.026948
+</pre>
+
+<p>Více nás však budou v&nbsp;grafu zajímat odchylky od průměru, tedy:</p>
+
+<pre>
+<strong>input &lt;- mtcars</strong>
+<strong>m &lt;- mean(input$mpg)</strong>
+<strong>s &lt;- sd(input$mpg)</strong>
+&nbsp;
+<strong>m - s</strong>
+<strong>m + s</strong>
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+[1] 14.06368
+[1] 26.11757
+</pre>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Zakreslení obou statistických hodnot do diagramu</h2>
+
+<p>Přidání obou statistických hodnot do diagramu je již snadné. Průměr bude
+reprezentován světle červenou vodorovnou úsečkou, odchylky od průměru pak
+světle modrou úsečkou. V&nbsp;diagramu ponecháme i regresní přímku:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex = 0.2)
+&nbsp;
+<strong>abline(h = mean(input$mpg), col = '#ff8080', lwd = 1, lty = 2)</strong>
+&nbsp;
+<strong>abline(h = mean(input$mpg) + sd(input$mpg), col = 'steelblue', lwd = 1, lty = 2)</strong>
+<strong>abline(h = mean(input$mpg) - sd(input$mpg), col = 'steelblue', lwd = 1, lty = 2)</strong>
+&nbsp;
+regression &lt;- lm(input$mpg~input$wt)
+abline(reg=regression, col='lightblue', lwd=2)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416309/"><img src="https://i.iinfo.cz/images/651/r-plots-2-18-prev.png" class="image-416309" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 20: Průměr o odchylky od průměru v&nbsp;korelačním diagramu.</i></p>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Získání koeficientů z&nbsp;regresního modelu</h2>
+
+<p>Na závěr si ve stručnosti ukažme, jak je možné z&nbsp;výsledku regresního
+modelu získat oba koeficienty přímky, tedy jak její sklon, tak i posun:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp; 
+regression &lt;- lm(input$mpg~input$wt)
+ &nbsp; 
+a &lt;- coefficients(regression)[1] #intercept
+b &lt;- coefficients(regression)[2] #slope
+&nbsp; 
+regression
+&nbsp; 
+print("intercept")
+a
+&nbsp; 
+print("slope")
+b
+</pre>
+
+<p>Po spuštění skriptu se nejprve zobrazí výsledek výpočtu regrese a následně i
+oba koeficienty:</p>
+
+<pre>
+Call:
+lm(formula = input$mpg ~ input$wt)
+&nbsp;
+Coefficients:
+(Intercept)     input$wt  
+     37.285       -5.344  
+&nbsp;
+[1] "intercept"
+(Intercept) 
+   37.28513 
+&nbsp;
+[1] "slope"
+ input$wt 
+-5.344472 
+</pre>
+
+<p>Příklad pro vykreslení korelačního diagramu tedy můžeme upravit takovým
+způsobem, že úsečku zadáme koeficienty <strong>a</strong> a <strong>b</strong>,
+které byly získány právě z&nbsp;regresního modelu:</p>
+
+<pre>
+input &lt;- mtcars
+&nbsp;
+plot(x = input$wt,y = input$mpg,
+   xlab = "Weight",
+   ylab = "Mileage",
+   main = "Weight vs Mileage",
+   pch=20, col="red"
+)
+&nbsp;
+text(input$wt+0, input$mpg+0.7, rownames(input), cex = 0.2)
+&nbsp;
+abline(h = mean(input$mpg), col = '#ff8080', lwd = 1, lty = 2)
+&nbsp;
+abline(h = mean(input$mpg) + sd(input$mpg), col = 'steelblue', lwd = 1, lty = 2)
+abline(h = mean(input$mpg) - sd(input$mpg), col = 'steelblue', lwd = 1, lty = 2)
+&nbsp;
+regression &lt;- lm(input$mpg~input$wt)
+&nbsp;
+<strong>a &lt;- coefficients(regression)[1] #intercept</strong>
+<strong>b &lt;- coefficients(regression)[2] #slope</strong>
+&nbsp;
+abline(<strong>a=a, b=b</strong>, col="steelblue", lwd=2)
+</pre>
+
+<a href="https://www.root.cz/obrazek/416310/"><img src="https://i.iinfo.cz/images/651/r-plots-2-19-prev.png" class="image-416310" alt="&#160;" width="270" height="270" /></a>
+<p><i>Obrázek 21: Totožný diagram, jaký byl vypočten i předchozím demonstračním
+příkladem.</i></p>
+
+<p><div class="rs-tip-major">Poznámka: sice zadáváme koeficienty <i>přímky</i>,
+ovšem v&nbsp;konečném grafu je přímka omezena jeho plochou, takže se
+geometricky jedná o úsečku.</div></p>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+stále jen jednotky kilobajtů), můžete namísto toho použít odkazy na jednotlivé
+demonstrační příklady, které naleznete v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td>1</td><td>01_plot_wt_mpg.R</td><td>jednoduchý korelační diagram (bodový graf)</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/01_plot_wt_mpg.R">https://github.com/tisnik/r-examples/blob/master/07-plots/01_plot_wt_mpg.R</a></td></tr>
+<tr><td>2</td><td>02_plot_labels.R</td><td>přidání popisku grafu a popisků os do korelačního diagramu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/02_plot_labels.R">https://github.com/tisnik/r-examples/blob/master/07-plots/02_plot_labels.R</a></td></tr>
+<tr><td>3</td><td>03_plot_limits.R</td><td>nastavení limitů (rozsahů) na souřadných osách korelačního diagramu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/03_plot_limits.R">https://github.com/tisnik/r-examples/blob/master/07-plots/03_plot_limits.R</a></td></tr>
+<tr><td>4</td><td>04_pairs_2.R</td><td>korelace mezi hodnotami ve dvou sloupcích</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/04_pairs_2.R">https://github.com/tisnik/r-examples/blob/master/07-plots/04_pairs_2.R</a></td></tr>
+<tr><td>5</td><td>05_pairs_3.R</td><td>korelace mezi hodnotami ve třech sloupcích</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/05_pairs_3.R">https://github.com/tisnik/r-examples/blob/master/07-plots/05_pairs_3.R</a></td></tr>
+<tr><td>6</td><td>06_pairs_4.R</td><td>korelace mezi hodnotami ve čtyřech sloupcích</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/06_pairs_4.R">https://github.com/tisnik/r-examples/blob/master/07-plots/06_pairs_4.R</a></td></tr>
+<tr><td>7</td><td>07_pairs_all.R</td><td>korelace mezi hodnotami ve všech jedenácti sloupcích</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/07_pairs_all.R">https://github.com/tisnik/r-examples/blob/master/07-plots/07_pairs_all.R</a></td></tr>
+<tr><td>8</td><td>08_plot_style.R</td><td>změna stylu vykreslení grafu (tvar a barva jednotlivých bodů)</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/08_plot_style.R">https://github.com/tisnik/r-examples/blob/master/07-plots/08_plot_style.R</a></td></tr>
+<tr><td>9</td><td>09_plot_and_text.R</td><td>přidání textu k&nbsp;vykresleným bodům</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/09_plot_and_text.R">https://github.com/tisnik/r-examples/blob/master/07-plots/09_plot_and_text.R</a></td></tr>
+<tr><td>10</td><td>10_plot_and_text_offset.R</td><td>posun textů v&nbsp;rámci grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/10_plot_and_text_offset.R">https://github.com/tisnik/r-examples/blob/master/07-plots/10_plot_and_text_offset.R</a></td></tr>
+<tr><td>11</td><td>11_plot_horizontal_abline.R</td><td>přidání horizontálních úseček do grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/11_plot_horizontal_abline.R">https://github.com/tisnik/r-examples/blob/master/07-plots/11_plot_horizontal_abline.R</a></td></tr>
+<tr><td>12</td><td>12_plot_horizontal_abline_style.R</td><td>přidání horizontálních úseček do grafu se změnou jejich stylu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/12_plot_horizontal_abline_style.R">https://github.com/tisnik/r-examples/blob/master/07-plots/12_plot_horizontal_abline_style.R</a></td></tr>
+<tr><td>13</td><td>13_plot_regression.R</td><td>regresní přímka v&nbsp;grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/13_plot_regression.R">https://github.com/tisnik/r-examples/blob/master/07-plots/13_plot_regression.R</a></td></tr>
+<tr><td>14</td><td>14_plot_regression_mean_sd.R</td><td>regresní přímka, průměrná hodnota a standardní odchylka</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/14_plot_regression_mean_sd.R">https://github.com/tisnik/r-examples/blob/master/07-plots/14_plot_regression_mean_sd.R</a></td></tr>
+<tr><td>15</td><td>15_plot_regression_mean_sd.R</td><td>regresní přímka, průměrná hodnota a standardní odchylka</td><td><a href="https://github.com/tisnik/r-examples/blob/master/07-plots/15_plot_regression_mean_sd.R">https://github.com/tisnik/r-examples/blob/master/07-plots/15_plot_regression_mean_sd.R</a></td></tr>
+</table>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>Grid<br />
+<a href="https://www.stat.auckland.ac.nz/~paul/grid/grid.html">https://www.stat.auckland.ac.nz/~paul/grid/grid.html</a>
+</li>
+
+<li>Lattice: Multivariate Data Visualization with R<br />
+<a href="http://lmdvr.r-forge.r-project.org/figures/figures.html">http://lmdvr.r-forge.r-project.org/figures/figures.html</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded &amp; Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>Cesta erka: Krok nultý &ndash; instalace &amp; nastavení – prostředí, projekty, package<br />
+<a href="https://www.jla-data.net/r4su/r4su-environment-setup/">https://www.jla-data.net/r4su/r4su-environment-setup/</a>
+</li>
+
+<li>Cesta erka: Krok první &ndash; operace a struktury – proměnné, rovnítka a dolary<br />
+<a href="https://www.jla-data.net/r4su/r4su-data-structures/">https://www.jla-data.net/r4su/r4su-data-structures/</a>
+</li>
+
+<li>Cesta erka: Krok druhý &ndash; načtení externích dat – csvčka, excely a databáze<br />
+<a href="https://www.jla-data.net/r4su/r4su-read-data/">https://www.jla-data.net/r4su/r4su-read-data/</a>
+</li>
+
+<li>Cesta erka: Krok třetí &ndash; manipulace s daty – dplyr, slovesa a pajpy<br />
+<a href="https://www.jla-data.net/r4su/r4su-manipulate-data/">https://www.jla-data.net/r4su/r4su-manipulate-data/</a>
+</li>
+
+<li>Cesta erka: Krok čtvrtý &ndash; podání výsledků – ggplot, geomy a estetiky<br />
+<a href="https://www.jla-data.net/r4su/r4su-report-results/">https://www.jla-data.net/r4su/r4su-report-results/</a>
+</li>
+
+<li>Cesta erka: Krok pátý &ndash; case study – případ piva v&nbsp;Praze<br />
+<a href="https://www.jla-data.net/r4su/r4su-case-study-beer/">https://www.jla-data.net/r4su/r4su-case-study-beer/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+<li>R - Arrays<br />
+<a href="https://www.tutorialspoint.com/r/r_arrays.htm">https://www.tutorialspoint.com/r/r_arrays.htm</a>
+</li>
+
+<li>Array vs Matrix in R Programming<br />
+<a href="https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp">https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp</a>
+</li>
+
+<li>Online R Language IDE<br />
+<a href="https://www.jdoodle.com/execute-r-online/">https://www.jdoodle.com/execute-r-online/</a>
+</li>
+
+<li>Execute R Online (R v3.4.1)<br />
+<a href="https://www.tutorialspoint.com/execute_r_online.php">https://www.tutorialspoint.com/execute_r_online.php</a>
+</li>
+
+<li>Snippets: Run any R code you like. There are over twelve thousand R packages preloaded<br />
+<a href="https://rdrr.io/snippets/">https://rdrr.io/snippets/</a>
+</li>
+
+<li>R Package Documentation<br />
+<a href="https://rdrr.io/">https://rdrr.io/</a>
+</li>
+
+<li>Data Reshaping in R – Popular Functions to Organise Data<br />
+<a href="https://techvidvan.com/tutorials/data-reshaping-in-r/">https://techvidvan.com/tutorials/data-reshaping-in-r/</a>
+</li>
+
+<li>What is an R Data Frame?<br />
+<a href="https://magoosh.com/data-science/what-is-an-r-data-frame/">https://magoosh.com/data-science/what-is-an-r-data-frame/</a>
+</li>
+
+<li>What's a data frame?<br />
+<a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1">https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1</a>
+</li>
+
+<li>data.frame<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame</a>
+</li>
+
+<li>as.data.frame<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as.data.frame">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as.data.frame</a>
+</li>
+
+<li>table<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table</a>
+</li>
+
+<li>Python Pandas - DataFrame<br />
+<a href="https://www.tutorialspoint.com/python_pandas/python_pandas_dataframe.htm">https://www.tutorialspoint.com/python_pandas/python_pandas_dataframe.htm</a>
+</li>
+
+<li>The Pandas DataFrame: Make Working With Data Delightful<br />
+<a href="https://realpython.com/pandas-dataframe/">https://realpython.com/pandas-dataframe/</a>
+</li>
+
+<li>Python | Pandas DataFrame<br />
+<a href="https://www.geeksforgeeks.org/python-pandas-dataframe/">https://www.geeksforgeeks.org/python-pandas-dataframe/</a>
+</li>
+
+<li>R - Factors<br />
+<a href="https://www.tutorialspoint.com/r/r_factors.htm">https://www.tutorialspoint.com/r/r_factors.htm</a>
+</li>
+
+<li>R - Scatterplots<br />
+<a href="https://www.tutorialspoint.com/r/r_scatterplots.htm">https://www.tutorialspoint.com/r/r_scatterplots.htm</a>
+</li>
+
+<li>Quick guide to line types (lty) in R<br />
+<a href="https://www.benjaminbell.co.uk/2018/02/quick-guide-to-line-types-lty-in-r.html">https://www.benjaminbell.co.uk/2018/02/quick-guide-to-line-types-lty-in-r.html</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
