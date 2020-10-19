@@ -1,0 +1,1828 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title></title>
+<meta name="Author" content="Pavel Tisnovsky" />
+<meta name="Generator" content="vim" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+         body {color:#000000; background:#ffffff;}
+         h1  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#c00000; text-align:center; padding-left:1em}
+         h2  {font-family: arial, helvetica, sans-serif; color:#ffffff; background-color:#0000c0; padding-left:1em; text-align:left}
+         h3  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#c0c0c0; padding-left:1em; text-align:left}
+         h4  {font-family: arial, helvetica, sans-serif; color:#000000; background-color:#e0e0e0; padding-left:1em; text-align:left}
+         a   {font-family: arial, helvetica, sans-serif;}
+         li  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ol  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         ul  {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify; width:450px;}
+         p   {font-family: arial, helvetica, sans-serif; color:#000000; text-align:justify;}
+         pre {background:#e0e0e0}
+</style>
+</head>
+
+<body>
+
+<h1></h1>
+
+<h3>Pavel Tišnovský</h3>
+
+<p></p>
+
+<h1>Úvodník</h1>
+
+<p>V šesté části seriálu o programovacím jazyce R nejprve dokončíme popis práce s&nbsp;datovými rámci a ve druhé polovině se budeme věnovat tvorbě jednoduchých grafů, jejichž vstupní data jsou získávána právě z datových rámců.</p>
+
+
+
+<h2>Obsah</h2>
+
+<p><a href="#k01">1. Výpis struktury datového rámce, využití faktorů</a></p>
+<p><a href="#k02">2. Konstrukce datového rámce bez použití faktorů</a></p>
+<p><a href="#k03">3. Výpočet a výpis statistických informací o datovém rámci</a></p>
+<p><a href="#k04">4. Extrakce vybraných sloupců z&nbsp;datového rámce</a></p>
+<p><a href="#k05">5. Extrakce vybraných řádků z&nbsp;datového rámce</a></p>
+<p><a href="#k06">6. Přidání nového sloupce do datového rámce</a></p>
+<p><a href="#k07">7. Konverze datového rámce na matici</a></p>
+<p><a href="#k08">8. Datový rámec získaný z&nbsp;matice &ndash; jednoduchý kalendář</a></p>
+<p><a href="#k09">9. Funkce <strong>rbind()</strong> a <strong>cbind()</strong></a></p>
+<p><a href="#k10">10. Sloupcový graf s&nbsp;hodnotami vyčtenými z&nbsp;datového rámce</a></p>
+<p><a href="#k11">11. Přidání popisku horizontální osy do grafu</a></p>
+<p><a href="#k12">12. Úprava stylu zobrazení grafu</a></p>
+<p><a href="#k13">13. Orientace popisků na horizontální ose</a></p>
+<p><a href="#k14">14. Přidání liniového grafu do grafu sloupcového</a></p>
+<p><a href="#k15">15. Specifikace rozsahu hodnot na vertikální ose</a></p>
+<p><a href="#k16">*** 16. Pokus o vytvoření dvou skupin sloupců</a></p>
+<p><a href="#k17">*** 17. Zobrazení sloupcového grafu se dvěma skupinami sloupců</a></p>
+<p><a href="#k18">*** 18. Další typy grafů</a></p>
+<p><a href="#k19">19. Repositář s&nbsp;demonstračními příklady</a></p>
+<p><a href="#k20">20. Odkazy na Internetu</a></p>
+
+
+
+<p><a name="k01"></a></p>
+<h2 id="k01">1. Výpis struktury datového rámce, využití faktorů</h2>
+
+<p>Na <a
+href="https://www.root.cz/clanky/programovaci-jazyk-r-seznamy-a-datove-ramce/">předchozí
+článek</a> o <a
+href="https://www.root.cz/serialy/programovaci-jazyk-r/">programovacím jazyku
+R</a> dnes navážeme, protože si ukážeme některé další operace, které je možné
+provádět s&nbsp;datovými rámci. Nejprve se podíváme na funkci pojmenovanou
+<strong>str</strong>, která slouží pro výpis <u>str</u>uktury objektu, tedy i
+datového rámce:</p>
+
+<pre>
+str                   package:utils                    R Documentation
+&nbsp;
+Compactly Display the Structure of an Arbitrary R Object
+&nbsp;
+Description:
+&nbsp;
+     Compactly display the internal *str*ucture of an R object, a
+     diagnostic function and an alternative to ‘summary’ (and to some
+     extent, ‘dput’).  Ideally, only one line for each ‘basic’
+     structure is displayed.  It is especially well suited to compactly
+     display the (abbreviated) contents of (possibly nested) lists.
+     The idea is to give reasonable output for *any* R object.  It
+     calls ‘args’ for (non-primitive) function objects.
+&nbsp;
+     ‘strOptions()’ is a convenience function for setting ‘options(str
+     = .)’, see the examples.
+&nbsp;
+Usage:
+&nbsp;
+     str(object, ...)
+&nbsp;
+     ## S3 method for class 'data.frame'
+     str(object, ...)
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: název této funkce může být poněkud
+matoucí, protože v&nbsp;jiných programovacích jazycích slouží stejnojmenná
+funkce pro převod objektu na řetězec.</div></p>
+
+<p>Vraťme se k&nbsp;demonstračnímu příkladu s&nbsp;datovým rámcem nesoucím
+informace o popularitě programovacích jazyků. Tento rámec vytvoříme systémem,
+který již známe z&nbsp;předchozího článku a následně si necháme vytisknout
+strukturu tohoto rámce funkcí <strong>str</strong>:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(<strong>str(languages)</strong>)
+</pre>
+
+<p>Výsledek by mohl vypadat následovně:</p>
+
+<pre>
+'data.frame':   9 obs. of  4 variables:
+ $ id    : int  1 2 3 4 5 6 7 8 9
+ $ name  : Factor w/ 9 levels "C","C#","C++",..: 1 4 7 3 2 9 5 6 8
+ $ usage : num  15.95 13.48 10.47 7.11 4.58 ...
+ $ change: num  0.74 -3.18 0.59 1.48 1.18 0.83 0.41 0.62 1.33
+NULL
+</pre>
+
+<p>Povšimněte si, že jména programovacích jazyků nejsou uložena formou běžných
+řetězců, ale takzvaných <i>faktorů</i>. Jedná se o datový typ používaný ve
+chvíli, kdy nějaký sloupec obsahuje množství opakujících se hodnot,
+například:</p>
+
+<pre>
+height &lt;- c(132,151,162,139,166,147,122)
+weight &lt;- c(48,49,66,53,67,52,40)
+gender &lt;- c("male","male","female","female","male","female","male")
+&nbsp;
+# Create the data frame.
+input_data &lt;- data.frame(height,weight,gender)
+print(input_data)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+  height weight gender
+1    132     48   male
+2    151     49   male
+3    162     66 female
+4    139     53 female
+5    166     67   male
+6    147     52 female
+7    122     40   male
+</pre>
+
+<p>Výpis faktorů v&nbsp;posledním sloupci:</p>
+
+<pre>
+print(input_data$gender)
+</pre>
+
+<p>S&nbsp;výsledkem:</p>
+
+<pre>
+Levels: female male
+</pre>
+
+
+
+<p><a name="k02"></a></p>
+<h2 id="k02">2. Konstrukce datového rámce bez použití faktorů</h2>
+
+<p>Faktory mohou být velmi užitečné v&nbsp;těch případech, ve kterých se
+textová (resp.&nbsp;přesněji řečeno řetězcová) data v&nbsp;nějakém sloupci
+opakují. To však není případ vektoru s&nbsp;programovacími jazyky, takže se
+pokusme převod řetězců na faktory při konstrukci datových rámců vypnout.
+Provede se to následujícím způsobem (viz zvýrazněný řádek):</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   <strong>stringsAsFactors = FALSE</strong>
+)
+&nbsp;
+print(languages)
+</pre>
+
+<p>Vytvořený datový rámec vypadá zdánlivě stejně, jako tomu bylo i
+v&nbsp;prvním demonstračním příkladu:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+<p>Pokud si ovšem necháme vypsat jeho strukturu funkcí <strong>str</strong>,
+poznáme rozdíl:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   <strong>stringsAsFactors = FALSE</strong>
+)
+&nbsp;
+print(<strong>str(languages)</strong>)
+</pre>
+
+<p>Ve struktuře je patrné, že jména programovacích jazyků jsou nyní
+reprezentována běžnými řetězci:</p>
+
+<pre>
+'data.frame':   9 obs. of  4 variables:
+ $ id    : int  1 2 3 4 5 6 7 8 9
+ <strong>$ name  : chr  "C" "Java" "Python" "C++" ...</strong>
+ $ usage : num  15.95 13.48 10.47 7.11 4.58 ...
+ $ change: num  0.74 -3.18 0.59 1.48 1.18 0.83 0.41 0.62 1.33
+NULL
+</pre>
+
+
+
+<p><a name="k03"></a></p>
+<h2 id="k03">3. Výpočet a výpis statistických informací o datovém rámci</h2>
+
+<p>Další užitečnou funkcí, s&nbsp;níž se v&nbsp;dnešním článku seznámíme, je
+funkce nazvaná <strong>summary</strong>:</p>
+
+<pre>
+<strong>help(summary)</strong>
+&nbsp;
+summary                  package:base                  R Documentation
+&nbsp;
+Object Summaries
+&nbsp;
+Description:
+&nbsp;
+     ‘summary’ is a generic function used to produce result summaries
+     of the results of various model fitting functions.  The function
+     invokes particular ‘methods’ which depend on the ‘class’ of the
+     first argument.
+&nbsp;
+Usage:
+&nbsp;
+     summary(object, ...)
+&nbsp;
+     ## Default S3 method:
+     summary(object, ..., digits)
+     ## S3 method for class 'data.frame'
+     summary(object, maxsum = 7,
+            digits = max(3, getOption("digits")-3), ...)
+&nbsp;
+     ## S3 method for class 'factor'
+     summary(object, maxsum = 100, ...)
+&nbsp;
+     ## S3 method for class 'matrix'
+     summary(object, ...)
+&nbsp;
+     ## S3 method for class 'summaryDefault'
+     format(x, digits = max(3L, getOption("digits") - 3L), ...)
+      ## S3 method for class 'summaryDefault'
+     print(x, digits = max(3L, getOption("digits") - 3L), ...)
+</pre>
+
+<p>Tato funkce získá z&nbsp;datového rámce data uložená v&nbsp;jednotlivých
+sloupcích a vypočte z&nbsp;nich různé statistické informace:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   <strong>stringsAsFactors = FALSE</strong>
+)
+&nbsp;
+print(<strong>summary(languages)</strong>)
+</pre>
+
+<p>Výsledek může vypadat následovně:</p>
+
+<pre>
+       id        name               usage            change       
+ Min.   :1   Length:9           Min.   : 2.370   Min.   :-3.1800  
+ 1st Qu.:3   Class :character   1st Qu.: 2.540   1st Qu.: 0.5900  
+ Median :5   Mode  :character   Median : 4.580   Median : 0.7400  
+ Mean   :5                      Mean   : 7.012   Mean   : 0.4444  
+ 3rd Qu.:7                      3rd Qu.:10.470   3rd Qu.: 1.1800  
+ Max.   :9                      Max.   :15.950   Max.   : 1.4800
+</pre>
+
+<p>Popř.&nbsp;při použití faktorů ve sloupci se jmény programovacích
+jazyků:</p>
+
+<pre>
+       id            name       usage            change       
+ Min.   :1   C         :1   Min.   : 2.370   Min.   :-3.1800  
+ 1st Qu.:3   C#        :1   1st Qu.: 2.540   1st Qu.: 0.5900  
+ Median :5   C++       :1   Median : 4.580   Median : 0.7400  
+ Mean   :5   Java      :1   Mean   : 7.012   Mean   : 0.4444  
+ 3rd Qu.:7   JavaScript:1   3rd Qu.:10.470   3rd Qu.: 1.1800  
+ Max.   :9   PHP       :1   Max.   :15.950   Max.   : 1.4800  
+             (Other)   :3    
+</pre>
+
+<p>Užitečné jsou především statistické informace o numerických sloupcích, u
+nichž se získá minimum, maximum, průměr, medián a první a třetí kvartil (Q1 a
+Q3).</p>
+
+
+
+<p><a name="k04"></a></p>
+<h2 id="k04">4. Extrakce vybraných sloupců z&nbsp;datového rámce</h2>
+
+<p>S&nbsp;datovými rámci je možné provádět i různé transformace
+popř.&nbsp;extrakce (výběry) určitých dat. V&nbsp;dalším demonstračním příkladu
+je ukázáno, jak lze získat nový datový rámec, který však bude obsahovat pouze
+dva vybrané sloupce z&nbsp;rámce původního:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   stringsAsFactors = FALSE
+)
+&nbsp;
+print(<strong>data.frame(languages$name, languages$change)</strong>)
+</pre>
+
+<p>Nový datový rámec bude mít skutečně pouze dva sloupce (a všech devět
+řádků):</p>
+
+<pre>
+  languages.name languages.change
+1              C             0.74
+2           Java            -3.18
+3         Python             0.59
+4            C++             1.48
+5             C#             1.18
+6   Visual Basic             0.83
+7     JavaScript             0.41
+8            PHP             0.62
+9              R             1.33
+</pre>
+
+<p>Alternativní příklad s&nbsp;jiným výběrem, který je kompatibilní
+s&nbsp;dalšími programovacími jazyky:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   stringsAsFactors = FALSE
+)
+&nbsp;
+<strong>d2 = data.frame(languages["name"], languages["usage"])</strong>
+print(d2)
+&nbsp;
+print(str(d2))
+</pre>
+
+<p>Výsledky:</p>
+
+<pre>
+          name usage
+1            C 15.95
+2         Java 13.48
+3       Python 10.47
+4          C++  7.11
+5           C#  4.58
+6 Visual Basic  4.12
+7   JavaScript  2.54
+8          PHP  2.49
+9            R  2.37
+&nbsp;
+'data.frame':   9 obs. of  2 variables:
+ $ name : chr  "C" "Java" "Python" "C++" ...
+ $ usage: num  15.95 13.48 10.47 7.11 4.58 ...
+NULL
+</pre>
+
+
+
+<p><a name="k05"></a></p>
+<h2 id="k05">5. Extrakce vybraných řádků z&nbsp;datového rámce</h2>
+
+<p>Podobně jako jsme vybrali sloupce můžeme z&nbsp;datového rámce vybírat i
+řádky. Nejjednodušší je situace ve chvíli, kdy řádky tvoří posloupnost:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   stringsAsFactors = FALSE
+)
+&nbsp;
+print(<strong>languages[7:9,]</strong>)
+</pre>
+
+<p>V&nbsp;tomto případě skutečně došlo k&nbsp;výběru řádků 7, 8 a 9
+z&nbsp;většího datového rámce:</p>
+
+<pre>
+  id       name usage change
+7  7 JavaScript  2.54   0.41
+8  8        PHP  2.49   0.62
+9  9          R  2.37   1.33
+</pre>
+
+<p>Nic nám ovšem nebrání v&nbsp;nahodilém výběru řádků, což je ukázáno na
+dalším demonstračním příkladu:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   stringsAsFactors = FALSE
+)
+&nbsp;
+print(<strong>languages[c(1, 3, 9),]</strong>)
+</pre>
+
+<p>S&nbsp;tímto výsledkem:</p>
+
+<pre>
+  id   name usage change
+1  1      C 15.95   0.74
+3  3 Python 10.47   0.59
+9  9      R  2.37   1.33
+</pre>
+
+<p>Kombinovat můžeme výběr řádků i sloupců, což je vlastně stejný postup, jaký
+známe při práci s&nbsp;maticemi:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37), 
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   stringsAsFactors = FALSE
+)
+&nbsp;
+print(<strong>languages[c(1, 3, 9), c(2, 4)]</strong>)
+</pre>
+
+<p>Nyní budou výsledky vypadat následovně:</p>
+
+<pre>
+    name change
+1      C   0.74
+3 Python   0.59
+9      R   1.33
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: mnohem užitečnější je však výběr dat na
+základě nějakých kritérií. S&nbsp;tímto konceptem se podrobněji seznámíme
+příště.</div></p>
+
+
+
+<p><a name="k06"></a></p>
+<h2 id="k06">6. Přidání nového sloupce do datového rámce</h2>
+
+<p>Do datového rámce můžeme přidat nový sloupec způsobem, který je ukázán
+v&nbsp;následujícím demonstračním příkladu. Nejprve zkonstruujeme datový rámec
+pouze se třemi sloupci a následně přidáme sloupec čtvrtý:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37)
+)
+&nbsp;
+print(languages)
+&nbsp;
+<strong>languages$change &lt;-  c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)</strong>
+&nbsp;
+print("------------------------------------")
+print(languages)
+</pre>
+
+<p>Po spuštění příkladu se zobrazí jak původní rámec s&nbsp;pouhými třemi
+sloupci, tak i rámec rozšířený o další sloupec:</p>
+
+<pre>
+  id         name usage
+1  1            C 15.95
+2  2         Java 13.48
+3  3       Python 10.47
+4  4          C++  7.11
+5  5           C#  4.58
+6  6 Visual Basic  4.12
+7  7   JavaScript  2.54
+8  8          PHP  2.49
+9  9            R  2.37
+&nbsp;
+[1] "------------------------------------"
+&nbsp;
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+<p>Alternativní způsob zápisu známý z&nbsp;jiných programovacích jazyků je
+taktéž možný a podporovaný:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37)
+)
+&nbsp;
+print(languages)
+&nbsp;
+<strong>languages["change"] &lt;-  c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)</strong>
+&nbsp;
+print("------------------------------------")
+print(languages)
+</pre>
+
+<p>Výsledky:</p>
+
+<pre>
+  id         name usage
+1  1            C 15.95
+2  2         Java 13.48
+3  3       Python 10.47
+4  4          C++  7.11
+5  5           C#  4.58
+6  6 Visual Basic  4.12
+7  7   JavaScript  2.54
+8  8          PHP  2.49
+9  9            R  2.37
+&nbsp;
+[1] "------------------------------------"
+&nbsp;
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+<p>V&nbsp;případě, že je přidávaný sloupec kratší (ale datový rámec má délku
+rovnou celočíselnému násobku délky sloupce), je provedeno rozkopírování
+dat:</p>
+
+<pre>
+languages &lt;- data.frame(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37)
+)
+&nbsp; 
+print(languages)
+&nbsp; 
+<strong>languages$change &lt;-  c(0, 50, 100)</strong>
+&nbsp; 
+print("------------------------------------")
+print(languages)
+</pre>
+
+<p>Výsledek nyní bude vypadat odlišně:</p>
+
+<pre>
+  id         name usage
+1  1            C 15.95
+2  2         Java 13.48
+3  3       Python 10.47
+4  4          C++  7.11
+5  5           C#  4.58
+6  6 Visual Basic  4.12
+7  7   JavaScript  2.54
+8  8          PHP  2.49
+9  9            R  2.37
+&nbsp;
+[1] "------------------------------------"
+&nbsp;
+  id         name usage change
+1  1            C 15.95      0
+2  2         Java 13.48     50
+3  3       Python 10.47    100
+4  4          C++  7.11      0
+5  5           C#  4.58     50
+6  6 Visual Basic  4.12    100
+7  7   JavaScript  2.54      0
+8  8          PHP  2.49     50
+9  9            R  2.37    100
+</pre>
+
+<p>Opačný postup však možný není &ndash; přidávaný sloupec nesmí být delší, než
+odpovídá délce datového rámce:</p>
+
+<pre>
+languages &lt;- data.frame(
+   id = c (1:9), 
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37)
+)
+&nbsp; 
+print(languages)
+&nbsp;
+<strong>languages$change &lt;-  seq(1, 50)</strong>
+&nbsp;
+print("------------------------------------")
+print(languages)
+</pre>
+
+<p>Tentokrát dojde při pokusu o spuštění příkladu k&nbsp;chybě:</p>
+
+<pre>
+  id         name usage
+1  1            C 15.95
+2  2         Java 13.48
+3  3       Python 10.47
+4  4          C++  7.11
+5  5           C#  4.58
+6  6 Visual Basic  4.12
+7  7   JavaScript  2.54
+8  8          PHP  2.49
+9  9            R  2.37
+&nbsp;
+Error in `$&lt;-.data.frame`(`*tmp*`, change, value = 1:50) : 
+  <strong>replacement has 50 rows, data has 9</strong>
+Calls: $&lt;- -&gt; $&lt;-.data.frame
+Execution halted
+</pre>
+
+
+
+<p><a name="k07"></a></p>
+<h2 id="k07">7. Konverze datového rámce na matici</h2>
+
+<p>V&nbsp;dalším demonstračním příkladu si ukážeme jednu poměrně často
+prováděnou operaci &ndash; konverzi datového rámce na &bdquo;obyčejnou&ldquo;
+matici. To pochopitelně není zcela bezproblémové, protože všechny prvky matice
+musí být stejného datového typu. Pokud jsou řetězce reprezentovány formou
+faktorů, budou převedeny na celá čísla (indexy):</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(languages)
+&nbsp;
+print("-------------------------------")
+&nbsp;
+<strong>m &lt;- data.matrix(languages)</strong>
+print(class(m))
+print(m)
+</pre>
+
+<p>Příklad nejprve zobrazí původní datový rámec a posléze vytvořenou
+matici:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+&nbsp;
+[1] "-------------------------------"
+&nbsp;
+[1] "matrix"
+      id name usage change
+ [1,]  1    1 15.95   0.74
+ [2,]  2    4 13.48  -3.18
+ [3,]  3    7 10.47   0.59
+ [4,]  4    3  7.11   1.48
+ [5,]  5    2  4.58   1.18
+ [6,]  6    9  4.12   0.83
+ [7,]  7    5  2.54   0.41
+ [8,]  8    6  2.49   0.62
+ [9,]  9    8  2.37   1.33
+</pre>
+
+<p>V&nbsp;případě, že se nepoužívají faktory, je situace nepatrně horší:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33),
+   <strong>stringsAsFactors = FALSE</strong>
+)
+&nbsp;
+print(languages)
+&nbsp;
+print("-------------------------------")
+&nbsp;
+<strong>m &lt;- data.matrix(languages)</strong>
+print(class(m))
+print(m)
+</pre>
+
+<p>Nové výsledky budou muset obsahovat hodnoty <strong>NA</strong>, jinak by
+prvky matice nebyly stejného typu:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+&nbsp;
+[1] "-------------------------------"
+&nbsp;
+[1] "matrix"
+      id name usage change
+ [1,]  1   NA 15.95   0.74
+ [2,]  2   NA 13.48  -3.18
+ [3,]  3   NA 10.47   0.59
+ [4,]  4   NA  7.11   1.48
+ [5,]  5   NA  4.58   1.18
+ [6,]  6   NA  4.12   0.83
+ [7,]  7   NA  2.54   0.41
+ [8,]  8   NA  2.49   0.62
+ [9,]  9   NA  2.37   1.33
+&nbsp;
+Warning message:
+In data.matrix(languages) : NAs introduced by coercion
+</pre>
+
+<p>Alternativně je možné použít funkci <strong>t</strong>, která kromě
+transpozice matice provede i příslušnou konverzi:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(languages)
+&nbsp;
+print("-------------------------------")
+&nbsp;
+<strong>m &lt;- t(languages)</strong>
+print(class(m))
+print(m)
+</pre>
+
+<p>Nyní je výsledkem transponovaná matice:</p>
+
+<pre>
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+[1] "-------------------------------"
+[1] "matrix"
+       [,1]    [,2]    [,3]     [,4]    [,5]    [,6]           [,7]        
+id     "1"     "2"     "3"      "4"     "5"     "6"            "7"         
+name   "C"     "Java"  "Python" "C++"   "C#"    "Visual Basic" "JavaScript"
+usage  "15.95" "13.48" "10.47"  " 7.11" " 4.58" " 4.12"        " 2.54"     
+change " 0.74" "-3.18" " 0.59"  " 1.48" " 1.18" " 0.83"        " 0.41"     
+       [,8]    [,9]   
+id     "8"     "9"    
+name   "PHP"   "R"    
+usage  " 2.49" " 2.37"
+change " 0.62" " 1.33"
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že v&nbsp;tomto případě
+konverzní pravidla určila, že prvky matice budou řetězce a nikoli číselné
+hodnoty.</div></p>
+
+
+
+<p><a name="k08"></a></p>
+<h2 id="k08">8. Datový rámec získaný z&nbsp;matice &ndash; jednoduchý kalendář</h2>
+
+<p>Podívejme se nyní na způsob zpětné konverze, tj.&nbsp;na vytvoření datového
+rámce z&nbsp;matice. Použijeme přitom příklad, který již známe
+z&nbsp;předchozího článku a v&nbsp;němž jsme vytvořili matici se jmény měsíců
+rozdělených do ročních období. O samotný převod se postará funkce nazvaná
+<strong>as.data.frame</strong>:</p>
+
+<pre>
+m &lt;- <strong>matrix</strong>(
+  month.abb[c(12, 1:11)],
+  nrow = 3,
+  dimnames = list(
+    c("start", "middle", "end"),
+    c("Winter", "Spring", "Summer", "Fall")
+  )
+)
+&nbsp;
+print(class(m))
+print(m)
+&nbsp;
+print("-------------------------------")
+&nbsp;
+<strong>df &lt;- as.data.frame(m)</strong>
+print(class(df))
+print(df)
+</pre>
+
+<p>Povšimněte si, že po převodu na datový rámec došlo k&nbsp;pojmenování řádků
+a sloupců podle dat získaných z&nbsp;matice:</p>
+
+<pre>
+[1] "matrix"
+       Winter Spring Summer Fall 
+start  "Dec"  "Mar"  "Jun"  "Sep"
+middle "Jan"  "Apr"  "Jul"  "Oct"
+end    "Feb"  "May"  "Aug"  "Nov"
+&nbsp;
+[1] "-------------------------------"
+&nbsp;
+[1] "data.frame"
+       Winter Spring Summer Fall
+start     Dec    Mar    Jun  Sep
+middle    Jan    Apr    Jul  Oct
+end       Feb    May    Aug  Nov
+</pre>
+
+<p>Shodný demonstrační příklad, který ovšem tentokrát bude založen na celých
+(dlouhých) jménech měsíců, bude vypadat následovně:</p>
+
+<pre>
+m &lt;- <strong>matrix</strong>(
+  month.name[c(12, 1:11)],
+  nrow = 3,
+  dimnames = list(
+    c("start", "middle", "end"),
+    c("Winter", "Spring", "Summer", "Fall")
+  )
+)
+&nbsp;
+print(class(m))
+print(m)
+&nbsp;
+print("-------------------------------")
+&nbsp;
+<strong>df &lt;- as.data.frame(m)</strong>
+print(class(df))
+print(df)
+</pre>
+
+<p>Nyní budou výsledné datové struktury, tedy jak matice, tak i datový rámec,
+vypadat následovně:</p>
+
+<pre>
+[1] "matrix"
+       Winter     Spring  Summer   Fall       
+start  "December" "March" "June"   "September"
+middle "January"  "April" "July"   "October"  
+end    "February" "May"   "August" "November" 
+&nbsp;
+[1] "-------------------------------"
+&nbsp;
+[1] "data.frame"
+         Winter Spring Summer      Fall
+start  December  March   June September
+middle  January  April   July   October
+end    February    May August  November
+</pre>
+
+
+
+<p><a name="k09"></a></p>
+<h2 id="k09">9. Funkce <strong>rbind()</strong> a <strong>cbind()</strong></h2>
+
+<p>S&nbsp;funkcemi <strong>rbind()</strong> a <strong>cbind()</strong> jsme se
+již setkali v&nbsp;souvislosti s&nbsp;jinými datovými typy. Tyto funkce dokážou
+spojit několik struktur do jediné a lze je použít i v&nbsp;případě datových
+rámců. Nejprve si ukažme použití funkce <strong>rbind()</strong>, která spojuje
+struktury po řádcích (<i>row</i>):</p>
+
+<pre>
+languages1 &lt;- data.frame(
+   id = c(1:5),
+   name = c("C", "Java", "Python", "C++", "C#"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18)
+)
+&nbsp;
+languages2 &lt;- data.frame(
+   id = c(1:4),
+   name = c("Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(4.12, 2.54, 2.49, 2.37),
+   change = c(0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(nrow(languages1))
+print(nrow(languages2))
+&nbsp;
+<strong>languages &lt;- rbind(languages1, languages2)</strong>
+print(nrow(languages))
+print(languages)
+</pre>
+
+<p>Po spuštění tohoto příkladu dojde ke spojení datového rámce s&nbsp;pěti
+řádky s&nbsp;datovým rámcem, který má řádky čtyři:</p>
+
+<pre>
+[1] 5
+[1] 4
+[1] 9
+&nbsp;
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  1 Visual Basic  4.12   0.83
+7  2   JavaScript  2.54   0.41
+8  3          PHP  2.49   0.62
+9  4            R  2.37   1.33
+</pre>
+
+<p>Oba datové rámce musí mít stejně pojmenované sloupce:</p>
+
+<pre>
+languages1 &lt;- data.frame(
+   id = c(1:5),
+   name = c("C", "Java", "Python", "C++", "C#"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18)
+)
+&nbsp;
+languages2 &lt;- data.frame(
+   id = c(1:4),
+   name = c("Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(4.12, 2.54, 2.49, 2.37),
+   <strong>changeXYZZY = c(0.83, 0.41, 0.62, 1.33)</strong>
+)
+&nbsp;
+print(nrow(languages1))
+print(nrow(languages2))
+&nbsp;
+<strong>languages &lt;- rbind(languages1, languages2)</strong>
+print(nrow(languages))
+print(languages)
+</pre>
+
+<p>V&nbsp;tomto případě se jeden sloupec odlišuje svým jménem a dojde
+k&nbsp;chybě:</p>
+
+<pre>
+[1] 5
+[1] 4
+Error in match.names(clabs, names(xi)) : 
+  names do not match previous names
+Calls: rbind -&gt; rbind -&gt; match.names
+Execution halted
+</pre>
+
+<p>Podobně můžeme použít funkci <strong>cbind()</strong> pro spojení datových
+struktur se stejnou délkou, ale odlišnými sloupci:</p>
+
+<pre>
+id_and_names &lt;- data.frame(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R")
+)
+&nbsp;
+usages_and_changes &lt;- data.frame(
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+print(ncol(id_and_names))
+print(ncol(usages_and_changes))
+&nbsp;
+<strong>languages &lt;- cbind(id_and_names, usages_and_changes)</strong>
+print(ncol(languages))
+print(languages)
+</pre>
+
+<p>S&nbsp;výsledky:</p>
+
+<pre>
+[1] 2
+[1] 2
+[1] 4
+  id         name usage change
+1  1            C 15.95   0.74
+2  2         Java 13.48  -3.18
+3  3       Python 10.47   0.59
+4  4          C++  7.11   1.48
+5  5           C#  4.58   1.18
+6  6 Visual Basic  4.12   0.83
+7  7   JavaScript  2.54   0.41
+8  8          PHP  2.49   0.62
+9  9            R  2.37   1.33
+</pre>
+
+<p>Zajímavé je, že pokud má druhý datový rámec menší počet řádků, ovšem je
+soudělný s&nbsp;počtem řádků prvního datového rámce, je možné provést spojení,
+protože dojde k&nbsp;opakování hodnot:</p>
+
+<pre>
+id_and_names &lt;- data.frame(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R")
+)
+&nbsp; 
+usages_and_changes &lt;- data.frame(
+   usage = <strong>c(1, 99, 100),</strong>
+   change = <strong>c(0.74, -3.18, 0.59)</strong>
+)
+ &nbsp; 
+print(ncol(id_and_names))
+print(ncol(usages_and_changes))
+&nbsp;
+languages &lt;- cbind(id_and_names, usages_and_changes)
+print(ncol(languages))
+print(languages)
+</pre>
+
+<p>Tento příklad bude možné spustit, jeho výsledek bude následující:</p>
+
+<pre>
+[1] 2
+[1] 2
+[1] 4
+  id         name usage change
+1  1            C     1   0.74
+2  2         Java    99  -3.18
+3  3       Python   100   0.59
+4  4          C++     1   0.74
+5  5           C#    99  -3.18
+6  6 Visual Basic   100   0.59
+7  7   JavaScript     1   0.74
+8  8          PHP    99  -3.18
+9  9            R   100   0.59
+</pre>
+
+
+
+<p><a name="k10"></a></p>
+<h2 id="k10">10. Sloupcový graf s&nbsp;hodnotami vyčtenými z&nbsp;datového rámce</h2>
+
+<p>Ve druhé části článku se budeme věnovat tvorbě jednoduchých grafů, jejichž
+vstupní data jsou získána právě z&nbsp;datových rámců. Jedná se totiž o velmi
+častý požadavek.</p>
+
+<p>Nejprve zobrazíme sloupcový graf obsahující hodnoty vyčtené ze sloupce
+<strong>usage</strong>. Sloupcový graf se zobrazuje funkcí
+<strong>barplot()</strong>:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+<strong>barplot(languages$usage)</strong>
+</pre>
+
+*** image ***
+<p><i>Obrázek 1: Sloupcový graf s&nbsp;hodnotami vyčtenými z&nbsp;datového rámce.</i></p>
+
+
+
+<p><a name="k11"></a></p>
+<h2 id="k11">11. Přidání popisku horizontální osy do grafu</h2>
+
+<p>Graf z&nbsp;předchozího demonstračního příkladu není v&nbsp;žádném případě
+dokonalý, například mu chybí popis na osách. Pojmenovaným parametrem
+<strong>names.arg</strong> lze specifikovat, který vektor (či seznam) obsahuje
+popisky na horizontální ose:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+barplot(languages$usage, <strong>names.arg=languages$name</strong>)
+</pre>
+
+*** image ***
+<p><i>Obrázek 2: Přidání popisků na horizontální ose.</i></p>
+
+
+
+<p><a name="k12"></a></p>
+<h2 id="k12">12. Úprava stylu zobrazení grafu</h2>
+
+<p>Pokud se stane, že popisky (resp.&nbsp;přesněji řečeno jejich font) jsou
+příliš velké, lze přes parametry <strong>cex.jméno</strong> určit relativní
+velikost písma. V&nbsp;dalším demonstračním příkladu změníme popisky obou os na
+80% resp.&nbsp;na 60%:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+barplot(languages$usage, names.arg=languages$name,
+     <strong>cex.axis = 0.8</strong>,
+     <strong>cex.names = 0.6</strong>)
+</pre>
+
+*** image ***
+<p><i>Obrázek 3: Změna velikosti popisků.</i></p>
+
+
+
+<p><a name="k13"></a></p>
+<h2 id="k13">13. Orientace popisků na horizontální ose</h2>
+
+<p>I přesto, že jsou nyní popisky zobrazeny menším písmem, nevidíme všechny
+názvy programovacích jazyků. Pokusme se tedy změnit orientaci popisků &ndash;
+otočíme je o 90&deg;, takže nezávisle na délce názvu jazyka budou zobrazeny
+všechny názvy. Upravený zdrojový kód příkladu bude vypadat takto:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+barplot(languages$usage, names.arg=languages$name,
+     cex.axis = 0.8,
+     cex.names = 0.6,
+     <strong>las=2</strong>)
+</pre>
+
+*** image ***
+<p><i>Obrázek 4: Změna orientace popisků na horizontální ose.</i></p>
+
+
+
+<p><a name="k14"></a></p>
+<h2 id="k14">14. Přidání liniového grafu do grafu sloupcového</h2>
+
+<p>Do sloupcového grafu je možné přidat další průběh, například liniový graf.
+To je užitečná vlastnost, protože můžeme zobrazit dvě (více nebo méně
+korelující) veličiny. U liniového průběhu můžeme změnit styl zobrazení bodů a
+popř.&nbsp;i barvu samotného průběhu. Následující příklad je poněkud umělý,
+protože v&nbsp;něm vytváříme graf, který zobrazuje používanost
+(resp.&nbsp;popularitu) programovacích jazyků a meziroční rozdíl v&nbsp;této
+popularitě:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+plt &lt;- barplot(languages$usage, names.arg=languages$name,
+     cex.axis = 0.8,
+     cex.names = 0.6,
+     las=2)
+&nbsp;
+<strong>lines(plt, languages$change, type="o", col="red")</strong>
+</pre>
+
+<p><div class="rs-tip-major">Poznámka: povšimněte si, že přidání nového průběhu
+již nezměnilo rozsah na vertikální ose, takže záporná hodnota není zobrazena
+(leží až pod grafem).</div></p>
+
+*** image ***
+<p><i>Obrázek 5: Přidání liniového grafu do existujícího sloupcového grafu.</i></p>
+
+
+
+<p><a name="k15"></a></p>
+<h2 id="k15">15. Specifikace rozsahu hodnot na vertikální ose</h2>
+
+<p>Předchozí graf je možné vylepšit dvěma způsoby:</p>
+
+<ul>
+
+<li>Přidáním sekundární vertikální osy s&nbsp;jiným rozsahem hodnot, než má
+primární osa.</li>
+
+<li>Změnou rozsahu hodnot u vertikální osy s&nbsp;tím, že měřítko atd. zůstane
+pro oba zobrazené průběhy totožné.</li>
+
+</ul>
+
+<p>Dnes si ukážeme první naznačenou možnost, tedy změnu rozsahu hodnot u jediné
+(primární) vertikální osy. Tento postup má dvě výhody &ndash; je jednodušší
+z&nbsp;hlediska programu a současně bývá i přehlednější pro uživatele, kteří
+mají někdy problém porozumět grafu s&nbsp;dvojicí průběhů, přičemž každý průběh
+má jiné měřítko. Pro specifikaci mezních hodnot se používá nepovinný parametr
+<strong>ulim</strong>, kterému se ve vektoru předá minimální a maximální
+hodnota, která může být na grafu zobrazena:</p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+plt &lt;- barplot(languages$usage, names.arg=languages$name,
+     <strong>ylim=c(-5, 20)</strong>,
+     cex.axis = 0.8,
+     cex.names = 0.6,
+     las=2)
+&nbsp;
+lines(plt, languages$change, type="o", col="red")
+</pre>
+
+*** image ***
+<p><i>Obrázek 6: Specifikace rozsahu hodnot na vertikální ose.</i></p>
+
+
+
+<p><a name="k16"></a></p>
+<h2 id="k16">16. Pokus o vytvoření dvou skupin sloupců</h2>
+
+<p>Poměrně často se ve sloupcových grafech musí zobrazit více skupin sloupců (typickým příkladem mohou být <a href=""></a>)</p>
+
+<pre>
+data=t(languages[, c("usage", "change")])
+</pre>
+
+<p></p>
+
+<pre>
+languages &lt;- <strong>data.frame</strong>(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+data=t(languages[, c("usage", "change")])
+print(data)
+&nbsp;
+barplot(data, names.arg=languages$name,
+     ylim=c(-5, 20),
+     cex.axis = 0.8,
+     cex.names = 0.6,
+     las=2)
+</pre>
+
+*** image ***
+<p><i>Obrázek 7: </i></p>
+
+
+
+<p><a name="k17"></a></p>
+<h2 id="k17">17. Zobrazení sloupcového grafu se dvěma skupinami sloupců</h2>
+
+<pre>
+languages &lt;- data.frame(
+   id = c(1:9),
+   name = c("C", "Java", "Python", "C++", "C#", "Visual Basic", "JavaScript", "PHP", "R"),
+   usage = c(15.95, 13.48, 10.47, 7.11, 4.58, 4.12, 2.54, 2.49, 2.37),
+   change = c(0.74, -3.18, 0.59, 1.48, 1.18, 0.83, 0.41, 0.62, 1.33)
+)
+&nbsp;
+data=t(languages[, c("usage", "change")])
+print(data)
+&nbsp;
+barplot(data, names.arg=languages$name,
+     ylim=c(-5, 20),
+     cex.axis = 0.8,
+     cex.names = 0.6,
+     las=2,
+     beside=T)
+</pre>
+
+*** image ***
+<p><i>Obrázek 8: </i></p>
+
+
+
+<p><a name="k18"></a></p>
+<h2 id="k18">18. Další typy grafů</h2>
+
+<pre>
+x &lt;- 1:100
+y &lt;- sin(x/10)
+
+print(x)
+print(y)
+
+x11()
+
+plot(x, y)
+</pre>
+
+<pre>
+  [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18
+ [19]  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36
+ [37]  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54
+ [55]  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72
+ [73]  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90
+ [91]  91  92  93  94  95  96  97  98  99 100
+  [1]  0.09983342  0.19866933  0.29552021  0.38941834  0.47942554  0.56464247
+  [7]  0.64421769  0.71735609  0.78332691  0.84147098  0.89120736  0.93203909
+ [13]  0.96355819  0.98544973  0.99749499  0.99957360  0.99166481  0.97384763
+ [19]  0.94630009  0.90929743  0.86320937  0.80849640  0.74570521  0.67546318
+ [25]  0.59847214  0.51550137  0.42737988  0.33498815  0.23924933  0.14112001
+ [31]  0.04158066 -0.05837414 -0.15774569 -0.25554110 -0.35078323 -0.44252044
+ [37] -0.52983614 -0.61185789 -0.68776616 -0.75680250 -0.81827711 -0.87157577
+ [43] -0.91616594 -0.95160207 -0.97753012 -0.99369100 -0.99992326 -0.99616461
+ [49] -0.98245261 -0.95892427 -0.92581468 -0.88345466 -0.83226744 -0.77276449
+ [55] -0.70554033 -0.63126664 -0.55068554 -0.46460218 -0.37387666 -0.27941550
+ [61] -0.18216250 -0.08308940  0.01681390  0.11654920  0.21511999  0.31154136
+ [67]  0.40484992  0.49411335  0.57843976  0.65698660  0.72896904  0.79366786
+ [73]  0.85043662  0.89870810  0.93799998  0.96791967  0.98816823  0.99854335
+ [79]  0.99894134  0.98935825  0.96988981  0.94073056  0.90217183  0.85459891
+ [85]  0.79848711  0.73439710  0.66296923  0.58491719  0.50102086  0.41211849
+ [91]  0.31909836  0.22288991  0.12445442  0.02477543 -0.07515112 -0.17432678
+ [97] -0.27176063 -0.36647913 -0.45753589 -0.54402111
+</pre>
+
+<pre>
+x &lt;- rnorm(1000)
+
+hx &lt;- hist(x, breaks=100, plot=FALSE)
+print(hx)
+
+plot(hx, col=ifelse(abs(hx$breaks) < 1.669, 4, 2))
+</pre>
+
+<pre>
+$breaks
+  [1] -3.20 -3.15 -3.10 -3.05 -3.00 -2.95 -2.90 -2.85 -2.80 -2.75 -2.70 -2.65
+ [13] -2.60 -2.55 -2.50 -2.45 -2.40 -2.35 -2.30 -2.25 -2.20 -2.15 -2.10 -2.05
+ [25] -2.00 -1.95 -1.90 -1.85 -1.80 -1.75 -1.70 -1.65 -1.60 -1.55 -1.50 -1.45
+ [37] -1.40 -1.35 -1.30 -1.25 -1.20 -1.15 -1.10 -1.05 -1.00 -0.95 -0.90 -0.85
+ [49] -0.80 -0.75 -0.70 -0.65 -0.60 -0.55 -0.50 -0.45 -0.40 -0.35 -0.30 -0.25
+ [61] -0.20 -0.15 -0.10 -0.05  0.00  0.05  0.10  0.15  0.20  0.25  0.30  0.35
+ [73]  0.40  0.45  0.50  0.55  0.60  0.65  0.70  0.75  0.80  0.85  0.90  0.95
+ [85]  1.00  1.05  1.10  1.15  1.20  1.25  1.30  1.35  1.40  1.45  1.50  1.55
+ [97]  1.60  1.65  1.70  1.75  1.80  1.85  1.90  1.95  2.00  2.05  2.10  2.15
+[109]  2.20  2.25  2.30  2.35  2.40  2.45  2.50  2.55  2.60  2.65  2.70  2.75
+[121]  2.80  2.85  2.90  2.95  3.00  3.05  3.10  3.15  3.20  3.25  3.30  3.35
+[133]  3.40  3.45  3.50
+
+$counts
+  [1]  1  0  1  0  0  0  0  1  1  2  1  0  1  2  2  1  0  1  3  1  1  0  5  5  1
+ [26]  5  5  3  6  1  4 11  6  2  5 12  8 10  8 14  8 15 12 11 16 12 18  8 16 11
+ [51] 18 13 14 15 16 16 12 18 14 29 24 19 29 23 25 19 18  7 21 15 16 14 20 19 25
+ [76] 24 18 13 17  7 13  5 14 15  8 10  9  7  9 12  8  9  6 13  5  5  4  3  4  3
+[101]  6  2  3  3  1  8  4  1  1  0  1  2  2  1  0  2  1  0  0  0  0  1  0  0  0
+[126]  1  1  0  0  0  0  0  1  1
+
+$density
+  [1] 0.02 0.00 0.02 0.00 0.00 0.00 0.00 0.02 0.02 0.04 0.02 0.00 0.02 0.04 0.04
+ [16] 0.02 0.00 0.02 0.06 0.02 0.02 0.00 0.10 0.10 0.02 0.10 0.10 0.06 0.12 0.02
+ [31] 0.08 0.22 0.12 0.04 0.10 0.24 0.16 0.20 0.16 0.28 0.16 0.30 0.24 0.22 0.32
+ [46] 0.24 0.36 0.16 0.32 0.22 0.36 0.26 0.28 0.30 0.32 0.32 0.24 0.36 0.28 0.58
+ [61] 0.48 0.38 0.58 0.46 0.50 0.38 0.36 0.14 0.42 0.30 0.32 0.28 0.40 0.38 0.50
+ [76] 0.48 0.36 0.26 0.34 0.14 0.26 0.10 0.28 0.30 0.16 0.20 0.18 0.14 0.18 0.24
+ [91] 0.16 0.18 0.12 0.26 0.10 0.10 0.08 0.06 0.08 0.06 0.12 0.04 0.06 0.06 0.02
+[106] 0.16 0.08 0.02 0.02 0.00 0.02 0.04 0.04 0.02 0.00 0.04 0.02 0.00 0.00 0.00
+[121] 0.00 0.02 0.00 0.00 0.00 0.02 0.02 0.00 0.00 0.00 0.00 0.00 0.02 0.02
+
+$mids
+  [1] -3.175 -3.125 -3.075 -3.025 -2.975 -2.925 -2.875 -2.825 -2.775 -2.725
+ [11] -2.675 -2.625 -2.575 -2.525 -2.475 -2.425 -2.375 -2.325 -2.275 -2.225
+ [21] -2.175 -2.125 -2.075 -2.025 -1.975 -1.925 -1.875 -1.825 -1.775 -1.725
+ [31] -1.675 -1.625 -1.575 -1.525 -1.475 -1.425 -1.375 -1.325 -1.275 -1.225
+ [41] -1.175 -1.125 -1.075 -1.025 -0.975 -0.925 -0.875 -0.825 -0.775 -0.725
+ [51] -0.675 -0.625 -0.575 -0.525 -0.475 -0.425 -0.375 -0.325 -0.275 -0.225
+ [61] -0.175 -0.125 -0.075 -0.025  0.025  0.075  0.125  0.175  0.225  0.275
+ [71]  0.325  0.375  0.425  0.475  0.525  0.575  0.625  0.675  0.725  0.775
+ [81]  0.825  0.875  0.925  0.975  1.025  1.075  1.125  1.175  1.225  1.275
+ [91]  1.325  1.375  1.425  1.475  1.525  1.575  1.625  1.675  1.725  1.775
+[101]  1.825  1.875  1.925  1.975  2.025  2.075  2.125  2.175  2.225  2.275
+[111]  2.325  2.375  2.425  2.475  2.525  2.575  2.625  2.675  2.725  2.775
+[121]  2.825  2.875  2.925  2.975  3.025  3.075  3.125  3.175  3.225  3.275
+[131]  3.325  3.375  3.425  3.475
+
+$xname
+[1] "x"
+
+$equidist
+[1] TRUE
+
+attr(,"class")
+[1] "histogram"
+</pre>
+
+
+
+<p><a name="k19"></a></p>
+<h2 id="k19">19. Repositář s&nbsp;demonstračními příklady</h2>
+
+<p>Zdrojové kódy všech dnes použitých demonstračních příkladů byly uloženy do
+nového Git repositáře, který je dostupný na adrese <a
+href="https://github.com/tisnik/r-examples">https://github.com/tisnik/r-examples</a>
+V&nbsp;případě, že z&nbsp;nějakého důvodu nebudete chtít klonovat celý
+repositář (ten je ovšem &ndash; alespoň prozatím &ndash; velmi malý, dnes má
+stále jen jednotky kilobajtů), můžete namísto toho použít odkazy na jednotlivé
+demonstrační příklady, které naleznete v&nbsp;následující tabulce:</p>
+
+<table>
+<tr><th> #</th><th>Příklad</th><th>Stručný popis</th><th>Cesta</th></tr>
+<tr><td>1</td><td>01-data-frame-structure.R</td><td>výpis struktury datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/01-data-frame-structure.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/01-data-frame-structure.R</a></td></tr>
+<tr><td>2</td><td>02-data-frame-constructor-str.R</td><td>konstrukce datového rámce bez použití faktorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/02-data-frame-constructor-str.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/02-data-frame-constructor-str.R</a></td></tr>
+<tr><td>3</td><td>03-data-frame-structure-str.R</td><td>výpis struktury datového rámce vytvořeného bez použití faktorů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/03-data-frame-structure-str.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/03-data-frame-structure-str.R</a></td></tr>
+<tr><td>4</td><td>04-data-frame-summary.R</td><td>výpočet a výpis statistických informací o datovém rámci</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/04-data-frame-summary.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/04-data-frame-summary.R</a></td></tr>
+<tr><td>5</td><td>05-data-frame-extract-columns.R</td><td>extrakce vybraných sloupců z&nbsp;datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/05-data-frame-extract-columns.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/05-data-frame-extract-columns.R</a></td></tr>
+<tr><td>6</td><td>06-data-frame-extract-rows.R</td><td>extrakce vybraných řádků z&nbsp;datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/06-data-frame-extract-rows.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/06-data-frame-extract-rows.R</a></td></tr>
+<tr><td>7</td><td>07-data-frame-extract-rows.R</td><td>extrakce vybraných řádků z&nbsp;datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/07-data-frame-extract-rows.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/07-data-frame-extract-rows.R</a></td></tr>
+<tr><td>8</td><td>08-data-frame-extract-columns-rows.R</td><td>kombinace předchozích příkladů</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/08-data-frame-extract-columns-rows.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/08-data-frame-extract-columns-rows.R</a></td></tr>
+<tr><td>9</td><td>09-data-frame-add-column.R</td><td>přidání nového sloupce do datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/09-data-frame-add-column.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/09-data-frame-add-column.R</a></td></tr>
+<tr><td>10</td><td>10-data-frame-add-column.R</td><td>přidání nového sloupce do datového rámce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/10-data-frame-add-column.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/10-data-frame-add-column.R</a></td></tr>
+<tr><td>11</td><td>11-data-frame-to-matrix.R</td><td>konverze datového rámce na matici</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/11-data-frame-to-matrix.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/11-data-frame-to-matrix.R</a></td></tr>
+<tr><td>12</td><td>12-data-frame-to-matrix.R</td><td>konverze datového rámce na transformovanou matici</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/12-data-frame-to-matrix.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/12-data-frame-to-matrix.R</a></td></tr>
+<tr><td>13</td><td>13-months-abb-as-data-frame.R</td><td>datový rámec s&nbsp;měsíci (zkrácená verze)</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/13-months-abb-as-data-frame.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/13-months-abb-as-data-frame.R</a></td></tr>
+<tr><td>14</td><td>14-months-names-as-data-frame.R</td><td>datový rámec s&nbsp;měsíci (plná verze)</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/14-months-names-as-data-frame.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/14-months-names-as-data-frame.R</a></td></tr>
+<tr><td>15</td><td>15-rbind.R</td><td>funkce <strong>cbind()</strong> použitá společně s&nbsp;datovými rámci</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/15-rbind.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/15-rbind.R</a></td></tr>
+<tr><td>16</td><td>16-cbind.R</td><td>funkce <strong>rbind()</strong> použitá společně s&nbsp;datovými rámci</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/16-cbind.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/16-cbind.R</a></td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>17</td><td>17-barplot.R</td><td>jednoduchý sloupcový graf</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/17-barplot.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/17-barplot.R</a></td></tr>
+<tr><td>18</td><td>18-barplot-x-labels.R</td><td>změna popisků na x-ové ose grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/18-barplot-x-labels.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/18-barplot-x-labels.R</a></td></tr>
+<tr><td>19</td><td>19-barplot-labels-size.R</td><td>změna velikosti popisků na ose grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/19-barplot-labels-size.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/19-barplot-labels-size.R</a></td></tr>
+<tr><td>20</td><td>20-barplot-labels-orientation.R</td><td>modifikace (otočení) popisků</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/20-barplot-labels-orientation.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/20-barplot-labels-orientation.R</a></td></tr>
+<tr><td>21</td><td>21-barplot-plot.R</td><td>přidání liniového průběhu do sloupcového grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/21-barplot-plot.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/21-barplot-plot.R</a></td></tr>
+<tr><td>22</td><td>22-barplot-plot-limits.R</td><td>nastavení mezí u obou os grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/22-barplot-plot-limits.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/22-barplot-plot-limits.R</a></td></tr>
+<tr><td>23</td><td>23-barplot-two-plots.R</td><td>dvě skupiny sloupců ve sloupcovém grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/23-barplot-two-plots.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/23-barplot-two-plots.R</a></td></tr>
+<tr><td>24</td><td>24-barplot-two-plots-beside.R</td><td>dvě vedle sebe ležící skupiny sloupců ve sloupcovém grafu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/24-barplot-two-plots-beside.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/24-barplot-two-plots-beside.R</a></td></tr>
+<tr><td>25</td><td>25_plot.R</td><td>jednoduchý liniový graf</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/25_plot.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/25_plot.R</a></td></tr>
+<tr><td>26</td><td>26_plot.R</td><td>jednoduchý liniový graf</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/26_plot.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/26_plot.R</a></td></tr>
+<tr><td>27</td><td>27_histogram.R</td><td>zobrazení jednoduchého histogramu</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/27_histogram.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/27_histogram.R</a></td></tr>
+<tr><td>28</td><td>28_lissajous.R</td><td>Lissajousova křivka zobrazená v&nbsp;grafu typu X-Y</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/28_lissajous.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/28_lissajous.R</a></td></tr>
+<tr><td>29</td><td>29_plot_lines.R</td><td>zobrazení průběhu funkce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/29_plot_lines.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/29_plot_lines.R</a></td></tr>
+<tr><td>30</td><td>30_plot_lines.R</td><td>zobrazení průběhu funkce</td><td><a href="https://github.com/tisnik/r-examples/blob/master/06-data-frames/30_plot_lines.R">https://github.com/tisnik/r-examples/blob/master/06-data-frames/30_plot_lines.R</a></td></tr>
+</table>
+
+
+
+<p><a name="k20"></a></p>
+<h2 id="k20">20. Odkazy na Internetu</h2>
+
+<ol>
+
+<li>The R Project for Statistical Computing<br />
+<a href="https://www.r-project.org/">https://www.r-project.org/</a>
+</li>
+
+<li>An Introduction to R<br />
+<a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf</a>
+</li>
+
+<li>R (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/R_(programming_language)">https://en.wikipedia.org/wiki/R_(programming_language)</a>
+</li>
+
+<li>The R Programming Language<br />
+<a href="https://www.tiobe.com/tiobe-index/r/">https://www.tiobe.com/tiobe-index/r/</a>
+</li>
+
+<li>R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/">https://rmarkdown.rstudio.com/</a>
+</li>
+
+<li>R Markdown: The Definitive Guide<br />
+<a href="https://bookdown.org/yihui/rmarkdown/">https://bookdown.org/yihui/rmarkdown/</a>
+</li>
+
+<li>R Markdown Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf</a>
+</li>
+
+<li>Introduction to R Markdown<br />
+<a href="https://rmarkdown.rstudio.com/articles_intro.html">https://rmarkdown.rstudio.com/articles_intro.html</a>
+</li>
+
+<li>R Cheat Sheets<br />
+<a href="https://blog.sergiouri.be/2016/07/r-cheat-sheets.html">https://blog.sergiouri.be/2016/07/r-cheat-sheets.html</a>
+</li>
+
+<li>R Cheat Sheet<br />
+<a href="https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf">https://s3.amazonaws.com/quandl-static-content/Documents/Quandl+-+R+Cheat+Sheet.pdf</a>
+</li>
+
+<li>Base R Cheat Sheet<br />
+<a href="https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf">https://rstudio.com/wp-content/uploads/2016/06/r-cheat-sheet.pdf</a>
+</li>
+
+<li>PYPL PopularitY of Programming Language<br />
+<a href="https://pypl.github.io/PYPL.html">https://pypl.github.io/PYPL.html</a>
+</li>
+
+<li>Tiobe index<br />
+<a href="https://www.tiobe.com/tiobe-index/">https://www.tiobe.com/tiobe-index/</a>
+</li>
+
+<li>Stack Overflow: Most Loved, Dreaded &amp; Wanted Programming Languages In 2020<br />
+<a href="https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/">https://fossbytes.com/stack-overflow-most-loved-dreaded-wanted-programming-languages-in-2020/</a>
+</li>
+
+<li>How to Install and Use R on Ubuntu<br />
+<a href="https://itsfoss.com/install-r-ubuntu/">https://itsfoss.com/install-r-ubuntu/</a>
+</li>
+
+<li>R programming for beginners - Why you should use R<br />
+<a href="https://www.youtube.com/watch?v=9kYUGMg_14s">https://www.youtube.com/watch?v=9kYUGMg_14s</a>
+</li>
+
+<li>GOTO 2012 • The R Language The Good The Bad &amp; The Ugly<br />
+<a href="https://www.youtube.com/watch?v=6S9r_YbqHy8">https://www.youtube.com/watch?v=6S9r_YbqHy8</a>
+</li>
+
+<li>R vs Python - What should I learn in 2020? | R and Python Comparison<br />
+<a href="https://www.youtube.com/watch?v=eRP_J2yLjSU">https://www.youtube.com/watch?v=eRP_J2yLjSU</a>
+</li>
+
+<li>R Programming 101<br />
+<a href="https://www.youtube.com/c/rprogramming101">https://www.youtube.com/c/rprogramming101</a>
+</li>
+
+<li>Seriál Tvorba grafů pomocí programu "R"<br />
+<a href="https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/">https://www.root.cz/serialy/tvorba-grafu-pomoci-programu-r/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": úvod<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-1/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": pokročilé funkce<br />
+<a href="https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/">https://www.root.cz/clanky/tvorba-grafu-pomoci-programu-r-pokrocile-funkce/</a>
+</li>
+
+<li>Tvorba grafů pomocí programu "R": vkládání textu, čeština<br />
+<a href="https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/">https://www.root.cz/clanky/grafy-pomoci-programu-r-vkladani-textu-cestina/</a>
+</li>
+
+<li>Cesta erka: Krok nultý &ndash; instalace &amp; nastavení – prostředí, projekty, package<br />
+<a href="https://www.jla-data.net/r4su/r4su-environment-setup/">https://www.jla-data.net/r4su/r4su-environment-setup/</a>
+</li>
+
+<li>Cesta erka: Krok první &ndash; operace a struktury – proměnné, rovnítka a dolary<br />
+<a href="https://www.jla-data.net/r4su/r4su-data-structures/">https://www.jla-data.net/r4su/r4su-data-structures/</a>
+</li>
+
+<li>Cesta erka: Krok druhý &ndash; načtení externích dat – csvčka, excely a databáze<br />
+<a href="https://www.jla-data.net/r4su/r4su-read-data/">https://www.jla-data.net/r4su/r4su-read-data/</a>
+</li>
+
+<li>Cesta erka: Krok třetí &ndash; manipulace s daty – dplyr, slovesa a pajpy<br />
+<a href="https://www.jla-data.net/r4su/r4su-manipulate-data/">https://www.jla-data.net/r4su/r4su-manipulate-data/</a>
+</li>
+
+<li>Cesta erka: Krok čtvrtý &ndash; podání výsledků – ggplot, geomy a estetiky<br />
+<a href="https://www.jla-data.net/r4su/r4su-report-results/">https://www.jla-data.net/r4su/r4su-report-results/</a>
+</li>
+
+<li>Cesta erka: Krok pátý &ndash; case study – případ piva v Praze<br />
+<a href="https://www.jla-data.net/r4su/r4su-case-study-beer/">https://www.jla-data.net/r4su/r4su-case-study-beer/</a>
+</li>
+
+<li>V indexu popularity programovacích jazyků TIOBE překvapilo R, Go, Perl, Scratch a Rust<br />
+<a href="https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/">https://www.root.cz/zpravicky/v-indexu-popularity-programovacich-jazyku-tiobe-prekvapilo-r-go-perl-scratch-a-rust/</a>
+</li>
+
+<li>Is R Programming SURGING in Popularity in 2020?<br />
+<a href="https://www.youtube.com/watch?v=Duwn-vImyXE">https://www.youtube.com/watch?v=Duwn-vImyXE</a>
+</li>
+
+<li>Using the R programming language in Jupyter Notebook<br />
+<a href="https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/">https://docs.anaconda.com/anaconda/navigator/tutorials/r-lang/</a>
+</li>
+
+<li>Using R on Jupyter Notebook<br />
+<a href="https://dzone.com/articles/using-r-on-jupyternbspnotebook">https://dzone.com/articles/using-r-on-jupyternbspnotebook</a>
+</li>
+
+<li>Graphics, ggplot2<br />
+<a href="http://r4stats.com/examples/graphics-ggplot2/">http://r4stats.com/examples/graphics-ggplot2/</a>
+</li>
+
+<li>A Practice Data Set<br />
+<a href="https://r4stats.wordpress.com/examples/mydata/">https://r4stats.wordpress.com/examples/mydata/</a>
+</li>
+
+<li>Shiny &ndash; galerie projektů<br />
+<a href="https://shiny.rstudio.com/gallery/">https://shiny.rstudio.com/gallery/</a>
+</li>
+
+<li>Seriál Programovací jazyk Julia<br />
+<a href="https://www.root.cz/serialy/programovaci-jazyk-julia/">https://www.root.cz/serialy/programovaci-jazyk-julia/</a>
+</li>
+
+<li>Julia (front page)<br />
+<a href="http://julialang.org/">http://julialang.org/</a>
+</li>
+
+<li>Julia &ndash; repositář na GitHubu<br />
+<a href="https://github.com/JuliaLang/julia">https://github.com/JuliaLang/julia</a>
+</li>
+
+<li>Julia (programming language)<br />
+<a href="https://en.wikipedia.org/wiki/Julia_%28programming_language%29">https://en.wikipedia.org/wiki/Julia_%28programming_language%29</a>
+</li>
+
+<li>IJulia<br />
+<a href="https://github.com/JuliaLang/IJulia.jl">https://github.com/JuliaLang/IJulia.jl</a>
+</li>
+
+<li>Introducing Julia<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia">https://en.wikibooks.org/wiki/Introducing_Julia</a>
+</li>
+
+<li>Julia: the REPL<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL">https://en.wikibooks.org/wiki/Introducing_Julia/The_REPL</a>
+</li>
+
+<li>Introducing Julia/Metaprogramming<br />
+<a href="https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming">https://en.wikibooks.org/wiki/Introducing_Julia/Metaprogramming</a>
+</li>
+
+<li>Month of Julia<br />
+<a href="https://github.com/DataWookie/MonthOfJulia">https://github.com/DataWookie/MonthOfJulia</a>
+</li>
+
+<li>Learn X in Y minutes (where X=Julia)<br />
+<a href="https://learnxinyminutes.com/docs/julia/">https://learnxinyminutes.com/docs/julia/</a>
+</li>
+
+<li>New Julia language seeks to be the C for scientists<br />
+<a href="http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html">http://www.infoworld.com/article/2616709/application-development/new-julia-language-seeks-to-be-the-c-for-scientists.html</a>
+</li>
+
+<li>Julia: A Fast Dynamic Language for Technical Computing<br />
+<a href="http://karpinski.org/publications/2012/julia-a-fast-dynamic-language">http://karpinski.org/publications/2012/julia-a-fast-dynamic-language</a>
+</li>
+
+<li>The LLVM Compiler Infrastructure<br />
+<a href="http://llvm.org/">http://llvm.org/</a>
+</li>
+
+<li>Julia: benchmarks<br />
+<a href="http://julialang.org/benchmarks/">http://julialang.org/benchmarks/</a>
+</li>
+
+<li>R Vector<br />
+<a href="https://www.datamentor.io/r-programming/vector/">https://www.datamentor.io/r-programming/vector/</a>
+</li>
+
+<li>.R File Extension<br />
+<a href="https://fileinfo.com/extension/r">https://fileinfo.com/extension/r</a>
+</li>
+
+<li>Lineární regrese<br />
+<a href="https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese">https://cs.wikipedia.org/wiki/Line%C3%A1rn%C3%AD_regrese</a>
+</li>
+
+<li>lm (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm">https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm</a>
+</li>
+
+<li>quit (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/quit</a>
+</li>
+
+<li>c (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/c</a>
+</li>
+
+<li>help (funkce)<br />
+<a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help">https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/help</a>
+</li>
+
+<li>Shiny: Introduction to interactive documents<br />
+<a href="https://shiny.rstudio.com/articles/interactive-docs.html">https://shiny.rstudio.com/articles/interactive-docs.html</a>
+</li>
+
+<li>R Release History 1997-2013<br />
+<a href="http://timelyportfolio.github.io/rCharts_timeline_r/">http://timelyportfolio.github.io/rCharts_timeline_r/</a>
+</li>
+
+<li>R: atomic vectors<br />
+<a href="https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/">https://renenyffenegger.ch/notes/development/languages/R/data-structures/vector/</a>
+</li>
+
+<li>11 Best R Programming IDE and editors<br />
+<a href="https://www.dunebook.com/best-r-programming-ide/">https://www.dunebook.com/best-r-programming-ide/</a>
+</li>
+
+<li>CRAN - The Comprehensive R Archive Network<br />
+<a href="https://cran.r-project.org/">https://cran.r-project.org/</a>
+</li>
+
+<li>R - Arrays<br />
+<a href="https://www.tutorialspoint.com/r/r_arrays.htm">https://www.tutorialspoint.com/r/r_arrays.htm</a>
+</li>
+
+<li>Array vs Matrix in R Programming<br />
+<a href="https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp">https://www.geeksforgeeks.org/array-vs-matrix-in-r-programming/?ref=rp</a>
+</li>
+
+<li>Online R Language IDE<br />
+<a href="https://www.jdoodle.com/execute-r-online/">https://www.jdoodle.com/execute-r-online/</a>
+</li>
+
+<li>Execute R Online (R v3.4.1)<br />
+<a href="https://www.tutorialspoint.com/execute_r_online.php">https://www.tutorialspoint.com/execute_r_online.php</a>
+</li>
+
+<li>Snippets: Run any R code you like. There are over twelve thousand R packages preloaded<br />
+<a href="https://rdrr.io/snippets/">https://rdrr.io/snippets/</a>
+</li>
+
+<li>R Package Documentation<br />
+<a href="https://rdrr.io/">https://rdrr.io/</a>
+</li>
+
+<li>Data Reshaping in R – Popular Functions to Organise Data<br />
+<a href="https://techvidvan.com/tutorials/data-reshaping-in-r/">https://techvidvan.com/tutorials/data-reshaping-in-r/</a>
+</li>
+
+<li>What is an R Data Frame?<br />
+<a href="https://magoosh.com/data-science/what-is-an-r-data-frame/">https://magoosh.com/data-science/what-is-an-r-data-frame/</a>
+</li>
+
+<li>What's a data frame?<br />
+<a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1">https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1</a>
+</li>
+
+<li>data.frame<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame</a>
+</li>
+
+<li>as.data.frame<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as.data.frame">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as.data.frame</a>
+</li>
+
+<li>table<br />
+<a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table">https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table</a>
+</li>
+
+<li>Python Pandas - DataFrame<br />
+<a href="https://www.tutorialspoint.com/python_pandas/python_pandas_dataframe.htm">https://www.tutorialspoint.com/python_pandas/python_pandas_dataframe.htm</a>
+</li>
+
+<li>The Pandas DataFrame: Make Working With Data Delightful<br />
+<a href="https://realpython.com/pandas-dataframe/">https://realpython.com/pandas-dataframe/</a>
+</li>
+
+<li>Python | Pandas DataFrame<br />
+<a href="https://www.geeksforgeeks.org/python-pandas-dataframe/">https://www.geeksforgeeks.org/python-pandas-dataframe/</a>
+</li>
+
+<li>R - Factors<br />
+<a href="https://www.tutorialspoint.com/r/r_factors.htm">https://www.tutorialspoint.com/r/r_factors.htm</a>
+</li>
+
+</ol>
+
+
+
+<p></p><p></p>
+<p><small>Autor: <a href="http://www.fit.vutbr.cz/~tisnovpa">Pavel Tišnovský</a> &nbsp; 2020</small></p>
+</body>
+</html>
+
