@@ -1,0 +1,6 @@
+NA+NA
+NA-NA
+NA+1
+NA*2
+NA+Inf
+NA/Inf
